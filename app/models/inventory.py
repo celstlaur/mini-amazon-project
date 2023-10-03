@@ -11,14 +11,14 @@ class Inventory:
     def get_products_given_seller(seller_id, available=False):
         if available:
             rows = app.db.execute('''
-    SELECT product_id, quantity
+    SELECT seller_id, product_id, quantity
     FROM HasInventory
     WHERE seller_id = :seller_id and quantity > 0
     ''',
                               seller_id=seller_id)
         else:
             rows = app.db.execute('''
-    SELECT product_id, quantity
+    SELECT seller_id, product_id, quantity
     FROM HasInventory
     WHERE seller_id = :seller_id
     ''',

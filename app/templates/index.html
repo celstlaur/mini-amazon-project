@@ -53,8 +53,14 @@
   {% else %}
   <h2>No purchase history</h2>
   {% endif %}
+  {% if seller_check %}
+  <p><a href="{{ url_for('index.seller') }}">Seller Page</a></p>
+  {% else %}
+  <p>sign up to become a seller (WIP)</p>
+  {% endif %}
 {% else %}
-<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history and / or seller information!</p>
 {% endif %}
+
 
 {% endblock %}
