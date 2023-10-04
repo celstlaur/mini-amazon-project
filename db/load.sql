@@ -28,8 +28,14 @@ SELECT pg_catalog.setval('public.orderfact_id_seq',
 \COPY OrderContents FROM 'OrderContents.csv' WITH DELIMITER ',' NULL '' CSV
 
 \COPY ReviewedProduct FROM 'ReviewedProduct.csv' WITH DELIMITER ',' NULL '' CSV
+SELECT pg_catalog.setval('public.reviewedproduct_id_seq',
+                         (SELECT MAX(id)+1 FROM ReviewedProduct),
+                         false);
 
 \COPY ReviewedSeller FROM 'ReviewedSeller.csv' WITH DELIMITER ',' NULL '' CSV
+SELECT pg_catalog.setval('public.reviewedseller_id_seq',
+                         (SELECT MAX(id)+1 FROM ReviewedSeller),
+                         false);
 
 \COPY SavedForLaterContents FROM 'SavedForLaterContents.csv' WITH DELIMITER ',' NULL '' CSV
 
