@@ -52,10 +52,6 @@ SELECT pg_catalog.setval('public.wishes_id_seq',
 
 \COPY OrderContents FROM 'OrderContents.csv' WITH DELIMITER ',' NULL '' CSV
 
-\COPY ReviewedProduct FROM 'ReviewedProduct.csv' WITH DELIMITER ',' NULL '' CSV
-
-\COPY ReviewedSeller FROM 'ReviewedSeller.csv' WITH DELIMITER ',' NULL '' CSV
-
 \COPY SavedForLaterContents FROM 'SavedForLaterContents.csv' WITH DELIMITER ',' NULL '' CSV
 
 \COPY Search FROM 'Search.csv' WITH DELIMITER ',' NULL '' CSV
