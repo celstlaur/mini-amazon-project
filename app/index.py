@@ -1,9 +1,10 @@
-from flask import render_template
+from flask import render_template, redirect, url_for
 from flask_login import current_user
 import datetime
 
 from .models.product import Product
-from .models.purchase import Purchase
+from .models.orderfact import OrderFact
+from .models.inventory import Inventory
 
 from flask import Blueprint
 bp = Blueprint('index', __name__)
@@ -12,14 +13,19 @@ bp = Blueprint('index', __name__)
 @bp.route('/')
 def index():
     # get all available products for sale:
-    products = Product.get_all(True)
+    products = Product.get_all_less_than_equal_to_price(100000000)
     # find the products current user has bought:
     if current_user.is_authenticated:
-        purchases = Purchase.get_all_by_uid_since(
-            current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
+        purchases = OrderFact.get_orders_given_buyer(current_user.id)
+        return render_template('index.html', avail_products=products, purchase_history=purchases, seller_check=current_user.is_seller(current_user.id))
     else:
-        purchases = None
-    # render the page by adding information to the index.html file
-    return render_template('index.html',
-                           avail_products=products,
-                           purchase_history=purchases)
+        return render_template('index.html', avail_products=products)
+
+@bp.route('/seller')
+def seller():
+    if current_user.is_authenticated:
+        inventory = Inventory.get_products_given_seller(current_user.id)
+        return render_template('seller.html', inventory=inventory)
+    else:
+        return redirect(url_for('index.index'))
+    

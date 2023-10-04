@@ -67,3 +67,14 @@ WHERE id = :id
 """,
                               id=id)
         return User(*(rows[0])) if rows else None
+    
+
+    @staticmethod
+    def is_seller(id):
+        rows = app.db.execute("""
+    SELECT id
+    FROM Sellers
+    WHERE id = :id
+    """,
+                                id=id)
+        return len(rows) > 0
