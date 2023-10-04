@@ -77,14 +77,14 @@ CREATE TABLE Fulfills (
 CREATE TABLE ReviewedSeller (
     user_id INT NOT NULL REFERENCES Users(id),
     seller_id INT NOT NULL REFERENCES Sellers(id),
-    review VARCHAR(500)
+    review VARCHAR(500),
     time_reviewed_seller timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC')
 );
 
 CREATE TABLE ReviewedProduct (
     user_id INT NOT NULL REFERENCES Users(id),
     product_id INT NOT NULL REFERENCES Products(id),
-    review VARCHAR(500)
+    review VARCHAR(500),
     time_reviewed_product timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC')
 );
 
