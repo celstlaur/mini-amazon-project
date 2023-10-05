@@ -19,6 +19,15 @@ WHERE id = :id
 ''',
                               id=id)
         return Product(*(rows[0])) if rows is not None else None
+    
+    # can make a bunch more of these, easy to make...
+    @staticmethod
+    def get_all():
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+''')
+        return [Product(*row) for row in rows]
 
 # can make a bunch more of these, easy to make...
     @staticmethod
