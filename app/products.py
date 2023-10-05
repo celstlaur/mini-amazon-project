@@ -5,7 +5,6 @@ from flask import redirect, url_for
 import datetime
 
 from .models.product import Product
-from .models.purchase import Purchase
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)
