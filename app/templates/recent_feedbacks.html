@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Recent feedbacks you posted:</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">timestamp</th>
+      <th scope="col">feedback</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    {% for feedback in recent_feedbacks%}
+      <tr>
+        <th scope="row">{{feedback.timestamp}}</th>
+        <td>{{feedback.review}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
