@@ -6,7 +6,8 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">timestamp</th>
-      <th scope="col">feedback</th>
+      <th scope="col">reviewed</th>
+      <th scope="col">review</th>
       
     </tr>
   </thead>
@@ -15,6 +16,7 @@
     {% for feedback in recent_feedbacks%}
       <tr>
         <th scope="row">{{feedback.timestamp}}</th>
+        <td>{{feedback.reviewed}}</td>
         <td>{{feedback.review}}</td>
       </tr>
     {% endfor %}
