@@ -6,13 +6,14 @@ import datetime
 
 from .models.product import Product
 
-from flask import Blueprint
+from flask import Blueprint, request
 bp = Blueprint('products', __name__)
 
 
-@bp.route('/products/findexpensive/<int:k>')
-def find_most_expensive_products(k):
+@bp.route('/products/findexpensive/', methods = {"GET"})
+def find_most_expensive_products():
 
+    k = request.args.get('k')
     # get most expensive available products for sale:
     filteredproducts = Product.get_k_most_expensive(k)
 

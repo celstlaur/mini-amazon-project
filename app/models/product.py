@@ -43,7 +43,7 @@ WHERE price <= :price
     @staticmethod
     def get_k_most_expensive(k):
         rows = app.db.execute('''
-SELECT id, name, price, available
+SELECT id, name, creator_id, category, product_description, price
 FROM Products
 ORDER BY price DESC, id
 LIMIT :k
