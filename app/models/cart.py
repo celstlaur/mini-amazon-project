@@ -7,7 +7,7 @@ class CartContents:
         self.seller_id = seller_id
         self.quantity = quantity
 
-    def get_card(id):
+    def get_cart(id):
         rows = app.db.execute(
             """
 SELECT id, product_id, seller_id, quantity
