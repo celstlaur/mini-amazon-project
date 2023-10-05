@@ -24,6 +24,9 @@ def create_app():
     from .wishlist import bp as wishlist_bp
     app.register_blueprint(wishlist_bp)
 
+    from .feedback import bp as feedback_bp
+    app.register_blueprint(feedback_bp)
+
     from .account import bp as account_bp
     app.register_blueprint(account_bp)
 
