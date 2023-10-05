@@ -2,30 +2,33 @@ from flask import current_app as app
 
 
 class Product:
-    def __init__(self, id, name, price, available):
+    def __init__(self, id, name, creator_id, category, product_description, price):
         self.id = id
         self.name = name
+        self.creator_id = creator_id
+        self.category = category
+        self.product_description = product_description
         self.price = price
-        self.available = available
 
     @staticmethod
     def get(id):
         rows = app.db.execute('''
-SELECT id, name, price, available
+SELECT id, name, creator_id, category, product_description, price
 FROM Products
 WHERE id = :id
 ''',
                               id=id)
         return Product(*(rows[0])) if rows is not None else None
 
+# can make a bunch more of these, easy to make...
     @staticmethod
-    def get_all(available=True):
+    def get_all_less_than_equal_to_price(price):
         rows = app.db.execute('''
-SELECT id, name, price, available
+SELECT id, name, creator_id, category, product_description, price
 FROM Products
-WHERE available = :available
+WHERE price <= :price
 ''',
-                              available=available)
+                              price=price)
         return [Product(*row) for row in rows]
 
     @staticmethod
