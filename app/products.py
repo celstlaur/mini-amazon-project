@@ -13,9 +13,11 @@ bp = Blueprint('products', __name__)
 
 @bp.route('/products/findexpensive/<int:k>')
 def find_most_expensive_products(k):
+
     # get most expensive available products for sale:
-    products = Product.get_k_most_expensive(k)
+    filteredproducts = Product.get_k_most_expensive(k)
 
     # render the page by adding information to the index.html file
-    return render_template('index.html',
-                           avail_products=products)
+    return render_template('productfilters.html',
+                           filteredproducts=filteredproducts)
+

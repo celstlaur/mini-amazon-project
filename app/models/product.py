@@ -37,3 +37,6 @@ ORDER BY price DESC, id
 LIMIT :k
                               ''', k = k)
         return [Product(*row) for row in rows]
+    
+
+
