@@ -7,6 +7,7 @@ class CartContents:
         self.seller_id = seller_id
         self.quantity = quantity
 
+    @staticmethod
     def get_cart(user_id):
         rows = app.db.execute(
             """
@@ -15,6 +16,7 @@ FROM CartContents
 WHERE user_id = :user_id
             """, user_id=user_id)
         return CartContents(*(rows[0])) if rows else None
+
 
     @staticmethod
     def get_all_cart_by_uid(user_id):
