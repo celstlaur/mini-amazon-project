@@ -78,3 +78,14 @@ WHERE id = :id
     """,
                                 id=id)
         return len(rows) > 0
+    
+    
+    @staticmethod
+    def has_cart(id):
+        rows = app.db.execute("""
+    SELECT user_id
+    FROM CartContents
+    WHERE user_id = :id
+    """,
+                                id=id)
+        return len(rows) > 0
