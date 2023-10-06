@@ -12,7 +12,6 @@
       <th scope="col">Product Name</th>
       <th scope="col">Price</th>
       <th scope="col">Add to Wishlist</th>
-      <th scope="col">Add to Cart</th>
       
 
     </tr>
@@ -68,11 +67,10 @@
   {% else %}
   <p>sign up to become a seller (WIP)</p>
   {% endif %}
-  {% if cart_check %}
-  <p><a href="{{ url_for('index.cart') }}">Cart Page</a></p>
-  {% endif %}
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history and / or seller information!</p>
 {% endif %}
+
+<p><a href="{{ url_for('cart.cart') }}">Cart Page</a></p>
 
 {% endblock %}
