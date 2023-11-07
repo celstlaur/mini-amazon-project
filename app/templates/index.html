@@ -75,8 +75,17 @@
   <p>sign up to become a seller (WIP)</p>
   <!-- TODO: link to sign up to become a seller -->
   {% endif %}
+
+
+  {% if cart_check %}
+  <p><a href="{{ url_for('index.cart') }}">See your cart</a></p>
+  {% else %}
+  <p>No items in your cart!</p>
+  {% endif %}
+
+
 {% else %}
-<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history and / or seller information!</p>
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history, current cart, and seller information!</p>
 {% endif %}
 
 <p><a href="{{ url_for('recent_feedback.recentFeedback') }}">Your Recent Feedbacks</a></p>
