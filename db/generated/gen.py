@@ -232,7 +232,7 @@ def gen_savedforlatercontents(num_saved, num_users, hasinv_name):
             sid = hasi['seller_id'].iloc[i]
             if hasi['quantity'].iloc[i] != 0:
                 quantity = fake.random_int(min=1, max=hasi['quantity'].iloc[i])
-                uid = fake.random_int(min=0, max=num_users)
+                uid = fake.random_int(min=0, max=num_users - 1)
                 writer.writerow([uid, pid, sid, quantity])
         print(f"{num_saved} savedforlatercontents rows generated")
     return
@@ -249,7 +249,7 @@ def gen_cartcontents(num_cart, num_users, hasinv_name):
             sid = hasi['seller_id'].iloc[i]
             if hasi['quantity'].iloc[i] != 0:
                 quantity = fake.random_int(min=1, max=hasi['quantity'].iloc[i])
-                uid = fake.random_int(min=0, max=num_users)
+                uid = fake.random_int(min=0, max=num_users - 1)
                 writer.writerow([uid, pid, sid, quantity])
         print(f"{num_cart} cartcontents rows generated")
     return
@@ -314,21 +314,29 @@ def gen_wishes(num_wishes, num_users, num_products):
     return
 
 
-def gen_balance(num_users):
+def gen_balance(num_users, fact_name):
+    fact = pd.read_csv(fact_name, names=['order_id', 'buyer_id', 'total_price', 'fulfillment_status', 'time_stamp']) 
     with open('Balance.csv', 'w') as f:
         writer = get_csv_writer(f)
         for uid in range(num_users):
-            time_stamp = fake.date_time()
-            balance = f'{str(fake.random_int(max=10000))}.{fake.random_int(max=99):02}'
-            writer.writerow([uid, time_stamp, balance])
-    print(f"{num_users} rows in balance generated")
+            if uid in set(fact['buyer_id'].values):
+                uid_df = fact[fact['buyer_id'] == uid].sort_values(by='time_stamp', ascending=True)
+                total_spent_by_user = fact[fact['buyer_id'] == uid]['total_price'].sum() + random.randint(10, 10000) + 0.01 *(random.randint(0, 99))
+                total_spent_by_user = int(total_spent_by_user * 100) / 100
+                for i in range(uid_df.shape[0]):
+                    if i == 0:
+                        writer.writerow([uid, pd.to_datetime(uid_df['time_stamp'].iloc[0]) - timedelta(days=1), total_spent_by_user])
+                    total_spent_by_user = int((total_spent_by_user - float(uid_df['total_price'].iloc[i])) * 100) / 100
+                    writer.writerow([uid, uid_df['time_stamp'].iloc[i], total_spent_by_user])     
+            else:
+                writer.writerow([uid, fake.date_time(), random.randint(10, 10000) + 0.01 * random.randint(0, 99)])
     return
 
 
 ## PARAMETERS ##
 num_users = 500 # number of generated users
 num_products = 500 # number of generated products
-num_orders = 100 # number of rows in order fact, order contents can have between [num_orders, 5 * num_orders]
+num_orders = 1500 # number of rows in order fact, order contents can have between [num_orders, 5 * num_orders]
 num_search = 100 # number of generated rows in Search.csv
 num_saved = 100 # number of generated rows in SavedForLaterContents.csv
 num_cart = 100 # number of generated rows in CartContents.csv
@@ -355,4 +363,4 @@ gen_cartcontents(num_cart, num_users, 'HasInventory.csv')
 gen_reviewedproduct('OrderFact.csv', 'OrderContents.csv', reviewed_product_percentage) 
 gen_reviewedseller('OrderFact.csv', 'OrderContents.csv', reviewed_seller_percentage)
 gen_wishes(num_wishes, num_users, num_products)
-gen_balance(num_users)
+gen_balance(num_users, 'OrderFact.csv')
