@@ -56,6 +56,24 @@ def edit_email():
 
     return redirect(url_for('account.account'))
 
+
+@bp.route('/edit_address', methods=['POST'])
+def edit_address():
+    user_id = current_user.id
+    address = request.form.get('address')
+    
+    sqlstr = "UPDATE users SET address = :address WHERE id = :user_id"
+    db = DB(current_app)
+
+    try:
+        ## TODO: update database schema, then uncomment this
+        #db.execute(sqlstr, address, user_id=user_id)
+        flash('Your address has been updated!', 'success')
+    except Exception as e:
+        flash(f'An error occurred: {e}', 'danger')
+
+    return redirect(url_for('account.account'))
+
 @bp.route('/change_password', methods=['POST'])
 def change_password():
     user_id = current_user.id
