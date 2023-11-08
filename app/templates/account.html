@@ -27,48 +27,106 @@
           <th scope="row">Full Name:</th>
           <td>{{ current_user.firstname }} {{ current_user.lastname }}</td>
           <td>
-            <!-- TODO: Edit button for Full Name -->
-            <input type="submit" value="Edit"/>
+            <input type="submit" value="Edit" data-toggle="modal" data-target="#editNameModal"/>
+                <!-- Modal -->
+                <div class="modal fade" id="editNameModal" tabindex="-1" role="dialog" aria-labelledby="editNameModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editNameModalLabel">Edit Name</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{{ url_for('account.edit_name') }}">
+                          <input type="hidden" name="user_id" value="{{ current_user.id }}" />
+                          <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            <input type="text" class="form-control" id="first-name" name="first_name" value="{{ current_user.firstname }}" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            <input type="text" class="form-control" id="last-name" name="last_name" value="{{ current_user.lastname }}" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
           </td>
         </tr>
-        <tr>
-          <th scope="row">Address:</th>
-          <td>{{ current_user.address }}</td>
-          <td>
-            <!-- TODO: Edit button for Address -->
-            <input type="submit" value="Edit"/>
-          </td>
-        </tr>
+        <!-- TODO: users have addresses -->
         <tr>
           <th scope="row">Email:</th>
           <td>{{ current_user.email }}</td>
           <td>
-            <!-- TODO: Edit button for Email -->
-            <input type="submit" value="Edit"/>
+            <input type="submit" value="Edit" data-toggle="modal" data-target="#editEmailModal"/>
+                <!-- Modal -->
+                <div class="modal fade" id="editEmailModal" tabindex="-1" role="dialog" aria-labelledby="editEmailModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editEmailModalLabel">Edit Email</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{{ url_for('account.edit_email') }}">
+                          <input type="hidden" name="user_id" value="{{ current_user.id }}" />
+                          <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="text" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
           </td>
         </tr>
         <tr>
           <th scope="row">Password:</th>
+          <!-- TODO: option to make password visible? -->
           <td>••••••••</td>
           <td>
-            <!-- TODO: Edit button for Password -->
-            <input type="submit" value="Edit"/>
+            <input type="submit" value="Edit" data-toggle="modal" data-target="#editPasswordModal"/>
+                <!-- Modal -->
+                <div class="modal fade" id="editPasswordModal" tabindex="-1" role="dialog" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editPasswordModalLabel">Change Password</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{{ url_for('account.change_password') }}">
+                          <input type="hidden" name="user_id" value="{{ current_user.id }}" />
+                          <div class="form-group">
+                            <label for="password">New Password</label>
+                            <input type="text" class="form-control" id="password" name="password" required>
+                          </div>
+
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
           </td>
         </tr>
-        <tr>
-          <th scope="row">Account Type:</th>
-          <td>
-              {% if seller_check %}
-                  Seller
-              {% else %}
-                  Standard
-              {% endif %}
-          </td>
-          <td>
-            <!-- TODO: Edit button for Seller Status -->
-            <input type="submit" value="Edit"/>
-          </td>
-        </tr>
+        
       </tbody>   
     </table>
   </div>
@@ -97,7 +155,20 @@
     </table>
 
   </div>
+ 
 </div>
+<br>
+<strong>Account Type:</strong>
+{% if seller_check %}
+    Seller
+{% else %}
+    Standard
+    <!-- TODO: option to become a seller account -->
+    <div style="padding-left: 10px;">
+      <p>Click <a href="{{ url_for('users.delete') }}">here</a> to create a seller account.</p>
+    </div>
+{% endif %}
+
 <br><br><br>
 
 
@@ -152,7 +223,7 @@
 {% endif %}
 
 <br><br><br>
-<h2>Danger Zone</h2><hr><br>
+<h2>Danger Zone :(</h2><hr><br>
 <!-- TODO: delete account -->
 <p>To permanently delete your account, click <a href="{{ url_for('users.delete') }}">here</a>.</p>
 

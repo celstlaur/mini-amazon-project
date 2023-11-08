@@ -78,5 +78,5 @@ def logout():
 
 @bp.route('/delete')
 def delete():
-    ##delete account
+    ##TODO: route to delete account
     return redirect(url_for('users.login'))
