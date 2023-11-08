@@ -49,10 +49,8 @@ user_id, product_id, seller_id, quantity
 Search: 
 user_id, timestamp, search
 
-HasInventory: 
-seller_id, product_id, quantity
-
------------------ TODO  -----------------
+UserAddress:
+user_id, address
 
 Balance:
 user_id, timestamp, balance
@@ -228,10 +226,11 @@ def gen_savedforlatercontents(num_saved, num_users, hasinv_name):
         for i in range(num_saved):
             if i % (0.1 * num_saved) == 0:
                 print(f'{i}', end=' ', flush=True)
-            pid = hasi['product_id'].iloc[i]
-            sid = hasi['seller_id'].iloc[i]
-            if hasi['quantity'].iloc[i] != 0:
-                quantity = fake.random_int(min=1, max=hasi['quantity'].iloc[i])
+            idx = random.randint(0, hasi.shape[0] - 1)
+            pid = hasi['product_id'].iloc[idx]
+            sid = hasi['seller_id'].iloc[idx]
+            if hasi['quantity'].iloc[idx] != 0:
+                quantity = fake.random_int(min=1, max=hasi['quantity'].iloc[idx])
                 uid = fake.random_int(min=0, max=num_users - 1)
                 writer.writerow([uid, pid, sid, quantity])
         print(f"{num_saved} savedforlatercontents rows generated")
@@ -245,10 +244,11 @@ def gen_cartcontents(num_cart, num_users, hasinv_name):
         for i in range(num_cart):
             if i % (0.1 * num_cart) == 0:
                 print(f'{i}', end=' ', flush=True)
-            pid = hasi['product_id'].iloc[i]
-            sid = hasi['seller_id'].iloc[i]
-            if hasi['quantity'].iloc[i] != 0:
-                quantity = fake.random_int(min=1, max=hasi['quantity'].iloc[i])
+            idx = random.randint(0, hasi.shape[0] - 1)
+            pid = hasi['product_id'].iloc[idx]
+            sid = hasi['seller_id'].iloc[idx]
+            if hasi['quantity'].iloc[idx] != 0:
+                quantity = fake.random_int(min=1, max=hasi['quantity'].iloc[idx])
                 uid = fake.random_int(min=0, max=num_users - 1)
                 writer.writerow([uid, pid, sid, quantity])
         print(f"{num_cart} cartcontents rows generated")
@@ -306,8 +306,8 @@ def gen_wishes(num_wishes, num_users, num_products):
     with open('Wishes.csv', 'w') as f:
         writer = get_csv_writer(f)
         for wid in range(num_wishes):
-            uid = fake.random_int(min=0, max=num_users)
-            pid = fake.random_int(min=0, max=num_products)
+            uid = fake.random_int(min=0, max=num_users - 1)
+            pid = fake.random_int(min=0, max=num_products - 1)
             time_stamp = fake.date_time()
             writer.writerow([wid, uid, pid, time_stamp])
     print(f"{num_wishes} rows in wishes generated")
@@ -333,21 +333,39 @@ def gen_balance(num_users, fact_name):
     return
 
 
+def gen_useraddress(num_users):
+    with open('UserAddress.csv', 'w') as f:
+        writer = get_csv_writer(f)
+        
+        
+        for uid in range(num_users):
+            if uid % (0.1 * num_users) == 0:
+                print(f'{uid}', end=' ', flush=True)
+            
+            profile = fake.profile()
+            address = profile['address']
+            
+            writer.writerow([int(uid), address])
+        
+        print(f"{int(num_users)} addresses generated")
+    return 
+
+
 ## PARAMETERS ##
 num_users = 500 # number of generated users
 num_products = 500 # number of generated products
-num_orders = 1500 # number of rows in order fact, order contents can have between [num_orders, 5 * num_orders]
-num_search = 100 # number of generated rows in Search.csv
-num_saved = 100 # number of generated rows in SavedForLaterContents.csv
-num_cart = 100 # number of generated rows in CartContents.csv
-num_wishes = 100 # number of generated rows in Wishes.csv
+num_orders = 25000 # number of rows in order fact, order contents can have between [num_orders, 5 * num_orders]
+num_search = 25000 # number of generated rows in Search.csv
+num_saved = 25000 # number of generated rows in SavedForLaterContents.csv
+num_cart = 25000 # number of generated rows in CartContents.csv
+num_wishes = 25000 # number of generated rows in Wishes.csv
 
 product_categories = ['Red', 'Blue', 'Green', 'Yellow', 'Purple'] # figured this would be better than random category names in case we want to use them for something, can be any str list of any len > 1...
 
-seller_percentage = 0.25 # percentage of users that will be assigned as sellers
+seller_percentage = 0.1 # percentage of users that will be assigned as sellers
 fulfill_percentage = 0.9 # percentage of item, buyer pairs that are set to 'True' in OrderContents... OrderFact only shows fulfilled=True if all items are fulfilled 
-reviewed_seller_percentage = 0.5 # percentage of valid seller, buyer pairs that are reviewed
-reviewed_product_percentage = 0.5 # percentage of valid product, buyer pairs that are reviewed
+reviewed_seller_percentage = 0.9 # percentage of valid seller, buyer pairs that are reviewed
+reviewed_product_percentage = 0.9 # percentage of valid product, buyer pairs that are reviewed
 
 ## --------------------------------------------------------------------------------------------- ##
 
@@ -364,3 +382,4 @@ gen_reviewedproduct('OrderFact.csv', 'OrderContents.csv', reviewed_product_perce
 gen_reviewedseller('OrderFact.csv', 'OrderContents.csv', reviewed_seller_percentage)
 gen_wishes(num_wishes, num_users, num_products)
 gen_balance(num_users, 'OrderFact.csv')
+gen_useraddress(num_users)
