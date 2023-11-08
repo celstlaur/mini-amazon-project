@@ -6,6 +6,11 @@ CREATE TABLE Users (
     lastname VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE UserAddress (
+    id INT NOT NULL UNIQUE REFERENCES Users(id),
+    address VARCHAR NOT NULL
+);
+
 CREATE TABLE Sellers (
     id INT NOT NULL UNIQUE REFERENCES Users(id),
     email_address VARCHAR UNIQUE NOT NULL,
