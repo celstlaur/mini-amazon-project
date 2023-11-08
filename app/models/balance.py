@@ -21,7 +21,7 @@ LIMIT 1
 ''',
                               user_id=user_id)
         if rows:
-            return Balance(*(rows[0]))
+            return rows[0][2]
         else:
             current_time = datetime.utcnow()
             # Assuming your Balance model has a 'user_id', 'balance_timestamp', and 'balance' fields
@@ -53,3 +53,20 @@ ORDER BY balance_timestamp DESC
 ''',
                               user_id=user_id)
         return [Balance(*row) for row in rows]
+    
+    @staticmethod
+    def calculate_new_balance(user_id, amount):
+        latest_balance = Balance.current_balance(user_id)
+        return latest_balance + amount
+    
+
+    @staticmethod
+    def insert_new_balance(user_id, new_balance):
+        current_time = datetime.utcnow()
+        app.db.execute('''
+            INSERT INTO Balance (user_id, balance_timestamp, balance)
+            VALUES (:user_id, :balance_timestamp, :balance)
+        ''',
+        user_id=user_id,
+        balance_timestamp=current_time,
+        balance=new_balance)

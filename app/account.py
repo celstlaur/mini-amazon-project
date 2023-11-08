@@ -17,8 +17,8 @@ bp = Blueprint('account', __name__)
 @bp.route('/account')
 def account():
     if current_user.is_authenticated:
-        balance_obj = Balance.current_balance(current_user.id)
-        balance = balance_obj.balance if balance_obj else 0
+        balance = Balance.current_balance(current_user.id)
+        balance = balance if balance else 0
     else:
         balance = None
     return render_template('account.html', title='Account', current_user=current_user, balance=balance)
@@ -90,3 +90,38 @@ def change_password():
 
     return redirect(url_for('account.account'))
 
+
+
+
+@bp.route('/deposit', methods=['POST'])
+def deposit():
+    amount = request.form.get('amount', type=float)
+    if amount <= 0:
+        flash('You must deposit a positive amount.', 'danger')
+        return redirect(url_for('account.account'))
+
+    user_id = current_user.id
+    new_balance = Balance.calculate_new_balance(user_id, amount)
+    Balance.insert_new_balance(user_id, new_balance)
+    
+    flash('Deposit successful!', 'success')
+    return redirect(url_for('account.account'))
+
+@bp.route('/withdraw', methods=['POST'])
+def withdraw():
+    amount = request.form.get('amount', type=float)
+    if amount <= 0:
+        flash('You must withdraw a positive amount.', 'danger')
+        return redirect(url_for('account.account'))
+
+    user_id = current_user.id
+    current_balance = Balance.current_balance(user_id)
+    if current_balance < amount:
+        flash('Insufficient funds.', 'danger')
+        return redirect(url_for('account.account'))
+
+    new_balance = Balance.calculate_new_balance(user_id, -amount)
+    Balance.insert_new_balance(user_id, new_balance)
+
+    flash('Withdrawal successful!', 'success')
+    return redirect(url_for('account.account'))

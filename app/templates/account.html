@@ -9,11 +9,50 @@
 {% else %}
 <div style="display: flex; justify-content: space-between; align-items: center;">
     <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
-    <!-- TODO: button to view public profile -->
-    <button type="button" class="btn btn-secondary">
-        View Public Profile
-    </button>
 </div>
+
+<br>
+<div style="padding-left: 10px;">
+  <a href="#" data-toggle="modal" data-target="#editPasswordModal">Change Password</a>
+  <!-- TODO: verification step? -->
+  <!-- Modal -->
+  <div class="modal fade" id="editPasswordModal" tabindex="-1" role="dialog" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editPasswordModalLabel">Change Password</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{{ url_for('account.change_password') }}">
+            <input type="hidden" name="user_id" value="{{ current_user.id }}" />
+            <div class="form-group">
+              <label for="password">New Password</label>
+              <input type="text" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% if not seller_check %}
+  <!-- TODO: option to become a seller account -->
+  <div style="padding-left: 10px;">
+    <a href="{{ url_for('users.delete') }}">Become a Seller</a>
+  </div>
+{% endif %}
+  <!-- TODO: button to view public profile -->
+  <!-- TODO: make a public profile page -->
+  <div style="padding-left: 10px;">
+    <a href="{{ url_for('users.delete') }}">View Public Profile</a>
+  </div>
+
+
+
 <br><br><br>
 
 <h2>Information</h2><hr><br>
@@ -59,7 +98,6 @@
             </tr>
           </td>
         </tr>
-        <!-- TODO: users have addresses -->
         <tr>
           <th scope="row">Email:</th>
           <td>{{ current_user.email }}</td>
@@ -94,7 +132,6 @@
         </tr>
         <tr>
           <th scope="row">Address:</th>
-          
           <td>
             <!-- TODO: current_user.address -->
           </td>
@@ -138,17 +175,66 @@
         <tr>
           <th scope="row" class="narrow-column">Current Balance:</th>
           <td>
-            <!-- TODO: find most recent balance with this user's user_id -->
-            ${{ balance }}
+            ${{ "%.2f"|format(balance) }}
           </td>
         </tr>
         <tr>
           <td colspan="2">
             <div style="display: flex; justify-content: space-around;">
-              <!-- TODO: deposit balance -->
-              <input type="submit" value="Deposit"/>
-              <!-- TODO: withdraw balance -->
-              <input type="submit" value="Withdraw"/>
+              <!-- Trigger Deposit Modal -->
+              <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#depositModal">
+                Deposit
+              </button>
+              <!-- Deposit Modal -->
+              <div class="modal fade" id="depositModal" tabindex="-1" role="dialog" aria-labelledby="depositModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="depositModalLabel">Deposit Funds</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form method="POST" action="{{ url_for('account.deposit') }}">
+                        <div class="form-group">
+                          <label for="depositAmount">Deposit Amount:</label>
+                          <input type="number" step="0.01" class="form-control" id="depositAmount" name="amount" required>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Deposit</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Trigger Withdraw Modal -->
+              <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#withdrawModal">
+                Withdraw
+              </button>
+              <!-- Withdraw Modal -->
+              <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="withdrawModalLabel">Withdraw Funds</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form method="POST" action="{{ url_for('account.withdraw') }}">
+                        <div class="form-group">
+                          <label for="withdrawAmount">Withdrawal Amount:</label>
+                          <input type="number" step="0.01" class="form-control" id="withdrawAmount" name="amount" required>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Withdraw</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </td>
         </tr>
@@ -157,46 +243,6 @@
   </div>
 </div>
 <br>
-
-<div style="padding-left: 10px;">
-  <a href="#" data-toggle="modal" data-target="#editPasswordModal">Change Password</a>
-  <!-- TODO: verification step? -->
-  <!-- Modal -->
-  <div class="modal fade" id="editPasswordModal" tabindex="-1" role="dialog" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editPasswordModalLabel">Change Password</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form method="POST" action="{{ url_for('account.change_password') }}">
-            <input type="hidden" name="user_id" value="{{ current_user.id }}" />
-            <div class="form-group">
-              <label for="password">New Password</label>
-              <input type="text" class="form-control" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Save changes</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-             
-
-
-
-
-</div>
-{% if not seller_check %}
-  <!-- TODO: option to become a seller account -->
-  <div style="padding-left: 10px;">
-    <a href="{{ url_for('users.delete') }}">Become a Seller</a>
-  </div>
-
-{% endif %}
 
 <br><br><br>
 
