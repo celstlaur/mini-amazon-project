@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 from .models.user import User
@@ -17,6 +17,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
+    next = HiddenField()
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -71,4 +72,11 @@ def register():
 @bp.route('/logout')
 def logout():
     logout_user()
+    return redirect(url_for('users.login'))
+
+
+
+@bp.route('/delete')
+def delete():
+    ##delete account
     return redirect(url_for('users.login'))

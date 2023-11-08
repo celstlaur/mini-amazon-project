@@ -1,4 +1,5 @@
 from flask import current_app as app
+import datetime
 
 class CartContents:
     def __init__(self, user_id, product_id, seller_id, quantity):
@@ -40,7 +41,7 @@ RETURNING id
                                   product_id=product_id,
                                   time_added=current_time)
             id = rows[0][0]
-            return Cart.get(user_id)
+            return CartContents.get(user_id)
         except Exception as e:
             print(str(e))
             return None

@@ -50,6 +50,13 @@ RETURNING id
                                   password=generate_password_hash(password),
                                   firstname=firstname, lastname=lastname)
             id = rows[0][0]
+
+            rows = app.db.execute("""
+INSERT INTO Balance(user_id, balance_timestamp, balance)
+VALUES(:user_id, CURRENT_TIMESTAMP, "0")
+""",
+                                  user_id=id) 
+            
             return User.get(id)
         except Exception as e:
             # likely email already in use; better error checking and reporting needed;

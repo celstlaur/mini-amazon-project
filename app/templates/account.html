@@ -3,17 +3,158 @@
 {% block content %}
 
 <br><br>
-<h1>Account Information</h1>
-<br>
-<h2>{{ current_user.firstname }} {{ current_user.lastname }} </h2>
-<!-- TODO: list account info -->
-<!-- TODO: edit edit account info -->
-<!-- TODO: become a seller, if not already -->
-<!-- TODO: view public profile -->
-<!-- TODO: manage balance -->
-<!-- TODO: search history -->
-<!-- TODO: purchase history -->
-<!-- TODO: (for sellers) order history-->
-<!-- TODO: delete account -->
+<h1>Account</h1>
+{% if not current_user.is_authenticated %}
+<p><a href="{{ url_for('users.login', next=url_for('account.account')) }}">Log in</a> to see your account information!</p>
+{% else %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
+    <!-- TODO: button to view public profile -->
+    <button type="button" class="btn btn-secondary">
+        View Public Profile
+    </button>
+</div>
+<br><br><br>
 
+<h2>Information</h2><hr><br>
+<div style="display: flex; justify-content: space-around;">
+  <div class="account-information">
+    
+    <h3>Account Information:</h3>
+    <table class='table table-hover table-bordered container left-aligned narrow-column'>
+      <tbody>
+        <tr>
+          <th scope="row">Full Name:</th>
+          <td>{{ current_user.firstname }} {{ current_user.lastname }}</td>
+          <td>
+            <!-- TODO: Edit button for Full Name -->
+            <input type="submit" value="Edit"/>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Address:</th>
+          <td>{{ current_user.address }}</td>
+          <td>
+            <!-- TODO: Edit button for Address -->
+            <input type="submit" value="Edit"/>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Email:</th>
+          <td>{{ current_user.email }}</td>
+          <td>
+            <!-- TODO: Edit button for Email -->
+            <input type="submit" value="Edit"/>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Password:</th>
+          <td>••••••••</td>
+          <td>
+            <!-- TODO: Edit button for Password -->
+            <input type="submit" value="Edit"/>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Account Type:</th>
+          <td>
+              {% if seller_check %}
+                  Seller
+              {% else %}
+                  Standard
+              {% endif %}
+          </td>
+          <td>
+            <!-- TODO: Edit button for Seller Status -->
+            <input type="submit" value="Edit"/>
+          </td>
+        </tr>
+      </tbody>   
+    </table>
+  </div>
+  <div class="balance-information">
+    <h3>Balance:</h3>
+    <table class='table table-hover table-bordered left-aligned'>
+      <tbody>
+        <tr>
+          <th scope="row" class="narrow-column">Current Balance:</th>
+          <td>
+            <!-- TODO: find most recent balance with this user's user_id -->
+            ${{ balance }}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div style="display: flex; justify-content: space-around;">
+              <!-- TODO: deposit balance -->
+              <input type="submit" value="Deposit"/>
+              <!-- TODO: withdraw balance -->
+              <input type="submit" value="Withdraw"/>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+<br><br><br>
+
+
+<h2>Activity</h2><hr><br>
+<!-- TODO: transaction history -->
+<div class="history">
+  <h3>Transaction History:</h3>
+  <table class='table table-hover table-bordered left-aligned'style="text-align: center;">
+    <tbody>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Description</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Resulting Balance</th>
+      </tr>
+      
+    </tbody>   
+  </table>
+</div>
+<br>
+<!-- TODO: purchase history -->
+<div class="history">
+  <h3>Purchase History:</h3>
+  <table class='table table-hover table-bordered container' style="text-align: center;">
+    <tbody>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Fulfillment Status</th>
+        <th scope="col">Number of Items</th>
+        <th scope="col">Total Price</th>
+        <th scope="col">Details</th>
+      </tr>
+    </tbody>   
+  </table>
+</div>
+<!-- TODO: (for sellers) order history-->
+{% if seller_check %}
+  <div class="history">
+    <h3>Seller History:</h3>
+    <table class='table table-hover table-bordered container' style="text-align: center;">
+      <tbody>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Fulfillment Status</th>
+          <th scope="col">Number of Items</th>
+          <th scope="col">Total Price</th>
+          <th scope="col">Details</th>
+        </tr>
+      </tbody>   
+    </table>
+  </div>
+{% endif %}
+
+<br><br><br>
+<h2>Danger Zone</h2><hr><br>
+<!-- TODO: delete account -->
+<p>To permanently delete your account, click <a href="{{ url_for('users.delete') }}">here</a>.</p>
+
+{% endif %}
 {% endblock %}

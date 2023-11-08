@@ -79,6 +79,20 @@
       background-color: #000 !important;
       color: #fff;
     }
+    .left-aligned {
+    margin-left: 0;
+  }
+
+  .narrow-column {
+    white-space: nowrap;
+    width: 1%;
+  }
+  .history {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    white-space: nowrap;
+  }
   </style>
 </head>
 
@@ -118,7 +132,7 @@
       </div>
     </div>
   </div>
-  <div class="main">
+  <div class="main" style="width: 90%; margin: auto;">
     {% block content %}{% endblock %}
   </div>
   <script>
