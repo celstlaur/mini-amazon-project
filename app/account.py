@@ -24,6 +24,8 @@ def account():
         purchases = OrderFact.get_orders_given_buyer(current_user.id)
     else:
         balance = None
+        address = None
+        purchases = None
     return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases,)
 
 
