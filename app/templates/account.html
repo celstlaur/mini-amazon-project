@@ -16,4 +16,17 @@
 <!-- TODO: (for sellers) order history-->
 <!-- TODO: delete account -->
 
+{% if cart %}
+<p><a href="{{ url_for('index.cart') }}">See your cart</a></p>
+{% else %}
+<p>No items in your cart!</p>
+{% endif %}
+<p><a href="{{ url_for('recent_feedback.recentFeedback') }}">Your Recent Feedbacks</a></p>
+
+{% if current_user.is_seller(current_user.id) %}
+<p><a href="{{ url_for('sell.sell') }}">Fulfillment History</a></p>
+<p><a href="{{ url_for('sell.inventory') }}">Current Inventory</a></p>
+{% endif %}
+
+
 {% endblock %}
