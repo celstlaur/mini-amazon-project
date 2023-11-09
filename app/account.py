@@ -24,6 +24,14 @@ def account():
         balance = None
     return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address)
 
+
+@bp.route('/public_profile')
+def public_profile():
+    num_purchases = User.num_purchases(current_user.id)
+    num_sales = User.num_sales(current_user.id)
+    return render_template('public_profile.html', title='Profile', current_user=current_user, num_sales=num_sales, num_purchases=num_purchases)
+
+
 @bp.route('/edit_name', methods=['POST'])
 def edit_name():
     user_id = current_user.id

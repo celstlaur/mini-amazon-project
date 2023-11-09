@@ -102,5 +102,25 @@ WHERE id = :id
     """,
                                 id=id)
         return rows
+    
+    @staticmethod
+    def num_sales(id):
+        rows = app.db.execute("""
+    SELECT order_id
+    FROM Fulfills
+    WHERE seller_id = :id
+    """,
+                                id=id)
+        return len(rows)
+
+    @staticmethod
+    def num_purchases(id):
+        rows = app.db.execute("""
+    SELECT id
+    FROM OrderFact
+    WHERE buyer_id = :id
+    """,
+                                id=id)
+        return len(rows)
 
 
