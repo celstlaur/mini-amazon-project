@@ -25,7 +25,7 @@ def index():
         
 
     products_all = Product.get_all()
-    randproducts = [products_all[random.randint(0,len(products_all))], products_all[random.randint(0,len(products_all))], products_all[random.randint(0,len(products_all))], products_all[random.randint(0,len(products_all))]]
+    randproducts = [products_all[random.randint(0,len(products_all) - 1)], products_all[random.randint(0,len(products_all) - 1) ], products_all[random.randint(0,len(products_all) - 1)], products_all[random.randint(0,len(products_all) - 1)]]
 
     if current_user.is_authenticated:
         purchases = OrderFact.get_orders_given_buyer(current_user.id)
