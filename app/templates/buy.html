@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<br><br>
+<br>
 <h2>Find Items</h2>
 <!-- TODO: search bar -->
 <!-- TODO: advanced search -->
@@ -20,11 +20,14 @@
 <form action='products/filterkeyword/' method = "GET">
   <input type="string" placeholder = "Enter keyword" name = "k"/>
 </form>
-<br> <br>
 
 {% set y = avail_products|length %}
 {% set len = total_avail|length %}
 {% set x = 0 %}
+
+<br>
+{% set pages = (len / page_length) | round(0, 'ceil') | int %}
+<p> Page {{ current_page }} of {{ pages}} </p>
 
 {% if len > page_length %}
 <form action="" method="post" style="display: inline;">
