@@ -59,7 +59,7 @@ RETURNING id
             # the following simply prints the error to the console:
             print(str(e))
             return None
-
+               
     @staticmethod
     @login.user_loader
     def get(id):
@@ -80,7 +80,9 @@ WHERE id = :id
     WHERE id = :id
     """,
                                 id=id)
-        return len(rows) > 0
+        if len(rows) != 1:
+            return False
+        return True
     
     
     @staticmethod

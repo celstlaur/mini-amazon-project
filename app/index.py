@@ -18,7 +18,7 @@ def index():
         purchases = OrderFact.get_orders_given_buyer(current_user.id)
         return render_template('index.html', avail_products=products, 
                                             purchase_history=purchases, 
-                                            #seller_check=current_user.is_seller(current_user.id), 
+                                            seller_check=current_user.is_seller(current_user.id), 
                                             cart_check=current_user.has_cart(current_user.id))
     else:
         return render_template('index.html', avail_products=products)

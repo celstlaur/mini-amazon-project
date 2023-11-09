@@ -5,7 +5,7 @@
 <br><br>
 <h1>Account</h1>
 {% if not current_user.is_authenticated %}
-<p><a href="{{ url_for('users.login', next=url_for('account.account')) }}">Log in</a> to see your account information!</p>
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
 {% else %}
 <div style="display: flex; justify-content: space-between; align-items: center;">
     <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
@@ -42,7 +42,7 @@
 {% if not seller_check %}
   <!-- TODO: option to become a seller account -->
   <div style="padding-left: 10px;">
-    <a href="{{ url_for('users.delete') }}">Become a Seller</a>
+    <a href="{{ url_for('users.become_seller') }}">Become a Seller</a>
   </div>
 {% endif %}
   <div style="padding-left: 10px;">
@@ -247,19 +247,27 @@
 
 <h2>Activity</h2><hr><br>
 <!-- maybe todo: transaction history -->
-<!-- maybe todo: visualize history of balances, spending amounts, purchases by category -->
+<!-- maybe todo: visualize history of balances, spending amounts, purchases by category -->     
 <div class="history">
   <h3>Transaction History:</h3>
-  <table class='table table-hover table-bordered left-aligned'style="text-align: center;">
-    <tbody>
+  <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
       <tr>
-        <th scope="col">Date</th>
-        <th scope="col">Description</th>
+        <th scope="col">Time of Transaction</th>
+        <th scope="col">Transaction Type</th>
         <th scope="col">Amount</th>
         <th scope="col">Resulting Balance</th>
       </tr>
-      
-    </tbody>   
+    </thead>
+    <tbody>
+      <!-- for this user's balances in balances -->
+        <tr>
+          <th scope="row">[timestamp]</th>
+          <td>[deposit, withdrawal, purchase, or sale]</td>
+          <td>[change since last balance]</td>
+          <td>[balance]</td>
+        </tr>
+    </tbody>
   </table>
 </div>
 <br>

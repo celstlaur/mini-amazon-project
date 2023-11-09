@@ -6,7 +6,9 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Hidde
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 from .models.user import User
+from .models.seller import Seller
 
+import logging
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -67,6 +69,33 @@ def register():
             flash('Congratulations, you are now a registered user!')
             return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
+    
+
+
+class SellerForm(FlaskForm):
+    business_email = StringField('Business Email', validators=[DataRequired(), Email()])
+    business_address = StringField('Business Address', validators=[DataRequired()])
+    submit = SubmitField('Become Seller')
+
+@bp.route('/become_seller', methods=['GET', 'POST'])
+def become_seller():
+    if User.is_seller(current_user.id):
+        flash('You are already a seller!', 'success')
+        return redirect(url_for('account.account'))
+    form = SellerForm()
+    print("there")
+    logging.info("Form created")
+    if form.validate_on_submit():
+        logging.info("Form validated and submitted")
+        if Seller.become_seller(current_user.id,
+                         form.business_email.data,
+                         form.business_address.data):
+            flash('Congratulations, you are now a seller!')
+            return redirect(url_for('account.account'))
+    else:
+        logging.info("Form not validated or not submitted")
+    return render_template('become_seller.html', title='Become Seller', form=form)
+
 
 
 @bp.route('/logout')

@@ -26,14 +26,16 @@ def account():
         balance = None
         address = None
         purchases = None
-    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases,)
+    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases,
+                           seller_check=current_user.is_seller(current_user.id))
 
 
 @bp.route('/public_profile')
 def public_profile():
     num_purchases = User.num_purchases(current_user.id)
     num_sales = User.num_sales(current_user.id)
-    return render_template('public_profile.html', title='Profile', current_user=current_user, num_sales=num_sales, num_purchases=num_purchases)
+    return render_template('public_profile.html', title='Profile', current_user=current_user, num_sales=num_sales, num_purchases=num_purchases,
+                           seller_check=current_user.is_seller(current_user.id))
 
 
 @bp.route('/edit_name', methods=['POST'])
@@ -101,9 +103,6 @@ def change_password():
         flash(f'An error occurred: {e}', 'danger')
 
     return redirect(url_for('account.account'))
-
-
-
 
 @bp.route('/deposit', methods=['POST'])
 def deposit():
