@@ -272,6 +272,7 @@
 <br>
 <!-- TODO: pagination -->
 <!-- maybe todo: sort purchase history by item, seller, date, etc -->
+<a name="paginationAnchor"></a>
 <div class="history">
   <h3>Purchase History:</h3>
   <table class='table table-hover table-bordered container'>
@@ -299,7 +300,22 @@
       {% endfor %}
     </tbody>
   </table>
+  <div id="pagination">
+    {% if current_page > 1 %}
+    <a href="{{ url_for('account.account', page=current_page-1) }}#paginationAnchor">Previous</a>
+    {% endif %}
+
+    <!-- Add more links for other pages as needed -->
+
+    {% if current_page < total_pages %}
+    <a href="{{ url_for('account.account', page=current_page+1) }}#paginationAnchor">Next</a>
+    {% endif %}
+
+    
+  </div>
 </div>
+
+<br>
 <!-- maybe todo: (for sellers) order history-->
 {% if seller_check %}
   <div class="history">
@@ -323,5 +339,8 @@
 <!-- maybe todo: delete account -->
 <p>To permanently delete your account, click <a href="{{ url_for('users.delete') }}">here</a>.</p>
 
+
 {% endif %}
+
+
 {% endblock %}

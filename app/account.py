@@ -17,18 +17,20 @@ bp = Blueprint('account', __name__)
 
 @bp.route('/account')
 def account():
+    page = request.args.get('page', 1, type=int)
+    per_page = 10 
     if current_user.is_authenticated:
         balance = Balance.current_balance(current_user.id)
         full_address = User.get_address(current_user.id)
         address = full_address[0][0]
-        purchases = OrderFact.get_orders_given_buyer(current_user.id)
+        purchases, total_pages = OrderFact.get_paged_orders(current_user.id, page, per_page)
     else:
         balance = None
         address = None
         purchases = None
-    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases,
+        total_pages=0
+    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases, total_pages=total_pages, current_page=page,
                            seller_check=current_user.is_seller(current_user.id))
-
 
 @bp.route('/public_profile')
 def public_profile():
