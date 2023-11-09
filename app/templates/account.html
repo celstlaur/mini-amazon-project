@@ -14,7 +14,7 @@
 <br>
 <div style="padding-left: 10px;">
   <a href="#" data-toggle="modal" data-target="#editPasswordModal">Change Password</a>
-  <!-- TODO: verification step? -->
+  <!-- maybe todo: verification step? -->
   <!-- Modal -->
   <div class="modal fade" id="editPasswordModal" tabindex="-1" role="dialog" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -45,8 +45,6 @@
     <a href="{{ url_for('users.delete') }}">Become a Seller</a>
   </div>
 {% endif %}
-  <!-- TODO: button to view public profile -->
-  <!-- TODO: make a public profile page -->
   <div style="padding-left: 10px;">
     <a href="{{ url_for('account.public_profile') }}">View Public Profile</a>
   </div>
@@ -248,7 +246,8 @@
 
 
 <h2>Activity</h2><hr><br>
-<!-- TODO: transaction history -->
+<!-- maybe todo: transaction history -->
+<!-- maybe todo: visualize history of balances, spending amounts, purchases by category -->
 <div class="history">
   <h3>Transaction History:</h3>
   <table class='table table-hover table-bordered left-aligned'style="text-align: center;">
@@ -265,21 +264,33 @@
 </div>
 <br>
 <!-- TODO: purchase history -->
+<!-- maybe todo: sort purchase history by item, seller, date, etc -->
 <div class="history">
   <h3>Purchase History:</h3>
-  <table class='table table-hover table-bordered container' style="text-align: center;">
-    <tbody>
+  <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
       <tr>
-        <th scope="col">Date</th>
+        <th scope="col">Purchase ID</th>
+        <th scope="col">Buyer ID</th>
+        <th scope="col">Price</th>
         <th scope="col">Fulfillment Status</th>
-        <th scope="col">Number of Items</th>
-        <th scope="col">Total Price</th>
-        <th scope="col">Details</th>
+        <th scope="col">Time of Purchase</th>
       </tr>
-    </tbody>   
+    </thead>
+    <tbody>
+      {% for purchase in purchase_history %}
+        <tr>
+          <th scope="row">{{purchase.id}}</th>
+          <td>{{purchase.buyer_id}}</td>
+          <td>{{purchase.total_price}}</td>
+          <td>{{purchase.status}}</td>
+          <td>{{purchase.timestamp}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
   </table>
 </div>
-<!-- TODO: (for sellers) order history-->
+<!-- maybe todo: (for sellers) order history-->
 {% if seller_check %}
   <div class="history">
     <h3>Seller History:</h3>
@@ -299,7 +310,7 @@
 
 <br><br><br>
 <h2>Danger Zone :(</h2><hr><br>
-<!-- TODO: delete account -->
+<!-- maybe todo: delete account -->
 <p>To permanently delete your account, click <a href="{{ url_for('users.delete') }}">here</a>.</p>
 
 {% endif %}

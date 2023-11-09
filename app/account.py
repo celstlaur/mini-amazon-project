@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from .models.user import User
 from .models.balance import Balance
+from .models.orderfact import OrderFact
 from . import DB
 
 
@@ -20,9 +21,10 @@ def account():
         balance = Balance.current_balance(current_user.id)
         full_address = User.get_address(current_user.id)
         address = full_address[0][0]
+        purchases = OrderFact.get_orders_given_buyer(current_user.id)
     else:
         balance = None
-    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address)
+    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases,)
 
 
 @bp.route('/public_profile')
