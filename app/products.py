@@ -10,14 +10,34 @@ from flask import Blueprint, request
 bp = Blueprint('products', __name__)
 
 
+@bp.route('/products/page/<product>', methods = {"GET"})
+def getprodpage(product):
+
+    product = Product.get(product)
+
+    # render the page by adding information to the index.html file
+    return render_template('productpage.html',
+                           product=product)
+
 @bp.route('/products/findexpensive/', methods = {"GET"})
 def find_most_expensive_products():
 
     k = request.args.get('k')
     # get most expensive available products for sale:
-    filteredproducts = Product.get_k_most_expensive(k)
+    expensive = Product.get_k_most_expensive(k)
 
     # render the page by adding information to the index.html file
     return render_template('productfilters.html',
-                           filteredproducts=filteredproducts)
+                           filteredproducts=expensive)
+
+@bp.route('/products/filtercategory/', methods = {"GET"})
+def find_category():
+
+    k = request.args.get('k')
+    # get products for sale in category:
+    filtcat = Product.get_by_category(k)
+
+    # render the page by adding information to the index.html file
+    return render_template('productfilters.html',
+                           filteredproducts=filtcat)
 
