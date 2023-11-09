@@ -263,7 +263,7 @@
   </table>
 </div>
 <br>
-<!-- TODO: purchase history -->
+<!-- TODO: pagination -->
 <!-- maybe todo: sort purchase history by item, seller, date, etc -->
 <div class="history">
   <h3>Purchase History:</h3>
@@ -271,20 +271,23 @@
     <thead class="thead-dark">
       <tr>
         <th scope="col">Purchase ID</th>
-        <th scope="col">Buyer ID</th>
         <th scope="col">Price</th>
-        <th scope="col">Fulfillment Status</th>
+        <th scope="col">Fulfillment</th>
         <th scope="col">Time of Purchase</th>
+        <th scope="col">Details</th>
       </tr>
     </thead>
     <tbody>
       {% for purchase in purchase_history %}
         <tr>
           <th scope="row">{{purchase.id}}</th>
-          <td>{{purchase.buyer_id}}</td>
           <td>{{purchase.total_price}}</td>
           <td>{{purchase.status}}</td>
           <td>{{purchase.timestamp}}</td>
+          <td>
+            link go here lolz
+            <!-- TODO: link to individual purchase page -->
+          </td>
         </tr>
       {% endfor %}
     </tbody>
