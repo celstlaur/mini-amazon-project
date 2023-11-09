@@ -11,33 +11,37 @@
   <input type="number" placeholder = "Enter # to display" name = "k"/>
 </form>
 <br> <br>
-<table class='table table-hover table-bordered container'>
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Product ID</th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Price</th>
-      <th scope="col">Add to Wishlist</th>
-      
 
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in avail_products%}
-      <tr>
-        <th scope="row">{{product.id}}</th>
-        <td>{{product.name}}</td>
-        <td>{{product.price}}</td>
-        <td>
-          <form action="{{ url_for('wishlist.wishlist_add', product_id=product.id) }}"
-                method="POST">
-            <input type="submit" value="Add to Wishlist"/>
-          </form>
-        </td>
-      </tr>
+{% set y = avail_products|length %}
+{% set x = 0 %}
+
+{% for x in range(0, y, 4) %}
+    <div class="card-group">
+      {% if x + 4 < y %}
+      {% set i = x + 4 %}
+      {% else %}
+      {% set i = y %}
+      {% endif %}
+      {% for product in avail_products[x:i]%}
+      <div class="card">
+          <img src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt={{product.id}} style="width:100%">
+          <h1>{{product.name}}</h1>
+          <p>{{product.id}}</p>
+          <p class="price">${{product.price}}</p>
+          <p class="card-body">{{product.product_description}}</p>
+          <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
+          <p><form action="{{ url_for('wishlist.wishlist_add', product_id=product.id) }}"
+            method="POST">
+        <input type="submit" value="Add to Wishlist"/><form action="{{ url_for('wishlist.wishlist_add', product_id=1) }}"
+        method="POST">
+        <input type="submit" value="Add to Cart"/></p>
+      </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
+
+  {% endfor %}
+
+
 
 <br><br>
 {% if current_user.is_authenticated %}
@@ -69,12 +73,12 @@
   <h2>No purchase history</h2>
   <!-- TODO: "Make a purchase!", [button to navigate to 'buy' page]-->
   {% endif %}
-  {% if seller_check %}
+  <!--   {% if seller_check %} # depreciated
   <p><a href="{{ url_for('index.seller') }}">Seller Page</a></p>
   {% else %}
   <p>sign up to become a seller (WIP)</p>
   <!-- TODO: link to sign up to become a seller -->
-  {% endif %}
+  <!-- {% endif %} -->
 
 
   {% if cart_check %}
