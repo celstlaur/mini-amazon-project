@@ -2,12 +2,76 @@
 
 {% block content %}
 
-<br><br>
-<h1>Find Items</h1>
+<br>
+<h2>Find Items</h2>
 <!-- TODO: search bar -->
 <!-- TODO: advanced search -->
 <!-- TODO: trending products -->
 <!-- TODO: recommended products -->
 <!-- TODO: recently viewed -->
+
+<form action='products/findexpensive/' method = "GET">
+  <label for = "k">Filter Products:</label><br>
+  <input type="number" placeholder = "Enter # to display" name = "k"/>
+</form>
+<form action='products/filtercategory/' method = "GET">
+  <input type="string" placeholder = "Enter category label" name = "k"/>
+</form>
+<form action='products/filterkeyword/' method = "GET">
+  <input type="string" placeholder = "Enter keyword" name = "k"/>
+</form>
+
+{% set y = avail_products|length %}
+{% set len = total_avail|length %}
+{% set x = 0 %}
+
+<br>
+{% set pages = (len / page_length) | round(0, 'ceil') | int %}
+<p> Page {{ current_page }} of {{ pages}} </p>
+
+{% if len > page_length %}
+<form action="" method="post" style="display: inline;">
+    {% if current_page > 1 %} <!-- dont want to get page < 1, will give out of bounds error-->
+        <input type="hidden" name="action" value="prev">
+        <button type="submit"><<</button>
+    {% endif %}
+</form>
+
+<form action="" method="post" style="display: inline;"> 
+    {% if (len / page_length) > current_page %} <!-- dont want out of bounds error on right side either -->
+        <input type="hidden" name="action" value="next">
+        <button type="submit">>></button>
+    {% endif %}
+</form>
+{% endif %}
+
+{% for x in range(0, y, 4) %}
+    <div class="card-group">
+      {% if x + 4 < y %}
+      {% set i = x + 4 %}
+      {% else %}
+      {% set i = y %}
+      {% endif %}
+      {% for product in avail_products[x:i]%}
+      {% set id = product.id%}
+      <!--{% print id %}-->
+      <div class="card">
+          <img src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt={{product.id}} style="width:100%">
+          <h1>#{{product.id}} {{product.name}}</h1>
+          <p class="price">${{product.price}}</p>
+          <p class="card-body">{{product.product_description}}</p>
+          <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
+          <p><form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}"
+            method="POST">
+              <!--{% print id %}-->
+          <input type="submit" value="Add to Wishlist"/><form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}"
+          method="POST">
+          <input type="submit" value="Add to Cart"/></p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% endfor %}
+
 
 {% endblock %}

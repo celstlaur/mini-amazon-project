@@ -6,6 +6,8 @@
     {% if seller_check %}
         {% if inventory %}
             <h2>Your Seller Inventory:</h2>
+            {% set pages = (inventory_length / page_length) | round(0, 'ceil') | int %}
+            <p> Page {{ current_page }} of {{ pages}} </p>
             {% if inventory_length > page_length%}
             <form action="" method="post" style="display: inline;">
                 {% if current_page > 1 %} <!-- dont want to get page < 1, will give out of bounds error-->

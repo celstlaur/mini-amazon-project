@@ -2,13 +2,35 @@
 
 {% block content %}
 
+<!-- for later
+<div class="input-group mb-3">
+  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Filter By</button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Price</a></li>
+    <li><a class="dropdown-item" href="#">Category</a></li>
+    <li><a class="dropdown-item" href="#"></a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="#">Separated link</a></li>
+  </ul>
+  <input type="text" class="form-control" aria-label="Text input with dropdown button">
+</div>
+-->
+
+
 <br><br>
 
 <h2>Filtered Products:</h2>
-<form action='/products/filtercategory/' method = "GET">
+<form action='/products/findexpensive/' method = "GET">
   <label for = "k">Filter By:</label><br>
   <input type="string" placeholder = "Enter # to display" name = "k"/>
 </form>
+<form action='/products/filtercategory/' method = "GET">
+  <input type="string" placeholder = "Enter category label" name = "k"/>
+</form>
+<form action='/products/filterkeyword/' method = "GET">
+  <input type="string" placeholder = "Enter keyword" name = "k"/>
+</form>
+
 <br> <br>
 
 {% set y = filteredproducts|length %}
@@ -30,10 +52,10 @@
           <p class="price">${{product.price}}</p>
           <p class="card-body">{{product.product_description}}</p>
           <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
-          <p><form action="{{ url_for('wishlist.wishlist_add', product_id=product.id) }}"
+          <p><form action="{{ url_for('wishlist.wishlist_add', product_id=l) }}"
             method="POST">
         <input type="submit" value="Add to Wishlist"/>
-        <form action="{{ url_for('wishlist.wishlist_add', product_id=1) }}"
+        <form action="{{ url_for('wishlist.wishlist_add', product_id=l) }}"
         method="POST">
         <input type="submit" value="Add to Cart"/></p>
       </div>
