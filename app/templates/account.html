@@ -60,7 +60,7 @@
   <div class="account-information">
     
     <h3>Account Information:</h3>
-    <table class='table table-hover table-bordered container left-aligned narrow-column'>
+    <table class='table table-hover table-bordered container left-aligned '>
       <tbody>
         <tr>
           <th scope="row">Full Name:</th>
@@ -133,7 +133,7 @@
         <tr>
           <th scope="row">Address:</th>
           <td>
-            <!-- TODO: current_user.address -->
+            {{ address }}
           </td>
           <td>
             <input type="submit" value="Edit" data-toggle="modal" data-target="#editAddressModal"/>
@@ -152,7 +152,7 @@
                           <input type="hidden" name="user_id" value="{{ current_user.address }}" />
                           <div class="form-group">
                             <label for="password">New Address</label>
-                            <input type="text" class="form-control" id="address" name="address" required>
+                            <input type="text" class="form-control" id="address" name="address" value="{{address}}" required>
                           </div>
                           <button type="submit" class="btn btn-primary">Save changes</button>
                         </form>

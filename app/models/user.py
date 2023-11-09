@@ -51,11 +51,7 @@ RETURNING id
                                   firstname=firstname, lastname=lastname)
             id = rows[0][0]
 
-            rows = app.db.execute("""
-INSERT INTO Balance(user_id, balance_timestamp, balance)
-VALUES(:user_id, CURRENT_TIMESTAMP, "0")
-""",
-                                  user_id=id) 
+            
             
             return User.get(id)
         except Exception as e:
@@ -96,3 +92,15 @@ WHERE id = :id
     """,
                                 id=id)
         return len(rows) > 0
+    
+    @staticmethod
+    def get_address(id):
+        rows = app.db.execute("""
+    SELECT address
+    FROM UserAddress
+    WHERE id = :id
+    """,
+                                id=id)
+        return rows
+
+

@@ -18,10 +18,11 @@ bp = Blueprint('account', __name__)
 def account():
     if current_user.is_authenticated:
         balance = Balance.current_balance(current_user.id)
-        balance = balance if balance else 0
+        full_address = User.get_address(current_user.id)
+        address = full_address[0][0]
     else:
         balance = None
-    return render_template('account.html', title='Account', current_user=current_user, balance=balance)
+    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address)
 
 @bp.route('/edit_name', methods=['POST'])
 def edit_name():
@@ -62,12 +63,11 @@ def edit_address():
     user_id = current_user.id
     address = request.form.get('address')
     
-    sqlstr = "UPDATE users SET address = :address WHERE id = :user_id"
+    sqlstr = "UPDATE UserAddress SET address = :address WHERE id = :user_id"
     db = DB(current_app)
 
     try:
-        ## TODO: update database schema, then uncomment this
-        #db.execute(sqlstr, address, user_id=user_id)
+        db.execute(sqlstr, address=address, user_id=user_id)
         flash('Your address has been updated!', 'success')
     except Exception as e:
         flash(f'An error occurred: {e}', 'danger')
