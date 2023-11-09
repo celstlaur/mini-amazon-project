@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for
 from flask_login import current_user
 import datetime
+import random
 
 from .models.product import Product
 from .models.orderfact import OrderFact
@@ -22,31 +23,22 @@ def index():
     # finds order history, number of rows in order history
     products = Product.get_byoffset(per_page, offset)
         
-    # logic for front and back buttons
-    if request.method == 'POST':
-        if request.form['action'] == 'next':
-            page += 1
-        elif request.form['action'] == 'prev':
-            page -= 1
-
-        return redirect(url_for('index.index', page = page))
-        
 
     products_all = Product.get_all()
+    randproducts = [products_all[random.randint(0,len(products_all))], products_all[random.randint(0,len(products_all))], products_all[random.randint(0,len(products_all))], products_all[random.randint(0,len(products_all))]]
+
     if current_user.is_authenticated:
         purchases = OrderFact.get_orders_given_buyer(current_user.id)
-        return render_template('index.html', avail_products=products, 
+        return render_template('index.html',
                                             purchase_history=purchases, 
                                             current_page = page,
                                             page_length = per_page,
-                                            total_avail = products_all,
+                                            avail_products = randproducts,
                                             #seller_check=current_user.is_seller(current_user.id), 
                                             cart_check=current_user.has_cart(current_user.id))
     else:
-        return render_template('index.html', avail_products=products,
-                               current_page = page,
-                               page_length = per_page,
-                               total_avail = products_all)
+        return render_template('index.html', 
+                               avail_products = randproducts)
     
 
 #@bp.route('/seller')
