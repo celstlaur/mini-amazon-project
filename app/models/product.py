@@ -58,6 +58,18 @@ WHERE category = :category
 category = category)
         return [Product(*row) for row in rows]
     
+# filter by word in description
+    @staticmethod
+    def get_by_desc(keyword):
+        key = "%" + keyword + "%"
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key
+''', 
+key = key)
+        return [Product(*row) for row in rows]
+    
 
 # PRICE FILTERS
 
@@ -128,6 +140,19 @@ FROM Products
 ORDER BY id
 LIMIT :k
                               ''', k = k)
+        return [Product(*row) for row in rows]
+    
+
+# get by offset, sort by id
+    @staticmethod
+    def get_byoffset(limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+ORDER BY id
+LIMIT :limit OFFSET :offset
+                              
+                              ''', limit = limit, offset = offset)
         return [Product(*row) for row in rows]
     
 

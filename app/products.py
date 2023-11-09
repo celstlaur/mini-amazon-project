@@ -41,3 +41,14 @@ def find_category():
     return render_template('productfilters.html',
                            filteredproducts=filtcat)
 
+@bp.route('/products/filterkeyword/', methods = {"GET"})
+def find_keyword():
+
+    k = request.args.get('k')
+    # get products for sale in category:
+    filtdesc = Product.get_by_desc(k)
+
+    # render the page by adding information to the index.html file
+    return render_template('productfilters.html',
+                           filteredproducts=filtdesc)
+
