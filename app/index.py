@@ -7,21 +7,47 @@ from .models.orderfact import OrderFact
 from .models.inventory import Inventory
 from .models.carts import Cart
 
-from flask import Blueprint
+from flask import Blueprint, request
 bp = Blueprint('index', __name__)
 
 
-@bp.route('/')
+@bp.route('/', methods = ['GET', 'POST'])
 def index():
-    products = Product.get_all()
+
+    # determines table size
+    page = request.args.get('page', 1, type=int)
+    per_page = 12
+    offset = (page - 1) * per_page
+
+    # finds order history, number of rows in order history
+    products = Product.get_byoffset(per_page, offset)
+        
+    # logic for front and back buttons
+    if request.method == 'POST':
+        if request.form['action'] == 'next':
+            page += 1
+        elif request.form['action'] == 'prev':
+            page -= 1
+
+        return redirect(url_for('index.index', page = page))
+        
+
+    products_all = Product.get_all()
     if current_user.is_authenticated:
         purchases = OrderFact.get_orders_given_buyer(current_user.id)
         return render_template('index.html', avail_products=products, 
                                             purchase_history=purchases, 
+                                            current_page = page,
+                                            page_length = per_page,
+                                            total_avail = products_all,
                                             #seller_check=current_user.is_seller(current_user.id), 
                                             cart_check=current_user.has_cart(current_user.id))
     else:
-        return render_template('index.html', avail_products=products)
+        return render_template('index.html', avail_products=products,
+                               current_page = page,
+                               page_length = per_page,
+                               total_avail = products_all)
+    
 
 #@bp.route('/seller')
 #def seller():
