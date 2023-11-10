@@ -28,7 +28,7 @@ def index():
     randproducts = [products_all[random.randint(0,len(products_all) - 1)], products_all[random.randint(0,len(products_all) - 1) ], products_all[random.randint(0,len(products_all) - 1)], products_all[random.randint(0,len(products_all) - 1)]]
 
     if current_user.is_authenticated:
-        purchases = OrderFact.get_orders_given_buyer(current_user.id)
+        purchases = OrderFact.get_paged_orders(current_user.id, page, per_page)
         return render_template('index.html',
                                             purchase_history=purchases, 
                                             current_page = page,
