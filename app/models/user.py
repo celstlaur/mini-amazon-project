@@ -50,13 +50,16 @@ RETURNING id
                                   password=generate_password_hash(password),
                                   firstname=firstname, lastname=lastname)
             id = rows[0][0]
+
+            
+            
             return User.get(id)
         except Exception as e:
             # likely email already in use; better error checking and reporting needed;
             # the following simply prints the error to the console:
             print(str(e))
             return None
-
+               
     @staticmethod
     @login.user_loader
     def get(id):
@@ -77,7 +80,9 @@ WHERE id = :id
     WHERE id = :id
     """,
                                 id=id)
-        return len(rows) > 0
+        if len(rows) != 1:
+            return False
+        return True
     
     
     @staticmethod
@@ -89,3 +94,35 @@ WHERE id = :id
     """,
                                 id=id)
         return len(rows) > 0
+    
+    @staticmethod
+    def get_address(id):
+        rows = app.db.execute("""
+    SELECT address
+    FROM UserAddress
+    WHERE id = :id
+    """,
+                                id=id)
+        return rows
+    
+    @staticmethod
+    def num_sales(id):
+        rows = app.db.execute("""
+    SELECT order_id
+    FROM Fulfills
+    WHERE seller_id = :id
+    """,
+                                id=id)
+        return len(rows)
+
+    @staticmethod
+    def num_purchases(id):
+        rows = app.db.execute("""
+    SELECT id
+    FROM OrderFact
+    WHERE buyer_id = :id
+    """,
+                                id=id)
+        return len(rows)
+
+
