@@ -34,7 +34,7 @@ def index():
                                             current_page = page,
                                             page_length = per_page,
                                             avail_products = randproducts,
-                                            #seller_check=current_user.is_seller(current_user.id), 
+                                            seller_check=current_user.is_seller(current_user.id), 
                                             cart_check=current_user.has_cart(current_user.id))
     else:
         return render_template('index.html', 

@@ -79,6 +79,20 @@
       background-color: #000 !important;
       color: #fff;
     }
+    .left-aligned {
+    margin-left: 0;
+  }
+
+  .narrow-column {
+    white-space: nowrap;
+    width: 1%;
+  }
+  .history {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    white-space: nowrap;
+  }
   </style>
 </head>
 
@@ -118,7 +132,17 @@
       </div>
     </div>
   </div>
-  <div class="main">
+  <div class="main" style="width: 90%; margin: auto;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} flash-message">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     {% block content %}{% endblock %}
   </div>
   <script>
@@ -132,6 +156,15 @@
       }
     });
   </script>
+  <script>
+    // Using jQuery for simplicity, but you could use plain JavaScript as well
+    $(document).ready(function() {
+        setTimeout(function() {
+            // Slide up all elements with class 'flash-message' over 500 milliseconds
+            $(".flash-message").slideUp(500);
+        }, 3000); // Adjust time as needed
+    });
+    </script>
   
 </body>
 

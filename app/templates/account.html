@@ -3,29 +3,343 @@
 {% block content %}
 
 <br><br>
-<h1>Account Information</h1>
-<br>
-<h2>{{ current_user.firstname }} {{ current_user.lastname }} </h2>
-<!-- TODO: list account info -->
-<!-- TODO: edit edit account info -->
-<!-- TODO: become a seller, if not already -->
-<!-- TODO: view public profile -->
-<!-- TODO: manage balance -->
-<!-- TODO: search history -->
-<!-- TODO: purchase history -->
-<!-- TODO: (for sellers) order history-->
-<!-- TODO: delete account -->
-
-{% if cart %}
-<p><a href="{{ url_for('index.cart') }}">See your cart</a></p>
+<h1>Account</h1>
+{% if not current_user.is_authenticated %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
 {% else %}
-<p>No items in your cart!</p>
-{% endif %}
-<p><a href="{{ url_for('recent_feedback.recentFeedback') }}">Your Recent Feedbacks</a></p>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
+</div>
 
-{% if current_user.is_seller(current_user.id) %}
-<p><a href="{{ url_for('sell.sell') }}">Fulfillment History</a></p>
-<p><a href="{{ url_for('sell.inventory') }}">Current Inventory</a></p>
+<br>
+<div style="padding-left: 10px;">
+  <a href="#" data-toggle="modal" data-target="#editPasswordModal">Change Password</a>
+  <!-- maybe todo: verification step? -->
+  <!-- Modal -->
+  <div class="modal fade" id="editPasswordModal" tabindex="-1" role="dialog" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editPasswordModalLabel">Change Password</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{{ url_for('account.change_password') }}">
+            <input type="hidden" name="user_id" value="{{ current_user.id }}" />
+            <div class="form-group">
+              <label for="password">New Password</label>
+              <input type="text" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% if not seller_check %}
+  <div style="padding-left: 10px;">
+    <a href="{{ url_for('users.become_seller') }}">Become a Seller</a>
+  </div>
+{% endif %}
+  <div style="padding-left: 10px;">
+    <a href="{{ url_for('account.public_profile') }}">View Public Profile</a>
+  </div>
+
+
+
+<br><br><br>
+
+<h2>Information</h2><hr><br>
+<div style="display: flex; justify-content: space-around;">
+  <div class="account-information">
+    
+    <h3>Account Information:</h3>
+    <table class='table table-hover table-bordered container left-aligned '>
+      <tbody>
+        <tr>
+          <th scope="row">Full Name:</th>
+          <td>{{ current_user.firstname }} {{ current_user.lastname }}</td>
+          <td>
+            <input type="submit" value="Edit" data-toggle="modal" data-target="#editNameModal"/>
+                <!-- Modal -->
+                <div class="modal fade" id="editNameModal" tabindex="-1" role="dialog" aria-labelledby="editNameModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editNameModalLabel">Edit Name</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{{ url_for('account.edit_name') }}">
+                          <input type="hidden" name="user_id" value="{{ current_user.id }}" />
+                          <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            <input type="text" class="form-control" id="first-name" name="first_name" value="{{ current_user.firstname }}" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            <input type="text" class="form-control" id="last-name" name="last_name" value="{{ current_user.lastname }}" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Email:</th>
+          <td>{{ current_user.email }}</td>
+          <td>
+            <input type="submit" value="Edit" data-toggle="modal" data-target="#editEmailModal"/>
+                <!-- Modal -->
+                <div class="modal fade" id="editEmailModal" tabindex="-1" role="dialog" aria-labelledby="editEmailModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editEmailModalLabel">Edit Email</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{{ url_for('account.edit_email') }}">
+                          <input type="hidden" name="user_id" value="{{ current_user.id }}" />
+                          <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="text" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Address:</th>
+          <td>
+            {{ address }}
+          </td>
+          <td>
+            <input type="submit" value="Edit" data-toggle="modal" data-target="#editAddressModal"/>
+                <!-- Modal -->
+                <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editAddressModalLabel">Change Address</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{{ url_for('account.edit_address') }}">
+                          <input type="hidden" name="user_id" value="{{ current_user.address }}" />
+                          <div class="form-group">
+                            <label for="password">New Address</label>
+                            <input type="text" class="form-control" id="address" name="address" value="{{address}}" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </td>
+        </tr>
+        
+      </tbody>   
+    </table>
+  </div>
+  <div class="balance-information">
+    <h3>Balance:</h3>
+    <table class='table table-hover table-bordered left-aligned'>
+      <tbody>
+        <tr>
+          <th scope="row" class="narrow-column">Current Balance:</th>
+          <td>
+            ${{ "%.2f"|format(balance) }}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div style="display: flex; justify-content: space-around;">
+              <!-- Trigger Deposit Modal -->
+              <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#depositModal">
+                Deposit
+              </button>
+              <!-- Deposit Modal -->
+              <div class="modal fade" id="depositModal" tabindex="-1" role="dialog" aria-labelledby="depositModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="depositModalLabel">Deposit Funds</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form method="POST" action="{{ url_for('account.deposit') }}">
+                        <div class="form-group">
+                          <label for="depositAmount">Deposit Amount:</label>
+                          <input type="number" step="0.01" class="form-control" id="depositAmount" name="amount" required>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Deposit</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Trigger Withdraw Modal -->
+              <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#withdrawModal">
+                Withdraw
+              </button>
+              <!-- Withdraw Modal -->
+              <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="withdrawModalLabel">Withdraw Funds</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form method="POST" action="{{ url_for('account.withdraw') }}">
+                        <div class="form-group">
+                          <label for="withdrawAmount">Withdrawal Amount:</label>
+                          <input type="number" step="0.01" class="form-control" id="withdrawAmount" name="amount" required>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Withdraw</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br>
+
+<br><br><br>
+
+
+<h2>Activity</h2><hr><br>
+<!-- maybe todo: transaction history -->
+<!-- maybe todo: visualize history of balances, spending amounts, purchases by category -->     
+<div class="history">
+  <h3>Transaction History:</h3>
+  <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Time of Transaction</th>
+        <th scope="col">Transaction Type</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Resulting Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- for this user's balances in balances -->
+        <tr>
+          <th scope="row">[timestamp]</th>
+          <td>[deposit, withdrawal, purchase, or sale]</td>
+          <td>[change since last balance]</td>
+          <td>[balance]</td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+<br>
+<!-- TODO: pagination -->
+<!-- maybe todo: sort purchase history by item, seller, date, etc -->
+<a name="paginationAnchor"></a>
+<div class="history">
+  <h3>Purchase History:</h3>
+  <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Purchase ID</th>
+        <th scope="col">Price</th>
+        <th scope="col">Fulfillment</th>
+        <th scope="col">Time of Purchase</th>
+        <th scope="col">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for purchase in purchase_history %}
+        <tr>
+          <th scope="row">{{purchase.id}}</th>
+          <td>{{purchase.total_price}}</td>
+          <td>{{purchase.status}}</td>
+          <td>{{purchase.timestamp}}</td>
+          <td>
+            link go here lolz
+            <!-- TODO: link to individual purchase page -->
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div id="pagination">
+    {% if current_page > 1 %}
+    <a href="{{ url_for('account.account', page=current_page-1) }}#paginationAnchor">Previous</a>
+    {% endif %}
+
+    <!-- Add more links for other pages as needed -->
+
+    {% if current_page < total_pages %}
+    <a href="{{ url_for('account.account', page=current_page+1) }}#paginationAnchor">Next</a>
+    {% endif %}
+
+    
+  </div>
+</div>
+
+<br>
+<!-- maybe todo: (for sellers) order history-->
+{% if seller_check %}
+  <div class="history">
+    <h3>Seller History:</h3>
+    <table class='table table-hover table-bordered container' style="text-align: center;">
+      <tbody>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Fulfillment Status</th>
+          <th scope="col">Number of Items</th>
+          <th scope="col">Total Price</th>
+          <th scope="col">Details</th>
+        </tr>
+      </tbody>   
+    </table>
+  </div>
+{% endif %}
+
+<br><br><br>
+<h2>Danger Zone :(</h2><hr><br>
+<!-- maybe todo: delete account -->
+<p>To permanently delete your account, click <a href="{{ url_for('users.delete') }}">here</a>.</p>
+
+
 {% endif %}
 
 
