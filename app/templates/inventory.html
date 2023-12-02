@@ -37,7 +37,34 @@
                 <tr>
                     <td>{{inv.product_name}}</td>
                     <td>{{inv.quantity}}</td>
-                    <td>Edit</td>
+                    <td>
+                        <input type="submit" value="Edit" data-toggle="modal" data-target="#editAddressModal"/>
+                            <!-- Modal -->
+                            <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="editAddressModalLabel">Change Quantity</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form method="POST" action="{{ url_for('sell.edit_quant', item_id=inv.product_id) }}">
+                                      <input type="hidden" name="user_id" value="{{ inv.quantity }}" />
+                                      <div class="form-group">
+                                        <label for="password">New Quantity</label>
+                                        <input type="text" class="form-control" id="quantity" name="quantity" value="{{inv.quantity}}" required>
+                                      </div>
+                                      <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </td>
                     <td>
                         <a href="{{ url_for('sell.delete_item', item_id=inv.product_id) }}" class="btn btn-danger">Remove</a>
                     </td>

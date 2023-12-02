@@ -64,8 +64,8 @@ class Inventory:
     
     @staticmethod
     def delete_inventory_item(pid, uid):
-        rows = app.db.execute('''
-    DELETE FROM HasInventory
-    WHERE seller_id = :uid AND product_id = :pid;
-    ''', uid=uid, pid=pid)
-        return True if rows else False
+        try:
+            app.db.execute('''DELETE FROM HasInventory WHERE seller_id = :uid AND product_id = :pid;''', uid=uid, pid=pid)
+            return True
+        except Exception as e:
+            return False
