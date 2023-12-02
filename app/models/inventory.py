@@ -61,3 +61,11 @@ class Inventory:
     ''',
                               product_id=product_id)
         return [Inventory(*row) for row in rows] if rows else None
+    
+    @staticmethod
+    def delete_inventory_item(pid, uid):
+        rows = app.db.execute('''
+    DELETE FROM HasInventory
+    WHERE seller_id = :uid AND product_id = :pid;
+    ''', uid=uid, pid=pid)
+        return True if rows else False

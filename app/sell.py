@@ -81,3 +81,15 @@ def inventory():
     
     else:
         return redirect(url_for('index.index'))
+    
+@bp.route('/delete_from_inventory/<int:item_id>', methods=['POST', 'DELETE', 'GET'])
+def delete_item(item_id):
+    if current_user.is_authenticated:
+       # Assuming CartItem has an 'id' attribute
+        if Inventory.delete_inventory_item(pid=item_id, uid=current_user.id):
+            flash('Item removed from cart.', 'success')
+        else:
+            flash('Error', 'error')
+        return redirect(url_for('sell.inventory'))
+    else:
+        return redirect(url_for('index.index'))

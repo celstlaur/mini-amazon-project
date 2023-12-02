@@ -28,6 +28,8 @@
                 <tr>
                 <th scope="col">Product Name</th>
                 <th scope="col">Quantity</th>
+                <th scope="col">Test1</th>
+                <th scope="col">Test2</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +37,10 @@
                 <tr>
                     <td>{{inv.product_name}}</td>
                     <td>{{inv.quantity}}</td>
+                    <td>Edit</td>
+                    <td>
+                        <a href="{{ url_for('sell.delete_item', item_id=inv.product_id) }}" class="btn btn-danger">Remove</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
