@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, current_app, flash, request
 from werkzeug.urls import url_parse
-from flask_login import login_user, logout_user, current_user
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
@@ -22,15 +22,17 @@ def account():
     if current_user.is_authenticated:
         balance = Balance.current_balance(current_user.id)
         full_address = User.get_address(current_user.id)
-        address = full_address[0][0]
+        address = full_address[0][0] if full_address else None
         purchases, total_pages = OrderFact.get_paged_orders(current_user.id, page, per_page)
+        seller_check = current_user.is_seller(current_user.id)
     else:
-        balance = None
+        balance=None
         address = None
         purchases = None
         total_pages=0
+        seller_check = False
     return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases, total_pages=total_pages, current_page=page,
-                           seller_check=current_user.is_seller(current_user.id))
+                           seller_check=seller_check)
 
 @bp.route('/public_profile')
 def public_profile():
