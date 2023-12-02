@@ -26,7 +26,7 @@ def account():
         purchases, total_pages = OrderFact.get_paged_orders(current_user.id, page, per_page)
         seller_check = current_user.is_seller(current_user.id)
     else:
-        balance = None
+        balance=None
         address = None
         purchases = None
         total_pages=0

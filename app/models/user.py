@@ -1,5 +1,7 @@
 from flask_login import UserMixin
 from flask import current_app as app
+
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .. import login
@@ -50,6 +52,15 @@ RETURNING id
                                   password=generate_password_hash(password),
                                   firstname=firstname, lastname=lastname)
             id = rows[0][0]
+
+            current_time = datetime.utcnow()
+            app.db.execute('''
+                INSERT INTO Balance (user_id, balance_timestamp, balance)
+                VALUES (:user_id, :balance_timestamp, :balance)
+            ''',
+            user_id=id,
+            balance_timestamp=current_time,
+            balance=0)
 
             
             
