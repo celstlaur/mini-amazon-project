@@ -10,6 +10,8 @@ from .models.seller import Seller
 
 import logging
 
+from . import DB
+
 from flask import Blueprint
 bp = Blueprint('users', __name__)
 
@@ -62,10 +64,10 @@ def register():
         return redirect(url_for('index.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        if User.register(form.email,
-                         form.password,
-                         form.firstname,
-                         form.lastname):
+        if User.register(form.email.data,
+                         form.password.data,
+                         form.firstname.data,
+                         form.lastname.data):
             flash('Congratulations, you are now a registered user!')
             return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
