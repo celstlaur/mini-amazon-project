@@ -4,27 +4,33 @@
 
 <br><br>
 {% if current_user.is_authenticated %}
-  {% if cart %}
-  <h2>Your Cart:</h2>
-  <table class='table table-hover table-bordered container'>
-    <thead class="thead-dark">
+{% if cart %}
+<h2>Your Cart:</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Product ID</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in cart%}
       <tr>
-        <th scope="col">Product ID</th>
-        <th scope="col">Quantity</th>
+        <th scope="row">{{item.product_id}}</th>
+        <td>{{item.quantity}}</td>
+        <td>
+          <a href="{{ url_for('cart.delete_item', item_id=item.product_id) }}" class="btn btn-danger">Remove</a>
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {% for item in cart%}
-        <tr>
-          <th scope="row">{{item.product_id}}</th>
-          <td>{{item.quantity}}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <h2>No items in cart</h2>
-  {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+<p class="total">Subtotal: {{ cart|length }} items</p>
+<a href="{{ url_for('buy.buy') }}" class="btn btn-success">Proceed to Checkout</a>
+{% else %}
+<h2>No items in cart</h2>
+{% endif %}
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
 {% endif %}

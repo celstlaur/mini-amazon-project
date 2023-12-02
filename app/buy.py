@@ -36,7 +36,7 @@ def buy():
 
     products_all = Product.get_all()
     if current_user.is_authenticated:
-        purchases = OrderFact.get_orders_given_buyer(current_user.id)
+        purchases = OrderFact.get_paged_orders(current_user.id, page, per_page)
         return render_template('buy.html', avail_products=products, 
                                             purchase_history=purchases, 
                                             current_page = page,
