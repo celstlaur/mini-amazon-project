@@ -3,38 +3,135 @@
 {% block content %}
 
 <main class="container">
- 
+
   <!-- Left Column / Products Image -->
   <div class="left-column">
-    <img data-image="red" class = active src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt="">
+    <img data-image="red" class=active
+      src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt="">
   </div>
- 
- 
+
+
   <!-- Right Column -->
   <div class="right-column">
- 
+
     <!-- Product Description -->
     <div class="product-description">
       <span>{{product.category}}</span>
       <h1>{{product.name}}</h1>
       <p>{{product.product_description}}</p>
     </div>
- 
+
     <!-- Product Configuration -->
     <div class="product-configuration">
 
 
     </div>
- 
+
     <!-- Product Pricing -->
     <div class="product-price">
       <span>${{product.price}}</span>
-      <a href="#" class="cart-btn">Add to cart</a>
     </div>
     <br>
-    <p><a href="{{ url_for('recent_feedback.submit_feedback', product_id=product.id)}}">submit a review for this product</a></p>
+    <p><a href="{{ url_for('recent_feedback.submit_feedback', product_id=product.id)}}">submit a review for this
+        product</a></p>
   </div>
+
+  
+{% if sellers %}
+
+{% set y = sellers|length %}
+{% set len = len_sellers%}
+{% set x = 0 %}
+
+<br> <br>
+
+<div class="container"></div>
+
+{% set pages = (len / page_length) | round(0, 'ceil') | int %}
+
+<br>
+
+{% for x in range(0, y, 4) %}
+    <div class="card-group">
+      {% if x + 4 < y %}
+      {% set i = x + 4 %}
+      {% else %}
+      {% set i = y %}
+      {% endif %}
+      {% for seller in sellers[x:i]%}
+      <!--{% print id %}-->
+
+      <div class="height d-flex justify-content-center align-items-center"></div>
+      <div class="card">
+            <div class="mt-5">
+              <h4 class="main-heading mt-0">Seller {{seller.seller_id}}</h4>
+              <p class="product-description">In Stock: {{seller.quantity}}</p>
+              {% if current_user.is_authenticated %}
+              <form action="{{ url_for('products.add_to_cart', product_id=product.id, seller_id = seller.seller_id, seller_quant = seller.quantity)}}" method="post">
+                
+                <input type="string" placeholder = "Quantity to Order" name = "k"/><br>
+            
+                <input type="submit" value="Place Order">
+                {% endif %}
+            </form>
+      </div>
+      {% endfor %}
+      </div>
+      </div>
+
+  {% endfor %}
+
+  <div class="center-container">
+  <p> Page {{ current_page }} of {{ pages}} </p>
+
+{% if len > page_length %}
+<form action="" method="post" style="display: inline;">
+    {% if current_page > 1 %} <!-- dont want to get page < 1, will give out of bounds error-->
+        <input type="hidden" name="action" value="prev">
+        <button type="submit"><<</button>
+    {% endif %}
+</form>
+
+<form action="" method="post" style="display: inline;"> 
+    {% if (len / page_length) > current_page %} <!-- dont want out of bounds error on right side either -->
+        <input type="hidden" name="action" value="next">
+        <button type="submit">>></button>
+    {% endif %}
+</form>
+{% endif %}
+{% endif %}
+
+{% if current_user.id == product.creator_id %}
+<h1>Edit Product Information</h1>
+<form action="{{ url_for('products.edit_cat', product_id=product.id)}}" method="post">
+  <input type="string" placeholder="New Category" name="l" /><br>
+</form>
+<form action="{{ url_for('products.edit_name', product_id=product.id)}}" method="post">
+  <input type="string" placeholder="New Name" name="k" /><br>
+</form>
+<form action="{{ url_for('products.edit_price', product_id=product.id)}}" method="post">
+  <input type="string" placeholder="New Price" name="m" /><br>
+</form>
+  <br>
+<label for="review">New Description:</label> <br>
+      <form action="{{ url_for('products.edit_desc', product_id=product.id)}}" method="post">
+        <textarea id="n" name="n"></textarea><br>
+        <input type="submit" value="Submit New Description">
+      </form>
+
+{% endif %}
+
+</div>
+</div>
+
+<br> <br> <br>
+
+
+
+
 </main>
+
+
 
 
 {% endblock %}
