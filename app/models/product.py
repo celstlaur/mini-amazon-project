@@ -70,6 +70,30 @@ FROM Products
 ''')
         return len(rows) if rows else 0
     
+# get and sort by asc, sort by id
+    @staticmethod
+    def get_asc(limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+ORDER BY price
+LIMIT :limit OFFSET :offset
+                              
+                              ''', limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# get and sort by asc, sort by id
+    @staticmethod
+    def get_desc(limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+ORDER BY price DESC
+LIMIT :limit OFFSET :offset
+                              
+                              ''', limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
 # filter by category
     @staticmethod
     def get_by_category(category, limit, offset):
@@ -178,36 +202,52 @@ key = key)
 
 # get all less than equal to price
     @staticmethod
-    def get_all_less_than_equal_to_price(price):
+    def get_all_less_than_equal_to_price(price, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+WHERE price <= :price
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''',
+                              price=price, limit=limit, offset=offset)
+        return [Product(*row) for row in rows]
+
+# get all greater than equal to price
+    @staticmethod
+    def get_len_leq(price):
         rows = app.db.execute('''
 SELECT id, name, creator_id, category, product_description, price
 FROM Products
 WHERE price <= :price
 ''',
                               price=price)
+        return len(rows) if rows else 0
+    
+# get all greater than equal to price
+    @staticmethod
+    def get_all_greater_than_price(price, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+WHERE price >= :price
+ORDER BY price, ID
+LIMIT :limit OFFSET :offset
+''',
+                              price=price, limit=limit, offset=offset)
         return [Product(*row) for row in rows]
     
 # get all greater than equal to price
     @staticmethod
-    def get_all_less_than_equal_to_price(price):
+    def get_len_geq(price):
         rows = app.db.execute('''
 SELECT id, name, creator_id, category, product_description, price
 FROM Products
 WHERE price >= :price
 ''',
                               price=price)
-        return [Product(*row) for row in rows]
+        return len(rows) if rows else 0
     
-# get all equal to price
-    @staticmethod
-    def get_all_less_than_equal_to_price(price):
-        rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
-FROM Products
-WHERE price >= :price
-''',
-                              price=price)
-        return [Product(*row) for row in rows]
 
 # PRICE SORTING
 
@@ -219,7 +259,7 @@ WHERE price >= :price
 SELECT id, name, creator_id, category, product_description, price
 FROM Products
 ORDER BY price DESC, id
-LIMIT :k, OFFSET: offset
+LIMIT :k OFFSET :offset
                               ''', limit = limit, offset = offset)
         return [Product(*row) for row in rows]
     

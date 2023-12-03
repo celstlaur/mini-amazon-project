@@ -44,25 +44,22 @@
 <div class ="right-column">
   <h5> Filter By Price </h5>
   <div class="button-container">
-    <a href="/products/filtercategory/?k=Red">
-      <button>Red</button>
+    <a href="/products/asc">
+      <button>Price Ascending</button>
     </a>
-    <a href="/products/filtercategory/?k=Blue">
-      <button>Blue</button>
+    <a href="/products/desc">
+      <button>Price Descending</button>
     </a>
-  </div>
-<form action='/products/filterkeyword/' method = "GET">
-  <input type="string" placeholder = "" name = "k"/>
-</form>
-<form action='/products/filterkeyword/' method = "GET">
-  <input type="string" placeholder = "Enter keyword" name = "k"/>
-</form>
-</div>
 
-<form action='/products/findexpensive/' method = "GET">
-  <label for = "k">Filter Products:</label><br>
-  <input type="number" placeholder = "Enter # to display" name = "k"/>
+  </div>
+<form action='/products/max/' method = "GET">
+  <input type="string" placeholder = "Maximum Price" name = "k"/>
 </form>
+<form action='/products/min/' method = "GET">
+  <input type="string" placeholder = "Minimum Price" name = "k"/>
+</form>
+
+</div>
 
 
 
