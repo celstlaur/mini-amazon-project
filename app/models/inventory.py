@@ -7,6 +7,33 @@ class Inventory:
         self.product_name = product_name
         self.quantity = quantity
 
+
+    # can build this out to join with Seller, get more info on sellers if needed...
+    @staticmethod
+    def get_sellers_given_product(product_id, limit, offset):
+        rows = app.db.execute('''
+    SELECT h.seller_id, h.product_id, p.name, h.quantity
+    FROM HasInventory h
+    LEFT JOIN Products p on p.id = h.product_id
+    WHERE product_id = :product_id
+    LIMIT :limit OFFSET :offset
+    ''',
+                              product_id=product_id, limit=limit, offset=offset)
+        return [Inventory(*row) for row in rows] if rows else None
+    
+        # can build this out to join with Seller, get more info on sellers if needed...
+    @staticmethod
+    def get_len_sellers_given_prod(product_id):
+        rows = app.db.execute('''
+    SELECT h.seller_id, h.product_id, p.name, h.quantity
+    FROM HasInventory h
+    LEFT JOIN Products p on p.id = h.product_id
+    WHERE product_id = :product_id
+    ''',
+                              product_id=product_id)
+        return len(rows) if rows else 0
+
+
 # can build this out to join with products, get more info on products if needed...
     @staticmethod
     def get_products_given_seller(seller_id, limit, offset, available=False):
@@ -50,14 +77,3 @@ class Inventory:
     ''',
                               seller_id=seller_id)
         return len(rows) if rows else 0
-
-# can build this out to join with Seller, get more info on sellers if needed...
-    @staticmethod
-    def get_sellers_given_product(product_id):
-        rows = app.db.execute('''
-    SELECT seller_id
-    FROM HasInventory
-    WHERE product_id = :product_id
-    ''',
-                              product_id=product_id)
-        return [Inventory(*row) for row in rows] if rows else None
