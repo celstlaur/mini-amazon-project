@@ -69,3 +69,11 @@ class Inventory:
             return True
         except Exception as e:
             return False
+    
+    @staticmethod
+    def update_inventory_quantity(pid, uid, quant):
+        try:
+            app.db.execute('''UPDATE HasInventory SET quantity = :quantity WHERE seller_id = :user_id and product_id =:item_id;''', user_id=uid, item_id=pid, quantity=quant)
+            return True
+        except Exception as e:
+            return False

@@ -94,19 +94,15 @@ def delete_item(item_id):
         return redirect(url_for('sell.inventory'))
     else:
         return redirect(url_for('index.index'))
-    
-@bp.route('/edit_inventory_quantity/<int:item_id>', methods=['POST', 'GET'])
-def edit_quant(item_id):
-    user_id = current_user.id
-    quantity = request.form.get('quantity')
-    
-    sqlstr = "UPDATE HasInventory SET quantity = :quantity WHERE seller_id = :user_id and product_id =:item_id"
-    db = DB(current_app)
 
-    try:
-        db.execute(sqlstr, user_id=current_user.id, item_id=item_id, quantity=quantity)
-        flash('The quantity has been updated!', 'success')
-    except Exception as e:
-        flash(f'An error occurred: {e}', 'danger')
-
-    return redirect(url_for('sell.inventory'))
+@bp.route('/update_inventory_quant/<int:item_id>', methods=['POST', 'GET'])
+def update_item(item_id):
+    if current_user.is_authenticated:
+       # Assuming CartItem has an 'id' attribute
+        if Inventory.update_inventory_quantity(pid=item_id, uid=current_user.id, quant=request.form.get('quantity')):
+            flash('Item Quantity Updated.', 'success')
+        else:
+            flash('An error occurred', 'danger')
+        return redirect(url_for('sell.inventory'))
+    else:
+        return redirect(url_for('index.index'))
