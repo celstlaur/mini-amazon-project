@@ -120,3 +120,16 @@ def update_fulfillment(order_id):
         return redirect(url_for('sell.sell'))
     else:
         return redirect(url_for('index.index'))
+    
+
+@bp.route('/insert_new_item', methods=['POST', 'GET'])
+def new_item():
+    if current_user.is_authenticated:
+
+        if Inventory.insert_new_item(product_name=request.form.get('product_name'), user_id=current_user.id, category=request.form.get('product_category'), product_description=request.form.get('product_description'), price=request.form.get('price'), quantity=request.form.get('quantity')):
+            flash('Item Quantity Updated.', 'success')
+        else:
+            flash('An error occurred', 'danger')
+        return redirect(url_for('sell.inventory'))
+    else:
+        return redirect(url_for('index.index'))

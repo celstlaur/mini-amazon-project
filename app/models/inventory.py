@@ -77,3 +77,13 @@ class Inventory:
             return True
         except Exception as e:
             return False
+    
+    @staticmethod
+    def insert_new_item(product_name, user_id, category, product_description, price, quantity):
+        try:
+            new_item_id = app.db.execute("""INSERT INTO Products(name, creator_id, category, product_description, price) VALUES(:pname, :uid, :cat, :desc, :price) RETURNING id;""", pname=product_name, uid=user_id, cat=category, desc=product_description, price=price)
+            app.db.execute("""INSERT INTO HasInventory(seller_id, product_id, quantity) VALUES(:sid, :pid, :quant);""", sid=user_id, pid=new_item_id[0][0], quant=quantity)
+            return True
+        except Exception as e:
+            print(e)
+            return False
