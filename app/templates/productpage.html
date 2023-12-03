@@ -2,18 +2,39 @@
 
 {% block content %}
 
-<br><br>
+<main class="container">
+ 
+  <!-- Left Column / Products Image -->
+  <div class="left-column">
+    <img data-image="red" class = active src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt="">
+  </div>
+ 
+ 
+  <!-- Right Column -->
+  <div class="right-column">
+ 
+    <!-- Product Description -->
+    <div class="product-description">
+      <span>{{product.category}}</span>
+      <h1>{{product.name}}</h1>
+      <p>{{product.product_description}}</p>
+    </div>
+ 
+    <!-- Product Configuration -->
+    <div class="product-configuration">
 
-<h2>{{product.name}}</h2>
 
-<br><br>
-ID: {{product.id}}
-<br><br>
-<b3>Description</b3>
-<br><br>
-<p>{{product.product_description}}</p>
-<p><a href="{{ url_for('recent_feedback.submit_feedback', product_id=product.id)}}">submit a review for this product</a></p>
-
+    </div>
+ 
+    <!-- Product Pricing -->
+    <div class="product-price">
+      <span>${{product.price}}</span>
+      <a href="#" class="cart-btn">Add to cart</a>
+    </div>
+    <br>
+    <p><a href="{{ url_for('recent_feedback.submit_feedback', product_id=product.id)}}">submit a review for this product</a></p>
+  </div>
+</main>
 
 
 {% endblock %}
