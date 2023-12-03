@@ -362,6 +362,10 @@ LIMIT :limit OFFSET :offset
     @staticmethod
     def create_new_product(name, creator_id, category, product_description, price):
 
+        if category not in ["Red", "Blue", "Green", "Yellow", "Purple"]:
+            print("Not an acceptable category!")
+            return False, 0
+
         rows1 = app.db.execute('''
 SELECT *
 FROM Products

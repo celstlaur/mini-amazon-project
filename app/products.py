@@ -534,6 +534,9 @@ def create(creator_id):
 
         if test is True:
             return redirect(url_for("products.getprodpage", product = product_id))
+        
+        else: 
+            return jsonify({"Cannot create new category!"}), 404
 
     
     else:
