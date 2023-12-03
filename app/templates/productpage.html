@@ -99,6 +99,9 @@
     {% endif %}
 </form>
 {% endif %}
+{% else %}
+<h1>No Sellers for this product yet!</h1>
+<br> <br> <br>
 {% endif %}
 
 {% if current_user.id == product.creator_id %}
@@ -120,6 +123,7 @@
       </form>
 
 {% endif %}
+
 
 </div>
 </div>

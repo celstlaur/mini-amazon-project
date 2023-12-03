@@ -332,6 +332,8 @@
       </tbody>   
     </table>
   </div>
+<br> <br> 
+<div style="justify-content: space-around;">
   <h1>Create New Product</h1>
 <form action="{{ url_for('products.create', creator_id = current_user.id)}}" method="post">
   <input type="string" placeholder="New Name" name="name" /><br>
@@ -343,6 +345,8 @@
         <input type="submit" value="Submit New Product">
       </form>
 {% endif %}
+
+</div>
 
 <br><br><br>
 <h2>Danger Zone :(</h2><hr><br>
