@@ -1,5 +1,6 @@
 from flask import current_app as app
-
+from flask_login import current_user
+from .inventory import Inventory
 
 
 # TO DO
@@ -28,8 +29,72 @@ class Product:
         self.product_description = product_description
         self.price = price
 
+# Products:
+# product_id, product_name, seller_id, category, description, price
 
 
+    @staticmethod
+    def edit_product_name(id, name):
+        try:
+
+            rows = app.db.execute(""" UPDATE Products
+                                   SET name = :name
+                                   WHERE id = :id """, name = name, id = id)
+
+            #id = rows[0][0]
+            #return FeedbackItem.get_all(id)
+            return True
+        except Exception as e:
+            print(str(e))
+            return None
+        
+    @staticmethod
+    def edit_product_category(id, category):
+        try:
+            if category not in ["Red", "Blue", "Green", "Yellow", "Purple"]:
+                print("Not an acceptable category!")
+                return False
+            rows = app.db.execute(""" UPDATE Products
+                                   SET category = :category
+                                   WHERE id = :id """, category = category, id = id)
+
+            #id = rows[0][0]
+            #return FeedbackItem.get_all(id)
+            return True
+        except Exception as e:
+            print(str(e))
+            return None
+        
+    @staticmethod
+    def edit_product_desc(id, desc):
+        try:
+
+            rows = app.db.execute("""UPDATE Products
+                                   SET product_description = :desc
+                                   WHERE id = :id """, desc = desc, id = id)
+
+            #id = rows[0][0]
+            #return FeedbackItem.get_all(id)
+            return True
+        except Exception as e:
+            print(str(e))
+            return None
+        
+    @staticmethod
+    def edit_product_price(id, price):
+        try:
+
+            rows = app.db.execute("""UPDATE Products
+                                   SET price = :price
+                                   WHERE id = :id """, price = price, id = id)
+
+            #id = rows[0][0]
+            #return FeedbackItem.get_all(id)
+            return True
+        except Exception as e:
+            print(str(e))
+            return None
+    
     @staticmethod
     def get(id):
         rows = app.db.execute('''
@@ -290,6 +355,41 @@ ORDER BY id
 LIMIT :limit OFFSET :offset
                               ''', limit = limit, offset = offset)
         return [Product(*row) for row in rows]
+
+# Products:
+# product_id, product_name, seller_id, category, description, price
+
+    @staticmethod
+    def create_new_product(name, creator_id, category, product_description, price):
+
+        if category not in ["Red", "Blue", "Green", "Yellow", "Purple"]:
+            print("Not an acceptable category!")
+            return False, 0
+
+        rows1 = app.db.execute('''
+SELECT *
+FROM Products
+''')
+        pid =  len(rows1) if rows1 else 0
+
+        try:
+        
+
+            rows = app.db.execute("""INSERT INTO Products(id, name, creator_id, category, product_description, price)
+                                VALUES(:pid, :product_name, :seller_id, :category, :description, :price)""",
+                                  pid=pid,
+                                  product_name = name,
+                                  seller_id =creator_id,
+                                  category = category,
+                                  description = product_description,
+                                  price = price)
+
+            return True, pid
+        except Exception as e:
+            print(str(e))
+            return None
+        
+
     
 
     
