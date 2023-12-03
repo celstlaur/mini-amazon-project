@@ -21,7 +21,7 @@ def buy():
     per_page = 12
     offset = (page - 1) * per_page
 
-    # finds order history, number of rows in order history
+    # finds all products by offset
     products = Product.get_byoffset(per_page, offset)
         
     # logic for front and back buttons
@@ -34,19 +34,21 @@ def buy():
         return redirect(url_for('buy.buy', page = page))
         
 
-    products_all = Product.get_all()
+    len = Product.get_len_prods()
     if current_user.is_authenticated:
         purchases = OrderFact.get_paged_orders(current_user.id, page, per_page)
         return render_template('buy.html', avail_products=products, 
                                             purchase_history=purchases, 
                                             current_page = page,
                                             page_length = per_page,
-                                            total_avail = products_all,
+                                            total_avail = len,
                                             #seller_check=current_user.is_seller(current_user.id), 
                                             cart_check=current_user.has_cart(current_user.id))
     else:
         return render_template('buy.html', avail_products=products,
                                current_page = page,
                                page_length = per_page,
-                               total_avail = products_all)
+                               total_avail = len)
     return render_template('buy.html', title='Buy', current_user=current_user)
+
+ 
