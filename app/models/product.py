@@ -28,6 +28,8 @@ class Product:
         self.product_description = product_description
         self.price = price
 
+
+
     @staticmethod
     def get(id):
         rows = app.db.execute('''
