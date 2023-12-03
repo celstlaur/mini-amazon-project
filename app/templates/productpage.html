@@ -32,8 +32,10 @@
       <span>${{product.price}}</span>
     </div>
     <br>
+    {% if current_user.is_authenticated %}
     <p><a href="{{ url_for('recent_feedback.submit_feedback', product_id=product.id)}}">submit a review for this
         product</a></p>
+    {% endif %}
   </div>
 
   
