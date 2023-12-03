@@ -33,6 +33,7 @@
                 <th scope="col">Buyer First Name</th>
                 <th scope="col">Buyer Last Name</th>
                 <th scope="col">Price per item</th>
+                <th scope="col">Buyer Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,11 +42,18 @@
                     <td>{{h.order_id}}</td>
                     <td>{{h.product_name}}</td>
                     <td>{{h.quantity}}</td>
-                    <td>{{h.fulfill_status}}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('sell.update_fulfillment', order_id=h.order_id) }}">
+                            <button type="submit" class="btn btn-primary" name="fulfill_status" value="{{ h.fulfill_status }}">
+                                {{h.fulfill_status}}
+                            </button>
+                        </form>
+                    </td>
                     <td>{{h.timestamp}}</td>
                     <td>{{h.first}}</td>
                     <td>{{h.last}}</td>
                     <td>{{h.price_each}}</td>
+                    <td>{{h.address}}</td>
                 </tr>
                 {% endfor %}
             </tbody>

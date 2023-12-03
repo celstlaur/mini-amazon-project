@@ -106,3 +106,17 @@ def update_item(item_id):
         return redirect(url_for('sell.inventory'))
     else:
         return redirect(url_for('index.index'))
+    
+    
+    
+@bp.route('/update_fulfillment/<int:order_id>', methods=['POST', 'GET'])
+def update_fulfillment(order_id):
+    if current_user.is_authenticated:
+       # Assuming CartItem has an 'id' attribute
+        if OrderHistory.update_ordercontents_status(sid=current_user.id, oid=order_id):
+            flash('Item Fulfillment Updated.', 'success')
+        else:
+            flash('An error occurred', 'danger')
+        return redirect(url_for('sell.sell'))
+    else:
+        return redirect(url_for('index.index'))
