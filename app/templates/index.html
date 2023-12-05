@@ -18,24 +18,39 @@
       {% set i = y %}
       {% endif %}
       {% for product in avail_products[x:i]%}
+      {% set id = product.id %}
+      <div class="height d-flex justify-content-center align-items-center"></div>
       <div class="card">
-          <img src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt={{product.id}} style="width:100%">
-          <h1>{{product.name}}</h1>
-          <p>{{product.id}}</p>
-          <p class="price">${{product.price}}</p>
-          <p class="card-body">{{product.product_description}}</p>
-          <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
-          <p><form action="{{ url_for('wishlist.wishlist_add', product_id=product.id) }}"
-            method="POST">
-        <input type="submit" value="Add to Wishlist"/><form action="{{ url_for('wishlist.wishlist_add', product_id=1) }}"
-        method="POST">
-        <input type="submit" value="Add to Cart"/></p>
+        <div class="d-flex justify-content-between align-items-center ">
+          <div class="mt-2">
+            <div class="image">
+              <img src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" width="190">
+            </div>
+            <div class="mt-5">
+              <h4 class="main-heading mt-0">{{product.name}}</h4>
+              <p class="product-description">{{product.product_description}}</p>
+              <p class="idx">ID: {{product.id}} &emsp; ${{product.price}}</p>
+              <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
+              <p>
+              {% if current_user.is_authenticated %}
+              <br>
+              <form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}" method="POST">
+                <!--{% print id %}-->
+                <input type="submit" value="Add to Wishlist" />
+                <form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}" method="POST">
+                  <input type="submit" value="Add to Cart" /></p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
       </div>
-    {% endfor %}
-  </div>
+      {% endfor %}
+      </div>
+      </div>
 
   {% endfor %}
 
+  
 
 
 <br><br>
