@@ -6,7 +6,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 from .models.user import User
-from .models.inventory import Inventory
+from .models.inventory import Inventory, InventoryList
 from .models.ordercontents import OrderHistory
 from . import DB
 
@@ -64,6 +64,8 @@ def inventory():
         
         inventory_length = Inventory.get_inv_length(current_user.id)
         
+        inventory_list_to_add = InventoryList.generate_lst(current_user.id)
+        
         # logic for front and back buttons
         if request.method == 'POST':
             if request.form['action'] == 'next':
@@ -78,7 +80,8 @@ def inventory():
                                inventory = inventory,
                                current_page = page,
                                inventory_length = 9,
-                               page_length = per_page)
+                               page_length = per_page,
+                               lst = inventory_list_to_add)
     
     else:
         return redirect(url_for('index.index'))
@@ -126,8 +129,10 @@ def update_fulfillment(order_id):
 def new_item():
     if current_user.is_authenticated:
 
-        if Inventory.insert_new_item(product_name=request.form.get('product_name'), user_id=current_user.id, category=request.form.get('product_category'), product_description=request.form.get('product_description'), price=request.form.get('price'), quantity=request.form.get('quantity')):
-            flash('Item Quantity Updated.', 'success')
+        pid = request.form.get('product_name')
+        quant = request.form.get('quantity')
+        if Inventory.insert_new_item(user_id=current_user.id, pid=pid, quantity=quant):
+            flash(f'Item Quantity Updated. {pid}', 'success')
         else:
             flash('An error occurred', 'danger')
         return redirect(url_for('sell.inventory'))
