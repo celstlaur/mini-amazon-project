@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Recent feedbacks you posted:</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">timestamp</th>
+      <th scope="col">reviewed</th>
+      <th scope="col">review</th>
+      
+    </tr>
+  </thead>
+  <!-- TODO: if there are no recent feedbacks, print a "no feedbacks" message-->
+  <tbody>
+    {% for feedback in recent_feedbacks%}
+      <tr>
+        <th scope="row">{{feedback.timestamp}}</th>
+        <td>{{feedback.reviewed}}</td>
+        <td>{{feedback.review}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

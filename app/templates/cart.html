@@ -4,29 +4,46 @@
 
 <br><br>
 {% if current_user.is_authenticated %}
-  {% if inventory %}
-  <h2>Your Cart:</h2>
-  <table class='table table-hover table-bordered container'>
-    <thead class="thead-dark">
+{% if cart %}
+<h2>Your Cart:</h2>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Product ID</th>
+      <th scope="col">Item</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Unit Price</th>
+      <th scope="col">Total Price</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in cart%}
       <tr>
-        <th scope="col">Product ID</th>
-        <th scope="col">Quantity</th>
+        <th scope="row">{{item.product_id}}</th>
+        <th scope="row">{{item.product_name}}</th>
+        <td>{{item.quantity}}</td>
+        <td>{{item.price}}</td>
+        <td>{{item.quantity}}</td>
+        <td>
+          <a href="{{ url_for('cart.delete_item', product_id=item.product_id) }}" class="btn btn-danger">Remove</a>
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {% for item in items %}
-        <tr>
-          <th scope="row">{{ item.pid }}</th>
-          <td>{{item.quantity }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <h2>No items in cart</h2>
-  {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+<p class="total">Total: {{ cart|length }} items</p>
+{% if cart %}
+   <form action="{{ url_for('cart.place_order') }}" method="POST">
+       <p><button type="submit" class="btn btn-success">Place Order</button></p>
+   </form>
+{% endif %}
+{% else %}
+<h2>No items in cart</h2>
+{% endif %}
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
-{ % endif %}
+{% endif %}
+
 
 {% endblock %}

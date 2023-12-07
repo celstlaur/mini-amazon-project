@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- for later
+<div class="input-group mb-3">
+  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Filter By</button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Price</a></li>
+    <li><a class="dropdown-item" href="#">Category</a></li>
+    <li><a class="dropdown-item" href="#"></a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="#">Separated link</a></li>
+  </ul>
+  <input type="text" class="form-control" aria-label="Text input with dropdown button">
+</div>
+-->
+
+
+<br><br>
+
+<h2>Filtered Products:</h2>
+<form action='/products/findexpensive/' method = "GET">
+  <label for = "k">Filter By:</label><br>
+  <input type="string" placeholder = "Enter # to display" name = "k"/>
+</form>
+<form action='/products/filtercategory/' method = "GET">
+  <input type="string" placeholder = "Enter category label" name = "k"/>
+</form>
+<form action='/products/filterkeyword/' method = "GET">
+  <input type="string" placeholder = "Enter keyword" name = "k"/>
+</form>
+
+<br> <br>
+
+{% set y = filteredproducts|length %}
+{% set x = 0 %}
+
+{% for x in range(0, y, 4) %}
+    <div class="card-group">
+      {% if x + 4 < y %}
+      {% set i = x + 4 %}
+      {% else %}
+      {% set i = y %}
+      {% endif %}
+      {% for product in filteredproducts[x:i]%}
+      {% set l = product.id %}
+      <div class="card">
+          <img src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt={{product.id}} style="width:100%">
+          <h1>{{product.name}}</h1>
+          <p>{{product.id}}</p>
+          <p class="price">${{product.price}}</p>
+          <p class="card-body">{{product.product_description}}</p>
+          <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
+          <p><form action="{{ url_for('wishlist.wishlist_add', product_id=l) }}"
+            method="POST">
+        <input type="submit" value="Add to Wishlist"/>
+        <form action="{{ url_for('wishlist.wishlist_add', product_id=l) }}"
+        method="POST">
+        <form action="{{ url_for('cart.add_to_cart', product_id=l) }}" method="POST">
+          <input type="submit" value="Add to Cart"/>
+      </form>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% endfor %}
+
+{% endblock %}

@@ -3,35 +3,55 @@
 {% block content %}
 
 <br><br>
+<h1>Home</h1>
+<br>
 
-<h2>Products for sale:</h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Product ID</th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Price</th>
-      <th scope="col">Add to Wishlist</th>
-      
 
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in avail_products%}
-      <tr>
-        <th scope="row">{{product.id}}</th>
-        <td>{{product.name}}</td>
-        <td>{{product.price}}</td>
-        <td>
-          <form action="{{ url_for('wishlist.wishlist_add', product_id=product.id) }}"
-                method="POST">
-            <input type="submit" value="Add to Wishlist"/>
-          </form>
-        </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% set y = avail_products|length %}
+{% set x = 0 %}
+
+{% for x in range(0, y, 4) %}
+    <div class="card-group">
+      {% if x + 4 < y %}
+      {% set i = x + 4 %}
+      {% else %}
+      {% set i = y %}
+      {% endif %}
+      {% for product in avail_products[x:i]%}
+      {% set id = product.id %}
+      <div class="height d-flex justify-content-center align-items-center"></div>
+      <div class="card">
+        <div class="d-flex justify-content-between align-items-center ">
+          <div class="mt-2">
+            <div class="image">
+              <img src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" width="190">
+            </div>
+            <div class="mt-5">
+              <h4 class="main-heading mt-0">{{product.name}}</h4>
+              <p class="product-description">{{product.product_description}}</p>
+              <p class="idx">ID: {{product.id}} &emsp; ${{product.price}}</p>
+              <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
+              <p>
+              {% if current_user.is_authenticated %}
+              <br>
+              <form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}" method="POST">
+                <!--{% print id %}-->
+                <input type="submit" value="Add to Wishlist" />
+                <form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}" method="POST">
+                  <input type="submit" value="Add to Cart" /></p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      </div>
+      </div>
+
+  {% endfor %}
+
+  
+
 
 <br><br>
 {% if current_user.is_authenticated %}
@@ -61,14 +81,25 @@
   </table>
   {% else %}
   <h2>No purchase history</h2>
+  <!-- TODO: "Make a purchase!", [button to navigate to 'buy' page]-->
   {% endif %}
-  {% if seller_check %}
-  <p><a href="{{ url_for('index.seller') }}">Seller Page</a></p>
+  <!--   {% if seller_check %} # depreciated
+    <p>Seller Page</p>
+    {% else %}
+    <p>sign up to become a seller (WIP)</p>
+     TODO: link to sign up to become a seller -->
+  <!-- {% endif %} -->
+
+
+  {% if cart_check %}
+  <p><a href="{{ url_for('index.cart') }}">See your cart</a></p>
   {% else %}
-  <p>sign up to become a seller (WIP)</p>
+  <p>No items in your cart!</p>
   {% endif %}
+
+
 {% else %}
-<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history and / or seller information!</p>
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history, current cart, and seller information!</p>
 {% endif %}
 
 <p><a href="{{ url_for('cart.cart') }}">Cart Page</a></p>

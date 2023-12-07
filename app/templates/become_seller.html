@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Become a Seller</h1>
+{% if not current_user.is_authenticated %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
+{% else  %}
+<form action="" method="post">
+  {{ form.hidden_tag() }}
+  <!-- maybe todo: verification step -->
+  <!-- maybe todo: confirm account info -->
+  
+  <h3>Seller information:</h3>
+  <p>
+    {{ form.business_email.label }}<br/>
+    {{ form.business_email(size=32) }}<br/>
+    {% for error in form.business_email.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.business_address.label }}<br/>
+    {{ form.business_address(size=32) }}<br/>
+    {% for error in form.business_address.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <!-- maybe todo: checkbox asking "are you sure you want to become a seller?" -->
+  <p>{{ form.submit() }}</p>
+</form>
+{% endif %}
+{% endblock %}

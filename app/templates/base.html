@@ -13,54 +13,217 @@
     }
 
     .main-head {
-        height: 150px;
-        background: #FFF;
+        background: #036;
+        padding: 10px;
+        overflow-x: hidden;
+        overflow-y: hidden;
     }
 
-    .sidenav {
-        height: 100%;
-        background-color: #000;
-        overflow-x: hidden;
-        padding-top: 20px;
+    .head-container {
+      position: relative;
+        width: 90%;
+        margin: 0 auto;
+    }
+
+    .nav-tabs {
+      background-color: transparent;
+      border: none;
+      padding-left: 0;
+      margin-bottom: 10px; 
+      border-bottom: 1px solid white;
+    }
+
+    .nav-tabs .nav-item {
+      margin-right: 20px;
+    }
+
+    .nav-tabs .nav-link {
+      color: #fff;
+    }
+
+    .nav-tabs .nav-link.active {
+      font-weight: bold;
+    }
+
+    .nav-tabs .nav-link.active:hover {
+      color: #000;
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: #fff;
     }
 
     .main {
-        padding: 0px 10px;
+      padding: 0px 10px;
     }
 
+    .title {
+    color: #fff;
+    }
     .login-main-text {
-        margin-top: 20%;
-        padding: 60px;
-        color: #fff;
-    }
+      
+    color: #fff;
+    position: absolute;
+  top: 0;
+  right: 0;
+}
+section {
+color: #fff;
+text-align: center;
+}
 
-    .login-main-text h2 {
-        font-weight: 300;
-    }
+.container {
+display: table;
+width: 100%;
+}
+
+.left-half {
+background-color: #ff9e2c;
+position: absolute;
+left: 0px;
+width: 50%;
+}
+
+.right-half {
+background-color: #b6701e;
+position: absolute;
+right: 0px;
+width: 50%;
+}
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+    font-family: arial;
+  }
+  
+  .price {
+    color: grey;
+    font-size: 22px;
+  }
+  
+  .card button {
+    border: none;
+    outline: 0;
+    padding: 12px;
+    color: white;
+    background-color: #000;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+  }
+  
+  .card button:hover {
+    opacity: 0.7;
+  }
+
+  .card-container{
+    gap: 10px; /*This feature may not work for all browsers*/
+    width: 100vw; /*this is 100% percent of the screen viewable width*/
+}
+
+
+/* Adjust the alignment of the individual elements inside .login-main-text */
+.login-main-text a {
+    align-self: flex-start; /* Align the "Hello user! Logout" text to the top */
+    margin-left: 10px;
+}
+
 
     .btn-black {
-        background-color: #000 !important;
-        color: #fff;
+      background-color: #000 !important;
+      color: #fff;
     }
+    .left-aligned {
+    margin-left: 0;
+  }
+
+  .narrow-column {
+    white-space: nowrap;
+    width: 1%;
+  }
+  .history {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    white-space: nowrap;
+  }
   </style>
 </head>
 
 <body>
-  <div class="sidenav">
-    {% block msg %}
-      <h1 style="color:aliceblue">Welcome to CompSci 316 Mini Amazon!</h1>
-      <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
+  <div class="main-head">
+    <div class="head-container">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" data-url="/" href="{{ url_for('index.index') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-url="{{ url_for('account.account') }}" href="{{ url_for('account.account') }}">Account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-url="{{ url_for('buy.buy') }}" href="{{ url_for('buy.buy') }}">Buy</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-url="{{ url_for('sell.sell') }}" href="{{ url_for('sell.sell') }}">Sell</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-url="{{ url_for('cart.cart') }}" href="{{ url_for('cart.cart') }}">Cart</a>
+        </li>
+      </ul>
+      <div class="title">
+        <h1>Mini Amazon</h1>
+        <h2 style="font-weight: 300; font-size: 18px; color: #b8b6d0;">by Three Sixteam</h2>
+      </div>
+      <div class="login-main-text">
         {% if current_user.is_authenticated %}
-          Hello {{current_user.firstname}}! <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
+        Hello {{ current_user.firstname }}! 
+        <a href="{{ url_for('users.logout') }}" type="button"
+          class="btn btn-light">Log out</a>
         {% else %}
-          <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
+        <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
         {% endif %}
       </div>
-    {% endblock %}
+      </div>
+    </div>
   </div>
-  <div class="main">
+  <div class="main" style="width: 90%; margin: auto;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} flash-message">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     {% block content %}{% endblock %}
   </div>
+  <script>
+    // JavaScript to set the active tab based on the current URL
+    const currentPath = window.location.pathname;
+    const tabs = document.querySelectorAll('.nav-link');
+  
+    tabs.forEach(tab => {
+      if (tab.getAttribute('data-url') === currentPath) {
+        tab.classList.add('active');
+      }
+    });
+  </script>
+  <script>
+    // Using jQuery for simplicity, but you could use plain JavaScript as well
+    $(document).ready(function() {
+        setTimeout(function() {
+            // Slide up all elements with class 'flash-message' over 500 milliseconds
+            $(".flash-message").slideUp(500);
+        }, 3000); // Adjust time as needed
+    });
+    </script>
+  
 </body>
 
 </html>

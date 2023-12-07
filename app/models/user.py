@@ -1,5 +1,7 @@
 from flask_login import UserMixin
 from flask import current_app as app
+
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .. import login
@@ -50,13 +52,25 @@ RETURNING id
                                   password=generate_password_hash(password),
                                   firstname=firstname, lastname=lastname)
             id = rows[0][0]
+
+            current_time = datetime.utcnow()
+            app.db.execute('''
+                INSERT INTO Balance (user_id, balance_timestamp, balance)
+                VALUES (:user_id, :balance_timestamp, :balance)
+            ''',
+            user_id=id,
+            balance_timestamp=current_time,
+            balance=0)
+
+            
+            
             return User.get(id)
         except Exception as e:
             # likely email already in use; better error checking and reporting needed;
             # the following simply prints the error to the console:
             print(str(e))
             return None
-
+               
     @staticmethod
     @login.user_loader
     def get(id):
@@ -77,4 +91,49 @@ WHERE id = :id
     WHERE id = :id
     """,
                                 id=id)
+        if len(rows) != 1:
+            return False
+        return True
+    
+    
+    @staticmethod
+    def has_cart(id):
+        rows = app.db.execute("""
+    SELECT user_id
+    FROM CartContents
+    WHERE user_id = :id
+    """,
+                                id=id)
         return len(rows) > 0
+    
+    @staticmethod
+    def get_address(id):
+        rows = app.db.execute("""
+    SELECT address
+    FROM UserAddress
+    WHERE id = :id
+    """,
+                                id=id)
+        return rows
+    
+    @staticmethod
+    def num_sales(id):
+        rows = app.db.execute("""
+    SELECT order_id
+    FROM Fulfills
+    WHERE seller_id = :id
+    """,
+                                id=id)
+        return len(rows)
+
+    @staticmethod
+    def num_purchases(id):
+        rows = app.db.execute("""
+    SELECT id
+    FROM OrderFact
+    WHERE buyer_id = :id
+    """,
+                                id=id)
+        return len(rows)
+
+
