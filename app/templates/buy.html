@@ -3,31 +3,124 @@
 {% block content %}
 
 <br>
+<div class="center-container">
 <h2>Find Items</h2>
+</div>
+
 <!-- TODO: search bar -->
 <!-- TODO: advanced search -->
 <!-- TODO: trending products -->
 <!-- TODO: recommended products -->
 <!-- TODO: recently viewed -->
 
-<form action='products/findexpensive/' method = "GET">
-  <label for = "k">Filter Products:</label><br>
-  <input type="number" placeholder = "Enter # to display" name = "k"/>
-</form>
-<form action='products/filtercategory/' method = "GET">
-  <input type="string" placeholder = "Enter category label" name = "k"/>
-</form>
-<form action='products/filterkeyword/' method = "GET">
+<div class="right-column">
+  <h5> Filter By Categories </h5>
+<div class="button-container">
+  <a href="/products/filtercategory/?k=Red">
+    <button>Red</button>
+  </a>
+  <a href="/products/filtercategory/?k=Blue">
+    <button>Blue</button>
+  </a>
+  <a href="/products/filtercategory/?k=Green">
+    <button>Green</button>
+  </a>
+  <a href="/products/filtercategory/?k=Yellow">
+    <button>Yellow</button>
+  </a>
+  <a href="/products/filtercategory/?k=Purple">
+    <button>Purple</button>
+  </a>
+</div>
+</div>
+
+<div class ="right-column">
+  <h5> Filter By Description </h5>
+<form action='/products/filterkeyword/' method = "GET">
   <input type="string" placeholder = "Enter keyword" name = "k"/>
 </form>
+</div>
+
+<div class ="right-column">
+  <h5> Filter By Price </h5>
+  <div class="button-container">
+    <a href="/products/asc">
+      <button>Price Ascending</button>
+    </a>
+    <a href="/products/desc">
+      <button>Price Descending</button>
+    </a>
+
+  </div>
+<form action='/products/max/' method = "GET">
+  <input type="string" placeholder = "Maximum Price" name = "k"/>
+</form>
+<form action='/products/min/' method = "GET">
+  <input type="string" placeholder = "Minimum Price" name = "k"/>
+</form>
+
+</div>
+
+
+
 
 {% set y = avail_products|length %}
-{% set len = total_avail|length %}
+{% set len = total_avail%}
 {% set x = 0 %}
 
-<br>
+<br> <br>
+
+<div class="container"></div>
+
 {% set pages = (len / page_length) | round(0, 'ceil') | int %}
-<p> Page {{ current_page }} of {{ pages}} </p>
+
+<br>
+
+{% for x in range(0, y, 4) %}
+    <div class="card-group">
+      {% if x + 4 < y %}
+      {% set i = x + 4 %}
+      {% else %}
+      {% set i = y %}
+      {% endif %}
+      {% for product in avail_products[x:i]%}
+      {% set id = product.id%}
+      <!--{% print id %}-->
+
+      <div class="height d-flex justify-content-center align-items-center"></div>
+      <div class="card">
+        <div class="d-flex justify-content-between align-items-center ">
+          <div class="mt-2">
+            <div class="image">
+              <img src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" width="190">
+            </div>
+            <div class="mt-5">
+              <h4 class="main-heading mt-0">{{product.name}}</h4>
+              <p class="product-description">{{product.product_description}}</p>
+              <p class="idx">ID: {{product.id}} &emsp; ${{product.price}}</p>
+              <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
+              <p>
+              {% if current_user.is_authenticated %}
+              <br>
+
+              <form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}" method="POST">
+                <!--{% print id %}-->
+                <input type="submit" value="Add to Wishlist" />
+                <form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}" method="POST">
+                  <input type="submit" value="Add to Cart" /></p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      </div>
+      </div>
+
+  {% endfor %}
+
+  <div class="center-container">
+  <p> Page {{ current_page }} of {{ pages}} </p>
 
 {% if len > page_length %}
 <form action="" method="post" style="display: inline;">
@@ -45,33 +138,9 @@
 </form>
 {% endif %}
 
-{% for x in range(0, y, 4) %}
-    <div class="card-group">
-      {% if x + 4 < y %}
-      {% set i = x + 4 %}
-      {% else %}
-      {% set i = y %}
-      {% endif %}
-      {% for product in avail_products[x:i]%}
-      {% set id = product.id%}
-      <!--{% print id %}-->
-      <div class="card">
-          <img src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt={{product.id}} style="width:100%">
-          <h1>#{{product.id}} {{product.name}}</h1>
-          <p class="price">${{product.price}}</p>
-          <p class="card-body">{{product.product_description}}</p>
-          <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
-          <p><form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}"
-            method="POST">
-              <!--{% print id %}-->
-          <input type="submit" value="Add to Wishlist"/><form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}"
-          method="POST">
-          <input type="submit" value="Add to Cart"/></p>
-      </div>
-    {% endfor %}
-  </div>
+</div>
+</div>
 
-  {% endfor %}
-
+<br> <br> <br>
 
 {% endblock %}
