@@ -29,7 +29,7 @@ def cart():
 
 
 
-@bp.route('/delete_item/<int:product_id>', methods=['POST', 'DELETE'])
+@bp.route('/delete_item/<int:product_id>', methods=['POST', 'DELETE', 'Get'])
 def delete_item(product_id):
    if request.method == 'DELETE':
        item = Product.query.get_or_404(product_id)
