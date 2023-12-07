@@ -13,20 +13,14 @@ from flask import Blueprint, request
 bp = Blueprint('products', __name__)
 
 
-@bp.route('/cart/add/<int:product_id>/<int:seller_id>/<int:seller_quant>')
-def add_to_cart(product_id, seller_id, seller_quant):
+@bp.route('/cart/add_to_cart/<int:product_id>/<int:user_id>/<int:seller_quant>')
+def add_to_cart(product_id, user_id, seller_quant):
     if current_user.is_authenticated:
+        user_id = current_user.id
+        cart.add_to_cart(user_id, product_id, quantity=1)
+        return redirect(url_for('cart.cart'))
 
         # THIS NEEDS TO BE EDITED TO ACTUALLY WORK LOL
-
-        user_id = current_user.id
-
-        quantity = request.form["k"]
-
-        if quantity > seller_quant:
-            return jsonify({"Impossible to complete order"})
-
-        return render_template('cart.html', title='Cart', current_user=current_user, cart_items=cart_items, total_cost=total_cost)
 
         #FeedbackItem.add_product_feedback(user_id, product_id)
 
