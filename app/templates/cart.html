@@ -22,9 +22,13 @@
       <tr>
         <th scope="row">{{item.product_id}}</th>
         <th scope="row">{{item.product_name}}</th>
-        <td>{{item.quantity}}</td>
+        <td>
+          <a href= "{{url_for('cart.minus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">-</a>
+            <p>{{item.quantity}}</p>
+          <a href= "({url_for('cart.plus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">+</a>
+        </td>
         <td>{{item.price}}</td>
-        <td>{{item.quantity}}</td>
+        <td>{{item.price}}</td>
         <td>
           <a href="{{ url_for('cart.delete_item', product_id=item.product_id) }}" class="btn btn-danger">Remove</a>
         </td>
@@ -32,7 +36,8 @@
     {% endfor %}
   </tbody>
 </table>
-<p class="total">Total: {{ cart|length }} items</p>
+<p class="total">Total Products: {{ cart|length }}</p>
+<p class="total">Total Cost: ${{ cart|length }}</p>
 {% if cart %}
    <form action="{{ url_for('cart.place_order') }}" method="POST">
        <p><button type="submit" class="btn btn-success">Place Order</button></p>
@@ -44,6 +49,40 @@
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
 {% endif %}
-
+{% if cart_info %}
+    <p>Cart Info: {{ cart_info }}</p>
+{% else %}
+    <p>Cart Info is None or Empty</p>
+{% endif %}
 
 {% endblock %}
+
+
+{{cart_info}}
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      const quantityButtons = document.querySelectorAll('.quantity-toggle');
+
+      quantityButtons.forEach(button => {
+          button.addEventListener('click', function () {
+              const action = this.dataset.action;
+              const productId = this.dataset.productId;
+              updateQuantity(productId, action);
+          });
+      });
+
+      function updateQuantity(productId, action) {
+          // Send an AJAX request to the server to update the quantity
+          fetch(`/update_quantity/${productId}/${action}`, { method: 'POST' })
+              .then(response => response.json())
+              .then(data => {
+                  // Update the quantity displayed on the page
+                  const quantityElement = document.querySelector(`[data-product-id="${productId}"]`);
+                  quantityElement.innerText = data.newQuantity;
+              })
+              .catch(error => console.error('Error:', error));
+      }
+  });
+</script>
