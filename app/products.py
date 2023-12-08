@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import flash, render_template
 from flask import jsonify
 from flask_login import current_user
 from flask import redirect, url_for
@@ -8,31 +8,32 @@ from .models.product import Product
 from .models.orderfact import OrderFact
 from .models.inventory import Inventory
 from .models.seller import Seller
+from .models.carts import Cart
+from .models.cart import CartContents
 
 from flask import Blueprint, request
 bp = Blueprint('products', __name__)
 
 
-@bp.route('/cart/add/<int:product_id>/<int:seller_id>/<int:seller_quant>')
+@bp.route('/cart/add_to_cart/<int:product_id>/<int:seller_id>/<int:seller_quant>', methods = {"GET", "POST"})
 def add_to_cart(product_id, seller_id, seller_quant):
     if current_user.is_authenticated:
-
-        # THIS NEEDS TO BE EDITED TO ACTUALLY WORK LOL
-
         user_id = current_user.id
 
         quantity = request.form["k"]
 
-        if quantity > seller_quant:
-            return jsonify({"Impossible to complete order"})
+        if int(quantity) > int(seller_quant):
+            string = "Seller " + str(seller_id) + " does not have that amount of product in stock."
+            flash(string)
+            return redirect(url_for('products.getprodpage', product = product_id))
+            
 
-        return render_template('cart.html', title='Cart', current_user=current_user, cart_items=cart_items, total_cost=total_cost)
 
-        #FeedbackItem.add_product_feedback(user_id, product_id)
 
-        #return jsonify([feedback.__dict__ for feedback in feedbacks])
-        
-        #return render_template('recent_feedbacks.html', recent_feedbacks = feedbacks)
+        CartContents.add_to_cart(user_id, product_id, quantity, seller_id)
+        return redirect(url_for('cart.cart'))
+
+
     
     else:
         return jsonify({}), 404
