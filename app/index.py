@@ -48,13 +48,5 @@ def index():
 #        return render_template('seller.html', inventory=inventory)
 #    else:
 #        return redirect(url_for('index.index'))
-    
-    
-@bp.route('/cart')
-def cart():
-    if current_user.is_authenticated:
-        cart = Cart.users_cart(current_user.id)
-        return render_template('cart.html', cart=cart)
-    else:
-        return redirect(url_for('index.index'))
+
     

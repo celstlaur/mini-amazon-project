@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from flask import jsonify
 
 
 from .models.user import User
@@ -25,10 +26,9 @@ def cart():
         return jsonify({}), 404
 
     user_id = current_user.id
-    print("a")
     cart_info = CartContents.get_cart(user_id)
 
-    return render_template('cart.html', cart_info=cart_info)
+    return render_template('cart.html', cart=cart_info)
     
     #cart_items = Cart.get_cart_items_with_info(user_id)
     #return render_template('cart.html', items=cart_items)
