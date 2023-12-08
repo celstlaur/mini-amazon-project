@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Update your review</h2>
+
+
+<form action="{{ url_for('recent_feedback.edit_feedback', product_id=product.id)}}" method="post">
+
+    <label for="edit">Your Review:</label>
+    <textarea id="edit" name="edit" required></textarea><br>
+
+    <input type="submit" value="Edit Review">
+</form>
+
+
+{% endblock %}

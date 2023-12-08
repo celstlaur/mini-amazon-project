@@ -1,24 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Recent feedbacks you posted:</h2>
+  <!-- <h2>Recent reviews you posted:</h2>-->
 <table class='table table-hover table-bordered container'>
   <thead class="thead-dark">
     <tr>
       <th scope="col">timestamp</th>
       <th scope="col">reviewed</th>
       <th scope="col">review</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
       
     </tr>
   </thead>
   <!-- TODO: if there are no recent feedbacks, print a "no feedbacks" message-->
   <tbody>
-    {% for feedback in recent_feedbacks%}
-      <tr>
-        <th scope="row">{{feedback.timestamp}}</th>
-        <td>{{feedback.reviewed}}</td>
-        <td>{{feedback.review}}</td>
-      </tr>
+    {% for feedback in recent_feedbacks %}
+        <tr>
+            <th scope="row">{{ feedback.timestamp }}</th>
+            <td>{{ feedback.reviewed }}</td>
+            <td>{{ feedback.review }}</td>
+            <td><p><a href="{{ url_for('recent_feedback.submit_edits', product_id=feedback.reviewed_id)}}">edit this review</a></p></td>
+            <td>
+                <form action="{{ url_for('recent_feedback.delete_feedback', product_id=feedback.reviewed_id, review=feedback.review, type=feedback.reviewed_type) }}"
+                      method="POST">
+                    <input type="submit" value="delete this review"/>
+                </form>
+            </td>
+        </tr>
     {% endfor %}
   </tbody>
 </table>
