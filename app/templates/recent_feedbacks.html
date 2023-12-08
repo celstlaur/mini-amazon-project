@@ -13,14 +13,14 @@
       
     </tr>
   </thead>
-  <!-- TODO: if there are no recent feedbacks, print a "no feedbacks" message-->
   <tbody>
     {% for feedback in recent_feedbacks %}
         <tr>
             <th scope="row">{{ feedback.timestamp }}</th>
             <td>{{ feedback.reviewed }}</td>
             <td>{{ feedback.review }}</td>
-            <td><p><a href="{{ url_for('recent_feedback.submit_edits', product_id=feedback.reviewed_id)}}">edit this review</a></p></td>
+            <td>{% if feedback.reviewed_type == "Product" %}<p><a href="{{ url_for('recent_feedback.submit_edits', product_id=feedback.reviewed_id)}}">update this review</a></p>{% else %}
+              <p><a href="{{ url_for('recent_feedback.submit_SELLERedits', seller_id=feedback.reviewed_id)}}">update this review</a></p>{% endif %}</td>
             <td>
                 <form action="{{ url_for('recent_feedback.delete_feedback', product_id=feedback.reviewed_id, review=feedback.review, type=feedback.reviewed_type) }}"
                       method="POST">
