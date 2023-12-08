@@ -105,3 +105,15 @@ ORDER BY balance_timestamp DESC
         user_id=user_id,
         balance_timestamp=current_time,
         balance=new_balance)
+
+    @staticmethod
+    def first_balance_date(user_id):
+        date = app.db.execute('''
+        SELECT balance_timestamp
+        FROM Balance
+        WHERE user_id = :user_id
+        ORDER BY balance_timestamp DESC 
+        LIMIT 1
+        ''',
+        user_id=user_id)
+        return date[0][0].year

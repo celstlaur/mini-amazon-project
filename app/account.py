@@ -41,9 +41,10 @@ def account():
 
 @bp.route('/public_profile')
 def public_profile():
+    year_joined = Balance.first_balance_date(current_user.id)
     num_purchases = User.num_purchases(current_user.id)
     num_sales = User.num_sales(current_user.id)
-    return render_template('public_profile.html', title='Profile', current_user=current_user, num_sales=num_sales, num_purchases=num_purchases,
+    return render_template('public_profile.html', title='Profile', current_user=current_user, year_joined=year_joined,num_sales=num_sales, num_purchases=num_purchases,
                            seller_check=current_user.is_seller(current_user.id))
 
 
