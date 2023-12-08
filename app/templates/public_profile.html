@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!--maybe todo: option to return to main account page-->
 <br><br>
+<p><a href="{{ url_for('account.account') }}">Return to Account Page</a></p>
+
 <h1>Public Profile</h1>
 {% if not current_user.is_authenticated %}
     <p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
 {% else %}
+
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
     </div>
@@ -26,6 +28,7 @@
         <strong>Email: </strong>{{ seller_email }}
         <br>
         <strong>Address: </strong>{{ seller_address }}
+        <!-- TODO: integrate with reviews-->
     {% else %}
         Buyer
     {% endif %}
