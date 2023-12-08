@@ -1,11 +1,17 @@
 from flask import current_app as app
-from flask_login import current_user
-from .inventory import Inventory
+from flask_sqlalchemy import SQLAlchemy
+import datetime
+
+
+db = SQLAlchemy()
 
 
 class Product:
+   '''id = db.Column(db.Integer, primary_key=True)
+   name = db.Column(db.String(255), nullable=False)
+   price = db.Column(db.Float, nullable=False)
+   cart_items = db.relationship('Cart', backref='product', lazy=True)'''
    def __init__(self, user_id, product_id, product_name, seller_id, quantity, price):
-       self.id = id
        self.user_id = user_id
        self.product_id = product_id
        self.product_name = product_name
@@ -15,6 +21,10 @@ class Product:
 
 
 class Order:
+   '''id = db.Column(db.Integer, primary_key=True)
+   name = db.Column(db.String(255), nullable=False)
+   price = db.Column(db.Float, nullable=False)
+   cart_items = db.relationship('Cart', backref='product', lazy=True)'''
    def __init__(self, user_id, product_id, seller_id, quantity):
        self.user_id = user_id
        self.product_id = product_id
@@ -24,6 +34,15 @@ class Order:
 
 
 class Cart:
+   '''id = db.Column(db.Integer, primary_key=True)
+   user_id = db.Column(db.Integer, nullable=False)
+   product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+   seller_id = db.Column(db.Integer, nullable=False)
+   quantity = db.Column(db.Integer, nullable=False)
+  
+   product = db.relationship('Product', backref='cart_items')'''
+
+
    def __init__(self, user_id, product_id, seller_id, quantity):
        self.user_id = user_id
        self.product_id = product_id
@@ -31,90 +50,14 @@ class Cart:
        self.quantity = quantity
       
    
-   @staticmethod
-   def users_cart(user_id):
-     
-       rows = app.db.execute('''
-   SELECT user_id, product_id, seller_id, quantity
-   FROM CartContents
-   WHERE user_id = :user_id
-   ''',
-                             user_id=user_id)
-       return [Cart(*row) for row in rows] if rows else None
-
-
-
-   @staticmethod
-   def get_all():
-        rows = app.db.execute('''
-        SELECT id, product_id, name, seller_id, quantity, price
-        FROM Products
-        ''')
-        return [Product(*row) for row in rows]
-
-
-   @staticmethod
-   def decrease_quantity(user_id, product_id, quantity):
-       app.db.execute('''
-       UPDATE CartContents SET quantity=:quantity
-       WHERE user_id=:user_id AND product_id=:product_id''',
-       user_id=user_id, product_id=product_id, quantity=quantity-1)
-       return
-
-   @staticmethod
-   def increase_quantity(user_id, product_id, quantity):
-       app.db.execute('''
-       UPDATE CartContents SET quantity=:quantity
-       WHERE user_id=:user_id AND product_id=:product_id''',
-       user_id=user_id, product_id=product_id, quantity=quantity+1)
-       return
-
-   @staticmethod
-   def add_to_cart(user_id, product_id, quantity, seller_id):
-        try:
-            rows = app.db.execute("""
-INSERT INTO CartContents(user_id, product_id, seller_id, quantity)
-VALUES(:user_id, :product_id, :seller_id, :quantity)
-""",
-                                  user_id=user_id,
-                                  product_id=product_id,
-                                  seller_id = seller_id,
-                                  quantity = quantity)
-            return True
-        except Exception as e:
-            print(str(e))
-            return None
-
-   @staticmethod
-   def remove_from_cart(user_id, product_id):
-        Cart.cart_items = [[item] for item in Cart.cart_items if not (item['user_id'] == user_id and item['product'].id == product_id)]
-        '''user_cart = Cart.users_cart(user_id)
-        item_index_to_remove = None
-        for i, item in enumerate(user_cart):
-            if item.product_id == product_id:
-                item_index_to_remove = i
-                break
-        if item_index_to_remove is not None:
-            del user_cart[item_index_to_remove]
-        return user_cart'''
-        return Cart.cart_items
-
-   @staticmethod
-   def update_cart_quantity(user_id, product_id, new_quantity):
-        try:
-            rows = app.db.execute("""
-                UPDATE Cart
-                SET quantity = :new_quantity
-                WHERE user_id = :user_id AND product_id = :product_id
-            """, new_quantity=new_quantity, user_id=user_id, product_id=product_id)
-
-            return True
-        except Exception as e:
-            print(str(e))
-            return None
-
    def create_order(self):
         try:
+            '''id = db.Column(db.Integer, primary_key=True)
+            user_id = db.Column(db.Integer, nullable=False)
+            product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+            seller_id = db.Column(db.Integer, nullable=False)
+            quantity = db.Column(db.Integer, nullable=False)'''
+
             current_time = datetime.datetime.now()
             #order = Order(user_id=self.user_id, time_created=current_time)
             order = Order(user_id=self.user_id, product_id=self.product_id, seller_id=self.seller_id, quantity=self.quantity, time_created=current_time)
@@ -136,24 +79,42 @@ VALUES(:user_id, :product_id, :seller_id, :quantity)
             print(str(e))
             db.session.rollback()
             return None
+   
+   @staticmethod
+   def users_cart(user_id):
+     
+       rows = app.db.execute('''
+   SELECT user_id, product_id, seller_id, quantity
+   FROM CartContents
+   WHERE user_id = :user_id
+   ''',
+                             user_id=user_id)
+       return [Cart(*row) for row in rows] if rows else None
 
 
-class CartContents:
-   def __init__(self, product_id, product_name, quantity, price):
-       self.product_id = product_id
-       self.product_name = product_name
-       self.quantity = quantity
-       self.price = price
+   def get_cart(user_id):
+       rows = app.db.execute("""
+SELECT user_id, product_id, seller_id, quantity
+FROM CartContents
+WHERE user_id = :user_id
+            """, user_id=user_id)
+       return CartContents(*(rows[0])) if rows else None
+
 
    @staticmethod
-   def get_cart(user_id):
-        print("a")
-        rows = app.db.execute('''
-            SELECT c.product_id, p.name as product_name, c.quantity, p.price
-            FROM CartContents c
-            LEFT JOIN Products p ON p.id = c.product_id
-            WHERE c.user_id = user_id
-        ''', user_id=user_id)
-        for row in rows:
-            print(row[id])
-        return [CartContents(*row) for row in rows] if rows else None
+   def add_to_cart(user_id, product_id, quantity):
+        try:
+            current_time = datetime.datetime.now()
+            rows = app.db.execute("""
+INSERT INTO CartContents(user_id, product_id, seller_id, quantity)
+VALUES(:user_id, :product_id, :seller_id, :time_added)
+RETURNING id
+""",
+                                  user_id=user_id,
+                                  product_id=product_id,
+                                  time_added=current_time)
+            id = rows[0][0]
+            return Cart.get(user_id)
+        except Exception as e:
+            print(str(e))
+            return None

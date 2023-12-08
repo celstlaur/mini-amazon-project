@@ -9,7 +9,7 @@ from .models.orderfact import OrderFact
 from .models.inventory import Inventory
 from .models.seller import Seller
 from .models.carts import Cart
-#from .models.cart import CartContents
+from .models.cart import CartContents
 
 from flask import Blueprint, request
 bp = Blueprint('products', __name__)
@@ -30,7 +30,7 @@ def add_to_cart(product_id, seller_id, seller_quant):
 
 
 
-        Cart.add_to_cart(user_id, product_id, quantity, seller_id)
+        CartContents.add_to_cart(user_id, product_id, quantity, seller_id)
         return redirect(url_for('cart.cart'))
 
 

@@ -30,8 +30,6 @@ def orders():
 
 @bp.route('/place_order', methods=['POST'])
 def place_order():
-    user_id = current_user.id
-    #ADD CHECK FOR SUFFICIENT FUNDS
     # Get the current user's cart items
     cart_items = Product.query.filter_by(user_id=current_user.id).all()
 
