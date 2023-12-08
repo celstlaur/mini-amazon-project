@@ -245,32 +245,63 @@
 
 
 <h2>Activity</h2><hr><br>
-<!-- maybe todo: transaction history -->
+
 <!-- maybe todo: visualize history of balances, spending amounts, purchases by category -->     
+
+<!------------------------------------------------------------------------->
+<!--                         TRANSACTION HISTORY                         -->
+<a name="paginationAnchorTRANSACTION"></a>
 <div class="history">
   <h3>Transaction History:</h3>
+  {% if transaction_history %}
   <table class='table table-hover table-bordered container'>
     <thead class="thead-dark">
       <tr>
         <th scope="col">Time of Transaction</th>
-        <th scope="col">Transaction Type</th>
-        <th scope="col">Amount</th>
         <th scope="col">Resulting Balance</th>
       </tr>
     </thead>
     <tbody>
-      <!-- for this user's balances in balances -->
+      {% for transaction in transaction_history %}
         <tr>
-          <th scope="row">[timestamp]</th>
-          <td>[deposit, withdrawal, purchase, or sale]</td>
-          <td>[change since last balance]</td>
-          <td>[balance]</td>
+          <th scope="row">{{transaction.balance_timestamp}}</th>
+          
+          <td>{{"%.2f"|format(transaction.balance)}}</td>
+          
         </tr>
+      {% endfor %}
+      
     </tbody>
   </table>
+
+  <div id="pagination">
+    {% if current_balance_page > 1 %}
+    <a href="{{ url_for('account.account', page=current_balance_page-1) }}#paginationAnchorTRANSACTION">Previous</a>
+    {% endif %}
+
+    <!-- Add more links for other pages as needed -->
+
+    {% if current_balance_page < total_pages %}
+    <a href="{{ url_for('account.account', page=current_balance_page+1) }}#paginationAnchorTRANSACTION">Next</a>
+    {% endif %}
+
+  {% else %}
+    <tr>No past purchases</tr>
+  {% endif %}
+  </div>
 </div>
+
 <br>
-<!-- TODO: pagination -->
+<br>
+<br>
+
+
+
+
+
+
+<!------------------------------------------------------------------------->
+
 <!-- maybe todo: sort purchase history by item, seller, date, etc -->
 <a name="paginationAnchor"></a>
 <div class="history">
@@ -305,21 +336,19 @@
   </table>
 
   <div id="pagination">
-    {% if current_page > 1 %}
-    <a href="{{ url_for('account.account', page=current_page-1) }}#paginationAnchor">Previous</a>
+    {% if current_purchase_page > 1 %}
+    <a href="{{ url_for('account.account', page=current_purchase_page-1) }}#paginationAnchor">Previous</a>
     {% endif %}
 
     <!-- Add more links for other pages as needed -->
 
-    {% if current_page < total_pages %}
-    <a href="{{ url_for('account.account', page=current_page+1) }}#paginationAnchor">Next</a>
+    {% if current_purchase_page < total_pages %}
+    <a href="{{ url_for('account.account', page=current_purchase_page+1) }}#paginationAnchor">Next</a>
     {% endif %}
 
-    {% else %}
-      <tr>No past purchases.</tr>
-    {% endif %}
-
-    
+  {% else %}
+    <tr>No past purchases.</tr>
+  {% endif %}
   </div>
 </div>
 

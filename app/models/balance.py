@@ -54,6 +54,41 @@ ORDER BY balance_timestamp DESC
                               user_id=user_id)
         return [Balance(*row) for row in rows]
     
+
+    @staticmethod
+    def get_paged_balance(user_id, page, per_page):
+        offset = (page - 1) * per_page
+
+        # Query to count the total number of balances for pagination
+        total_count_query = '''
+        SELECT COUNT(*)
+        FROM Balance
+        WHERE user_id = :user_id
+        '''
+        total_count = app.db.execute(total_count_query, user_id=user_id)
+        total_count = total_count[0][0] if total_count else 0
+
+        # Calculating the total number of pages
+        total_pages = (total_count + per_page - 1) // per_page
+
+        # Query to fetch specific range of orders
+        transactions_query = '''
+        SELECT user_id, balance_timestamp, balance
+        FROM Balance
+        WHERE user_id = :user_id
+        ORDER BY balance_timestamp DESC
+        LIMIT :limit OFFSET :offset
+        '''
+        transactions = app.db.execute(transactions_query, user_id=user_id, limit=per_page, offset=offset)
+
+        # Convert rows to OrderFact objects if necessary
+        # Assuming OrderFact is a class that can be instantiated with a row
+        transactions = [Balance(*row) for row in transactions] if transactions else []
+
+        return transactions, total_pages
+
+
+
     @staticmethod
     def calculate_new_balance(user_id, amount):
         latest_balance = Balance.current_balance(user_id)
