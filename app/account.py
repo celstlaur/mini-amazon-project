@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models.user import User
 from .models.balance import Balance
 from .models.orderfact import OrderFact
+from .models.seller import Seller
 from . import DB
 
 
@@ -19,14 +20,16 @@ bp = Blueprint('account', __name__)
 def account():
     balance_page = request.args.get('page', 1, type=int)
     purchase_page = request.args.get('page', 1, type=int)
-    per_page = 10 
+    per_page = 10
+    
     if current_user.is_authenticated:
         balance = Balance.current_balance(current_user.id)
-        transactions, total_pages = Balance.get_paged_balance(current_user.id, balance_page, per_page)
         full_address = User.get_address(current_user.id)
         address = full_address[0][0] if full_address else None
+        transactions, total_pages = Balance.get_paged_balance(current_user.id, balance_page, per_page)
         purchases, total_pages = OrderFact.get_paged_orders(current_user.id, purchase_page, per_page)
         seller_check = current_user.is_seller(current_user.id)
+        
     else:
         balance=None
         address = None
@@ -34,9 +37,10 @@ def account():
         transactions = None
         total_pages=0
         seller_check = False
-    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases, 
-                           transaction_history=transactions, total_pages=total_pages, current_balance_page=balance_page,
-                           current_purchase_page=purchase_page,
+    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, 
+                           transaction_history=transactions, purchase_history=purchases,
+                           total_pages=total_pages, 
+                           current_balance_page=balance_page, current_purchase_page=purchase_page, 
                            seller_check=seller_check)
 
 @bp.route('/public_profile')
@@ -44,8 +48,15 @@ def public_profile():
     year_joined = Balance.first_balance_date(current_user.id)
     num_purchases = User.num_purchases(current_user.id)
     num_sales = User.num_sales(current_user.id)
+    if current_user.is_seller(current_user.id):
+        seller_email=Seller.seller_details(current_user.id)[0].business_email
+        seller_address=Seller.seller_details(current_user.id)[0].business_address
+    else: 
+        seller_email=None
+        seller_address=None
+
     return render_template('public_profile.html', title='Profile', current_user=current_user, year_joined=year_joined,num_sales=num_sales, num_purchases=num_purchases,
-                           seller_check=current_user.is_seller(current_user.id))
+                           seller_check=current_user.is_seller(current_user.id), seller_email=seller_email, seller_address=seller_address)
 
 
 @bp.route('/edit_name', methods=['POST'])

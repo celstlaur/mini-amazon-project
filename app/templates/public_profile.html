@@ -5,20 +5,29 @@
 <br><br>
 <h1>Public Profile</h1>
 {% if not current_user.is_authenticated %}
-<p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
+    <p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
 {% else %}
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
-</div>
-<hr>
-<strong>Year Joined: </strong> {{ year_joined }}
-<br>
-<strong>Total Purchases: </strong>{{ num_purchases }}
-<br>
-{% if seller_check %}
-    <strong>Total Sales: </strong>{{ num_sales }}
-    <!-- TODO: section with all reviews for this seller -->
-{% endif %}
-
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
+    </div>
+    <hr>
+    <strong>Year Joined: </strong> {{ year_joined }}
+    <br>
+    <strong>Total Purchases: </strong>{{ num_purchases }}
+    <br>
+    <strong>Account Type: </strong>
+    {% if seller_check %}
+        Seller
+        <br><br><br>
+        <h5>Seller Profile</h5>
+        <hr>
+        <strong>Total Sales: </strong>{{ num_sales }}
+        <br>
+        <strong>Email: </strong>{{ seller_email }}
+        <br>
+        <strong>Address: </strong>{{ seller_address }}
+    {% else %}
+        Buyer
+    {% endif %}
 {% endif %}
 {% endblock %}

@@ -47,6 +47,7 @@ class Order:
         return [order for order in Order.orders if order.user_id == user_id]
         #return Order.query.filter_by(user_id=user_id).order_by(Order.time_placed.desc()).all()
 
+
 class OrderItem:
     '''id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
@@ -60,3 +61,6 @@ class OrderItem:
         self.order_id = order_id
         self.product_id = product_id
         self.quantity = quantity
+
+
+    
