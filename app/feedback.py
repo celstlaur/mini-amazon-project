@@ -6,6 +6,7 @@ import datetime
 from .models.feedbackitem import FeedbackItem
 from .models.product import Product
 from .models.seller import Seller
+from .models.transaction import Transaction
 
 from flask import Blueprint
 bp = Blueprint('recent_feedback', __name__)
@@ -30,6 +31,24 @@ def error():
     if current_user.is_authenticated:
                 
         return render_template('reviewerror.html')
+    
+    else:
+        return jsonify({}), 404
+
+@bp.route('/feedback_errorSELLER')
+def errorSELLER():
+    if current_user.is_authenticated:
+                
+        return render_template('reviewerrorSELLER.html')
+    
+    else:
+        return jsonify({}), 404
+
+@bp.route('/order_error')
+def ordererror():
+    if current_user.is_authenticated:
+                
+        return render_template('ordererror.html')
     
     else:
         return jsonify({}), 404
@@ -59,7 +78,7 @@ def submit_SELLERfeedback(seller_id):
 
         user_id = current_user.id
 
-        seller = Seller.seller_details(seller_id)
+        seller = Seller.seller_details(seller_id)[0]
 
         #return jsonify({seller})
 
@@ -140,7 +159,12 @@ def add_SELLERfeedback(seller_id):
         # RETURN ERROR IF REVIEW HAS ALREADY BEEN MADE
         current_reviews = FeedbackItem.get_seller_reviews(current_user.id, seller_id)
         if current_reviews is not None:
-            return redirect(url_for('recent_feedback.error'))
+            return redirect(url_for('recent_feedback.errorSELLER'))
+        
+        # RETURN ERROR IF CURRENT USER HAS NOT ORDERED FROM SELLER
+        orders = Transaction.transactions(current_user.id)
+        if orders is None:
+            return redirect(url_for('recent_feedback.ordererror'))
 
         user_id = current_user.id
         review_text = request.form["seller_review"]

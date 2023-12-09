@@ -126,12 +126,15 @@ class FeedbackItem:
     @staticmethod
     def edit_product_feedback(uid, pid, newReview):
         try:
+            current_time = datetime.datetime.now()
             rows = app.db.execute("""UPDATE ReviewedProduct
-                                SET review = :newReview
+                                SET review = :newReview,
+                                    time_reviewed_product = :time_reviewed_product
                                 WHERE user_id = :uid AND product_id = :pid""",
                                   uid=uid,
                                   pid=pid,
-                                  newReview=newReview)
+                                  newReview=newReview,
+                                  time_reviewed_product=current_time)
             #id = rows[0][0]
             #return FeedbackItem.get_all(id)
             return True
@@ -142,12 +145,15 @@ class FeedbackItem:
     @staticmethod
     def edit_seller_feedback(uid, sid, newReview):
         try:
+            current_time = datetime.datetime.now()
             rows = app.db.execute("""UPDATE ReviewedSeller
-                                SET review = :newReview
+                                SET review = :newReview,
+                                    time_reviewed_seller = :time_reviewed_seller
                                 WHERE user_id = :uid AND seller_id = :sid""",
                                   uid=uid,
                                   sid=sid,
-                                  newReview=newReview)
+                                  newReview=newReview,
+                                  time_reviewed_seller=current_time)
             #id = rows[0][0]
             #return FeedbackItem.get_all(id)
             return True
