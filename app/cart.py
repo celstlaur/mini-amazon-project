@@ -29,9 +29,10 @@ def cart():
     cart_info = CartContents.get_cart(user_id)
 
     total_cost = CartContents.calculate_total_cost(cart_info)
+    total_products = CartContents.calculate_total_products(cart_info)
 
 
-    return render_template('cart.html', cart=cart_info, total_cost=total_cost)
+    return render_template('cart.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
     
     #cart_items = Cart.get_cart_items_with_info(user_id)
     #return render_template('cart.html', items=cart_items)

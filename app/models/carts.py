@@ -144,6 +144,10 @@ class CartContents:
    def calculate_total_cost(cart):
        total_cost = sum(item.price * item.quantity for item in cart)
        return total_cost
+    
+   def calculate_total_products(cart):
+       total_products = sum(item.quantity for item in cart)
+       return total_products
 
    @staticmethod
    def decrease_quantity(user_id, product_id, quantity):

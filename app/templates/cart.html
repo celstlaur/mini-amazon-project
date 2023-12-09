@@ -37,7 +37,7 @@
     {% endfor %}
   </tbody>
 </table>
-<p class="total">{{ cart|length }} unique products</p>
+<p class="total">Items in Cart: {{ total_products }} items</p>
 <p class="total">Total Cost: ${{ total_cost }}</p>
 {% if cart %}
    <form action="{{ url_for('cart.place_order') }}" method="POST">
