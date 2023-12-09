@@ -48,3 +48,4 @@ WHERE id = :id
         orders = [OrderFact(*row) for row in orders] if orders else []
 
         return orders, total_pages
+    
