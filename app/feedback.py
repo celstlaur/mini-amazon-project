@@ -321,3 +321,26 @@ def delete_feedback(product_id, review, type):
     
     else:
         return jsonify({}), 404
+    
+@bp.route('/recent_feedback/sellerfeedpage/<int:seller_id>',  methods=['GET', 'POST'])
+def get_seller_feedback_page(seller_id):
+    if current_user.is_authenticated:
+
+        user_id = current_user.id
+
+        seller = Seller.seller_details(seller_id)[0]
+
+        seller_reviews = (Product.get_seller_reviews(seller.user_id))
+        avg_star_ratingSELLER = (Product.get_seller_avgstars(seller.user_id))
+        num_ratingsSELLER = (Product.get_num_seller_ratings(seller.user_id))
+
+        return render_template('seller_reviews_sorted.html', seller=seller, seller_reviews = seller_reviews, avg_star_ratingSELLER = avg_star_ratingSELLER, num_ratingsSELLER = num_ratingsSELLER )
+
+        #FeedbackItem.add_product_feedback(user_id, product_id)
+
+        #return jsonify([feedback.__dict__ for feedback in feedbacks])
+        
+        #return render_template('recent_feedbacks.html', recent_feedbacks = feedbacks)
+    
+    else:
+        return jsonify({}), 404

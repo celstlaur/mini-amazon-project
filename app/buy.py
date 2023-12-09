@@ -32,6 +32,7 @@ def buy():
             page -= 1
 
         return redirect(url_for('buy.buy', page = page))
+    
         
 
     len = Product.get_len_prods()
