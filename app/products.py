@@ -177,58 +177,69 @@ def filter():
             if stars != "-1":
                 if keyword:
                     adv_filt = Product.get_filtered(cat, keyword, stars, per_page, offset, minp, maxp)
+                    len = Product.get_filtered_len(cat, keyword, stars, minp, maxp)
                 else:
                     adv_filt = Product.get_catstars(cat, stars, per_page, offset, minp, maxp)
+                    len = Product.get_catstars_len(cat, stars, minp, maxp)
 
             else:
                 if keyword:
                     adv_filt = Product.get_catkey(cat, keyword, per_page, offset, minp, maxp)
+                    len = Product.get_catkey_len(cat, keyword, minp, maxp)
                 else:
                     adv_filt = Product.get_catfilter(cat, per_page, offset, minp, maxp)
+                    len = Product.get_catfilter_len(cat, minp, maxp)
         else:
             if stars != "-1":
                 if keyword:
                     adv_filt = Product.get_keystars(keyword, stars, per_page, offset, minp, maxp)
+                    len = Product.get_keystars_len(keyword, stars, minp, maxp)
                 else:
                     adv_filt = Product.get_starsfilter(stars, per_page, offset, minp, maxp)
+                    len = Product.get_starsfilter_len(stars, minp, maxp)
 
             else:
                 if keyword:
                     adv_filt = Product.get_keyfiltered(keyword, per_page, offset, minp, maxp)
+                    len = Product.get_keyfiltered_len(keyword, minp, maxp)
                 else:
                     adv_filt = Product.get_minmax(per_page, offset, minp, maxp)  
-                    if adv_filt == []:
-                        return jsonify({})   
+                    len = Product.get_minmax_len(minp, maxp)  
+ 
     else:
         if cat:
             if stars != "-1":
                 if keyword:
                     adv_filt = Product.get_filtered_desc(cat, keyword, stars, per_page, offset, minp, maxp)
+                    len = Product.get_filtered_len(cat, keyword, stars, minp, maxp)
                 else:
                     adv_filt = Product.get_catstars_desc(cat, stars, per_page, offset, minp, maxp)
+                    len = Product.get_catstars_len(cat, stars, minp, maxp)
 
             else:
                 if keyword:
                     adv_filt = Product.get_catkey_desc(cat, keyword, per_page, offset, minp, maxp)
+                    len = Product.get_catkey_len(cat, keyword, minp, maxp)
                 else:
                     adv_filt = Product.get_catfilter_desc(cat, per_page, offset, minp, maxp)
+                    len = Product.get_catfilter_len(cat, minp, maxp)
         else:
             if stars != "-1":
                 if keyword:
                     adv_filt = Product.get_keystars_desc(keyword,stars, per_page, offset, minp, maxp)
+                    len = Product.get_keystars_len(keyword, stars, minp, maxp)
                 else:
                     adv_filt = Product.get_starsfilter_desc(stars, per_page, offset, minp, maxp)
+                    len = Product.get_starsfilter_len(stars, minp, maxp)
 
             else:
                 if keyword:
                     adv_filt = Product.get_keyfiltered_desc(keyword, per_page, offset, minp, maxp)
+                    len = Product.get_keyfiltered_len(keyword, minp, maxp)
                 else:
                     adv_filt = Product.get_minmax_desc(per_page, offset, minp, maxp) 
-                    if adv_filt == []:
-                        return jsonify({})  
-     
-
-    len = Product.get_len_prods()
+                    len = Product.get_minmax_len(minp, maxp) 
+       
 
         
     # logic for front and back buttons
@@ -238,7 +249,7 @@ def filter():
         elif request.form['action'] == 'prev':
             page -= 1
         
-        return redirect(url_for('products.filter', page = page, keyword = keyword, cat = cat, minp = minp, maxp = maxp, checkbox = checkbox))
+        return redirect(url_for('products.filter', page = page, editSTARS = stars, keyword = keyword, cat = cat, maxp = maxp, minp = minp, checkbox = checkbox))
 
     # render the page by adding information to the index.html file
     if current_user.is_authenticated:
