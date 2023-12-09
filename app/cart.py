@@ -36,6 +36,8 @@ def cart():
         total_cost = 0
         total_products = 0
 
+    #t_cost = sum([item.product_price * item.quantity for item in cart_info]) if len(cart_info) > 0 else 0
+
 
     return render_template('cart.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
 
@@ -132,7 +134,7 @@ def place_order():
             '''amount = Decimal(total_cost)
             new_balance = Balance.calculate_new_balance(user_id, -amount)
             Balance.insert_new_balance(user_id, new_balance)'''
-            return render_template('orders.html', orders=cart_info, total_cost=total_cost, total_products=total_products)
+            return render_template('orders.html', orders=order_info, total_cost=total_cost, total_products=total_products)
         else:
             flash('Failed to place the order. Please try again later.', 'danger')
             return redirect(url_for('cart.cart'))
