@@ -147,6 +147,8 @@ def filter():
     per_page = 12
     offset = (page - 1) * per_page
 
+
+    stars = request.args.get('stars')
     keyword = request.args.get('keyword')
     cat = request.args.get('cat')
     maxp = request.args.get('maxp')
@@ -155,16 +157,59 @@ def filter():
 
 
 
-
-
     # finds order history, number of rows in order history
     if checkbox == 'asc':
-        
-        adv_filt = Product.get_adv_filter_asc(cat, keyword, minp, maxp, per_page, offset)
-    else:
-        adv_filt = Product.get_adv_filter_desc(cat, keyword, minp, maxp, per_page, offset)
+        if cat:
+            if stars:
+                if keyword:
+                    adv_filt = Product.get_filtered(cat, keyword, minp, maxp, stars, per_page, offset)
+                else:
+                    adv_filt = Product.get_catstars(cat, minp, maxp, stars, per_page, offset)
 
-    len = Product.get_adv_filter_len(cat, keyword, minp, maxp)
+            else:
+                if keyword:
+                    adv_filt = Product.get_catkey(cat, keyword, minp, maxp, per_page, offset)
+                else:
+                    adv_filt = Product.get_catfilter(cat, minp, maxp, per_page, offset)
+        else:
+            if stars:
+                if keyword:
+                    adv_filt = Product.get_keystars(keyword, minp, maxp, stars, per_page, offset)
+                else:
+                    adv_filt = Product.get_starsfilter(minp, maxp, stars, per_page, offset)
+
+            else:
+                if keyword:
+                    adv_filt = Product.get_keyfiltered(keyword, minp, maxp, per_page, offset)
+                else:
+                    adv_filt = Product.get_minmax(minp, maxp, per_page, offset)     
+    else:
+        if cat:
+            if stars:
+                if keyword:
+                    adv_filt = Product.get_filtered_desc(cat, keyword, minp, maxp, stars, per_page, offset)
+                else:
+                    adv_filt = Product.get_catstars_desc(cat, minp, maxp, stars, per_page, offset)
+
+            else:
+                if keyword:
+                    adv_filt = Product.get_catkey_desc(cat, keyword, minp, maxp, per_page, offset)
+                else:
+                    adv_filt = Product.get_catfilter_desc(cat, minp, maxp, per_page, offset)
+        else:
+            if stars:
+                if keyword:
+                    adv_filt = Product.get_keystars_desc(keyword, minp, maxp, stars, per_page, offset)
+                else:
+                    adv_filt = Product.get_starsfilter_desc(minp, maxp, stars, per_page, offset)
+
+            else:
+                if keyword:
+                    adv_filt = Product.get_keyfiltered_desc(keyword, minp, maxp, per_page, offset)
+                else:
+                    adv_filt = Product.get_minmax_desc(minp, maxp, per_page, offset)        
+
+    len = Product.get_len_prods()
         
     # logic for front and back buttons
     if request.method == 'POST':
@@ -173,7 +218,7 @@ def filter():
         elif request.form['action'] == 'prev':
             page -= 1
         
-        return redirect(url_for('products.sort_asc', page = page))
+        return redirect(url_for('products.filter', page = page, keyword = keyword, cat = cat, minp = minp, maxp = maxp, checkbox = checkbox))
 
     # render the page by adding information to the index.html file
     if current_user.is_authenticated:

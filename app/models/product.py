@@ -220,34 +220,142 @@ category = category, limit = limit, offset = offset)
 
 # filter by category PRICE DESCENDING WITH KEYWORD
     @staticmethod
-    def get_adv_filter_asc(category, keyword, minp, maxp, limit, offset):
+    def get_filtered(category, keyword, minp = 0, maxp = 99999999999999999, stars, limit, offset):
+
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND stars = :stars AND price >= :minp AND price <= :maxp)
+UNION
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', category = category, key = keyword, minp = minp, maxp=maxp, stars = :stars limit = limit, offset = offset)
+
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price >= :minp AND price <= :maxp
 ORDER BY price, id
 LIMIT :limit OFFSET :offset
 ''', 
 category = category, key = keyword, minp = minp, maxp=maxp, limit = limit, offset = offset)
-        return [Product(*row) for row in rows] if rows else None
+        return [Product(*row) for row in rows]
+
+# filter by category PRICE DESCENDING WITH KEYWORD
+    @staticmethod
+    def get_adv_filter_asc(category, keyword, minp, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price >= :minp AND price <= :maxp
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# ASC KEY MAXP CATEGORY
+    @staticmethod
+    def get_akcmax(category, keyword, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price <= :maxp
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+
+# ASC MAXP CATEGORY
+    @staticmethod
+    def get_acmax(category, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price <= :maxp
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# DESC MAXP CATEGORY
+    @staticmethod
+    def get_dcmax(category, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# DESC CATEGORY
+    @staticmethod
+    def get_dkc(category, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+    @staticmethod
+    def get_akcmax_len(category, keyword, maxp):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price <= :maxp
+ORDER BY price, id
+''', 
+category = category, key = keyword, maxp=maxp)
+        return len(rows) if rows else 0
+    
+
     
     @staticmethod
     def get_adv_filter_desc(category, keyword, minp, maxp, limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price >= :minp AND price <= :maxp
 ORDER BY price DESC, id
 LIMIT :limit OFFSET :offset
 ''', 
 category = category, key = keyword, minp = minp, maxp=maxp, limit = limit, offset = offset)
-        return [Product(*row) for row in rows] if rows else None
+        return [Product(*row) for row in rows]
+    
+
+# DESC KEY MAXP CATEGORY
+    @staticmethod
+    def get_dkcmax(category, keyword, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+        
+    
     
 # filter by category PRICE DESCENDING WITH KEYWORD
     @staticmethod
     def get_adv_filter_len(category, keyword, minp, maxp):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE category = :category AND product_description LIKE :key OR name LIKE :key AND price >= :minp AND price <= :maxp
 ORDER BY price DESC, id
@@ -371,30 +479,6 @@ WHERE price >= :price
                               price=price)
         return len(rows) if rows else 0
     
-
-# PRICE SORTING
-
-    @staticmethod
-    def get_k_most_expensive(k, limit, offset):
-        if k < limit:
-            limit = k
-        rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price, image
-FROM Products
-ORDER BY price DESC, id
-LIMIT :k OFFSET :offset
-                              ''', limit = limit, offset = offset)
-        return [Product(*row) for row in rows]
-    
-    @staticmethod
-    def get_k_cheapest(k):
-        rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price, image
-FROM Products
-ORDER BY price, id
-LIMIT :k
-                              ''', k = k)
-        return [Product(*row) for row in rows]
     
 
 # MISC SORTING
