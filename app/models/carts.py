@@ -152,7 +152,7 @@ class CartContents:
             SELECT c.product_id, p.name as product_name, c.quantity, p.price
             FROM CartContents c
             LEFT JOIN Products p ON p.id = c.product_id
-            WHERE c.user_id = user_id
+            WHERE c.user_id = :user_id
         ''', user_id=user_id)
         
         return [CartContents(*row) for row in rows] if rows else None
