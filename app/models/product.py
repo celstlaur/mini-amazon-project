@@ -436,7 +436,9 @@ FROM Products
                             WHERE product_id = :product_id
                             ORDER BY stars DESC''', product_id = product_id)
         
-        return rows if rows else None
+        all_reviews = [{'review': row[0], 'stars': row[1]} for row in rows]
+
+        return all_reviews if all_reviews else None
         
 
     

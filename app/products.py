@@ -63,6 +63,7 @@ def getprodpage(product):
 
     avg_star_rating = Product.get_product_avgstars(product)
     num_ratings = Product.get_num_product_ratings(product)
+
     all_reviews = Product.get_product_reviews(product)
 
     # render the page by adding information to the index.html file
