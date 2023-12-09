@@ -42,28 +42,28 @@ def cart():
     return render_template('cart.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
 
 
-@bp.route('/quantity_minus/<product_id>/<quantity>', methods = ['GET', 'POST'])
-def minus_item(product_id, quantity):
+@bp.route('/quantity_minus/<product_id>/<quantity>/<seller_id>', methods = ['GET', 'POST'])
+def minus_item(product_id, quantity, seller_id):
     user_id = current_user.id
     if int(quantity) > 1:
-        CartContents.decrease_quantity(user_id, product_id, int(quantity))
+        CartContents.decrease_quantity(user_id, product_id, int(quantity), seller_id)
     cart_items = CartContents.get_cart(user_id)
     #return render_template('cart.html', user_id=user_id, cart_items=cart_items)
     return redirect(url_for('cart.cart'))
 
-@bp.route('/quantity_plus/<product_id>/<quantity>', methods = ['GET', 'POST'])
-def plus_item(product_id, quantity):
+@bp.route('/quantity_plus/<product_id>/<quantity>/<seller_id>', methods = ['GET', 'POST'])
+def plus_item(product_id, quantity, seller_id):
     user_id = current_user.id
-    CartContents.increase_quantity(user_id, product_id, int(quantity))
+    CartContents.increase_quantity(user_id, product_id, int(quantity), seller_id)
     cart_items = CartContents.get_cart(user_id)
     #return render_template('cart.cart', user_id=user_id, cart_items=cart_items)
     return redirect(url_for('cart.cart'))
 
 
-@bp.route('/delete_item/<int:product_id>', methods=['POST', 'DELETE', 'Get'])
-def delete_item(product_id):
+@bp.route('/delete_item/<int:product_id>/<seller_id>', methods=['POST', 'DELETE', 'Get'])
+def delete_item(product_id, seller_id):
     user_id = current_user.id
-    CartContents.delete_from_cart(user_id, product_id)
+    CartContents.delete_from_cart(user_id, product_id, seller_id)
     flash('Item removed from cart', 'success')
     return redirect(url_for('cart.cart'))
 

@@ -58,16 +58,17 @@ VALUES(:user_id, :product_id, :seller_id, :quantity)
 
 
 class CartContents:
-   def __init__(self, product_id, product_name, quantity, price):
+   def __init__(self, product_id, product_name, quantity, price, seller_id):
        self.product_id = product_id
        self.product_name = product_name
        self.quantity = quantity
        self.price = price
+       self.seller_id = seller_id
 
    @staticmethod
    def get_cart(user_id):
         rows = app.db.execute('''
-            SELECT c.product_id, p.name as product_name, c.quantity, p.price
+            SELECT c.product_id, p.name as product_name, c.quantity, p.price, c.seller_id
             FROM CartContents c
             LEFT JOIN Products p ON p.id = c.product_id
             WHERE c.user_id = :user_id
@@ -89,25 +90,25 @@ class CartContents:
        return total_products
 
    @staticmethod
-   def increase_quantity(user_id, product_id, quantity):
+   def increase_quantity(user_id, product_id, quantity, seller_id):
        app.db.execute('''
        UPDATE CartContents SET quantity=:quantity
-       WHERE user_id=:user_id AND product_id=:product_id''',
-       user_id=user_id, product_id=product_id, quantity=quantity+1)
+       WHERE user_id=:user_id AND product_id=:product_id AND seller_id = :seller_id''',
+       user_id=user_id, product_id=product_id, quantity=quantity+1, seller_id = seller_id)
        return
 
    @staticmethod
-   def decrease_quantity(user_id, product_id, quantity):
+   def decrease_quantity(user_id, product_id, quantity, seller_id):
        app.db.execute('''
        UPDATE CartContents SET quantity=:quantity
-       WHERE user_id=:user_id AND product_id=:product_id''',
-       user_id=user_id, product_id=product_id, quantity=quantity-1)
+       WHERE user_id=:user_id AND product_id=:product_id AND seller_id = :seller_id''',
+       user_id=user_id, product_id=product_id, quantity=quantity-1, seller_id = seller_id)
        return
 
    @staticmethod
-   def delete_from_cart(user_id, product_id):
+   def delete_from_cart(user_id, product_id, seller_id):
         app.db.execute('''
             DELETE FROM CartContents
-            WHERE user_id = :user_id AND product_id = :product_id
-        ''', user_id=user_id, product_id=product_id)
+            WHERE user_id = :user_id AND product_id = :product_id AND seller_id = :seller_id
+        ''', user_id=user_id, product_id=product_id, seller_id = seller_id)
         return
