@@ -24,6 +24,7 @@ class Order:
         return [order for order in Order.orders if order.user_id == user_id]
         #return Order.query.filter_by(user_id=user_id).order_by(Order.time_placed.desc()).all()
 
+
 class OrderItem:
     def __init__(self, order_id, product_id, quantity):
         self.order_id = order_id

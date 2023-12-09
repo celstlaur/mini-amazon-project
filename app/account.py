@@ -9,6 +9,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models.user import User
 from .models.balance import Balance
 from .models.orderfact import OrderFact
+from .models.seller import Seller
+from .models.feedbackitem import FeedbackItem
 from . import DB
 
 
@@ -17,29 +19,55 @@ bp = Blueprint('account', __name__)
 
 @bp.route('/account')
 def account():
-    page = request.args.get('page', 1, type=int)
-    per_page = 10 
+    balance_page = request.args.get('page', 1, type=int)
+    purchase_page = request.args.get('page', 1, type=int)
+    per_page = 10
+    
     if current_user.is_authenticated:
         balance = Balance.current_balance(current_user.id)
         full_address = User.get_address(current_user.id)
         address = full_address[0][0] if full_address else None
-        purchases, total_pages = OrderFact.get_paged_orders(current_user.id, page, per_page)
+        transactions, total_pages = Balance.get_paged_balance(current_user.id, balance_page, per_page)
+        purchases, total_pages = OrderFact.get_paged_orders(current_user.id, purchase_page, per_page)
         seller_check = current_user.is_seller(current_user.id)
+        
     else:
         balance=None
         address = None
         purchases = None
+        transactions = None
         total_pages=0
         seller_check = False
-    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, purchase_history=purchases, total_pages=total_pages, current_page=page,
+    return render_template('account.html', title='Account', current_user=current_user, balance=balance, address=address, 
+                           transaction_history=transactions, purchase_history=purchases,
+                           total_pages=total_pages, 
+                           current_balance_page=balance_page, current_purchase_page=purchase_page, 
                            seller_check=seller_check)
 
 @bp.route('/public_profile')
 def public_profile():
+    year_joined = Balance.first_balance_date(current_user.id)
     num_purchases = User.num_purchases(current_user.id)
     num_sales = User.num_sales(current_user.id)
-    return render_template('public_profile.html', title='Profile', current_user=current_user, num_sales=num_sales, num_purchases=num_purchases,
-                           seller_check=current_user.is_seller(current_user.id))
+    
+    if current_user.is_seller(current_user.id):
+        seller_email=Seller.seller_details(current_user.id)[0].business_email
+        seller_address=Seller.seller_details(current_user.id)[0].business_address
+        
+    else: 
+        seller_email=None
+        seller_address=None
+
+    return render_template('public_profile.html', title='Profile', current_user=current_user, year_joined=year_joined,num_sales=num_sales, num_purchases=num_purchases,
+                           seller_check=current_user.is_seller(current_user.id), seller_email=seller_email, seller_address=seller_address)
+
+@bp.route('/public_profile_id/<user_id>', methods=['GET', 'POST'])
+def public_profile_by_id(user_id):
+    num_purchases = User.num_purchases(user_id)
+    num_sales = User.num_sales(user_id)
+    user = User.get(user_id)
+    return render_template('public_profile.html', title='Profile', user=user, num_sales=num_sales, num_purchases=num_purchases,
+                           seller_check=True)
 
 
 @bp.route('/edit_name', methods=['POST'])
