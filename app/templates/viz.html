@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .chart-container {
+        display: flex;
+        justify-content: space-between; /* or use "space-around" for some space between charts */
+        align-items: center;
+        flex-wrap: wrap; /* Allow items to wrap to the next line if necessary */
+    }
+
+    canvas {
+        max-width: 48%; /* Adjust as needed based on your design preferences */
+        margin-bottom: 20px; /* Add some space between charts */
+    }
+</style>
+    <br><br>
+    <!-- <h1>Sell Items</h1> -->
+    <p><a href="{{ url_for('sell.inventory') }}">Current Inventory</a></p>
+    <p><a href="{{ url_for('sell.sell') }}">Seller History</a></p>
+
+    {% if seller_check %}
+        {% if years %}
+            <!-- Your Chart -->
+            <div class="chart-container">
+                <canvas id="linechart" style="width:100%;max-width:600px"></canvas>
+                <canvas id="piechart" style="width:100%;max-width:600px"></canvas>
+            </div>
+            <br>
+            <div class="chart-container">
+                <canvas id="piechart2" style="width:100%;max-width:600px"></canvas>
+                <canvas id="barchart" style="width:100%;max-width:600px"></canvas>
+            </div>
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+            <script>
+            const xValues = '{{ years | tojson | safe }}';
+            const yValues = '{{ years_val | tojson | safe }}';
+            const parsedXValues = JSON.parse(xValues);
+            const parsedYValues = JSON.parse(yValues);
+
+            const xValues_pie = '{{ states | tojson | safe }}'
+            const yValues_pie = '{{ states_val | tojson | safe }}'
+            const parsedXValues_pie = JSON.parse(xValues_pie);
+            const parsedYValues_pie = JSON.parse(yValues_pie);
+
+            const xValues_bar = '{{ cats | tojson | safe }}'
+            const yValues_bar = '{{ cats_val | tojson | safe }}'
+            const parsedXValues_bar = JSON.parse(xValues_bar);
+            const parsedYValues_bar = JSON.parse(yValues_bar);
+
+            const xValues_pie2 = '{{ prods | tojson | safe }}'
+            const yValues_pie2 = '{{ prods_val | tojson | safe }}'
+            const parsedXValues_pie2 = JSON.parse(xValues_pie2);
+            const parsedYValues_pie2 = JSON.parse(yValues_pie2);
+
+            new Chart("linechart", {
+                type: "line",
+                data: {
+                  labels: parsedXValues,
+                  datasets: [{
+                    backgroundColor: ["rgba(0,0,255,0.2)"], 
+                    data: parsedYValues
+                  }]
+                },
+                options: {
+                  legend: {display: false},
+                  title: {
+                    display: true,
+                    text: "Revenue By Year"
+                  },
+                  scales: {
+                    xAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                      }
+                    }],
+                    yAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'USD ($)'
+                      }
+                    }]
+                  }
+                }
+              });
+              new Chart("piechart", {
+                type: "doughnut",
+                data: {
+                  labels: parsedXValues_pie,
+                  datasets: [{
+                    backgroundColor: ["rgba(0,0,255,1.0)",
+                    "rgba(0,0,255,0.8)",
+                    "rgba(0,0,255,0.6)",
+                    "rgba(0,0,255,0.4)",
+                    "rgba(0,0,255,0.2)",
+                    "rgba(219,219,219, 0.5)"],
+                    data: parsedYValues_pie
+                  }]
+                },
+                options: {
+                  title: {
+                    display: true,
+                    text: "Revenue By State Code"
+                  }
+                }
+              });
+              new Chart("barchart", {
+                type: "bar",
+                data: {
+                  labels: parsedXValues_bar,
+                  datasets: [{
+                    backgroundColor: parsedXValues_bar,
+                    data: parsedYValues_bar
+                  }]
+                },
+                options: {
+                  legend: {display: false},
+                  title: {
+                    display: true,
+                    text: "Revenue by Product Category"
+                  }
+                }
+              });
+              new Chart("piechart2", {
+                type: "doughnut",
+                data: {
+                  labels: parsedXValues_pie2,
+                  datasets: [{
+                    backgroundColor: ["rgba(0,0,255,1.0)",
+                    "rgba(0,0,255,0.8)",
+                    "rgba(0,0,255,0.6)",
+                    "rgba(0,0,255,0.4)",
+                    "rgba(0,0,255,0.2)",
+                    "rgba(219,219,219, 0.5)"],
+                    data: parsedYValues_pie2
+                  }]
+                },
+                options: {
+                  title: {
+                    display: true,
+                    text: "Revenue By Product"
+                  }
+                }
+              });
+            
+            </script>
+        {% else %}
+            <h2>No Fulfillment History</h2>
+        {% endif %}
+        
+        <!-- TODO: list inventory -->
+        <!-- TODO: inventory visualization -->
+        <!-- TODO: add product -->
+        <!-- TODO: order history -->
+
+    {% else %}
+        Access to the seller page is restricted - currently invite only.
+        <!-- <p><a href="{{ url_for('users.login') }}">Log in</a> to see your seller inventory!</p> -->
+        <!-- TODO: link to become a seller -->
+        <!-- TODO: link to buy items -->
+    {% endif %}
+
+{% endblock %}
