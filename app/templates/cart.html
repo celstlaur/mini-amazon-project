@@ -39,6 +39,13 @@
 </table>
 <p class="total">Items in Cart: {{ total_products }} items</p>
 <p class="total">Total Cost: ${{ total_cost }}</p>
+<div class="discount-section">
+  <form action="{{ url_for('cart.apply_discount') }}" method="POST">
+      <label for="discount_code">Discount Code:</label>
+      <input type="text" id="discount_code" name="discount_code">
+      <button type="submit">Apply Discount</button>
+  </form>
+</div>
 {% if cart %}
    <form action="{{ url_for('cart.place_order') }}" method="POST">
        <p><button type="submit" class="btn btn-success">Place Order</button></p>

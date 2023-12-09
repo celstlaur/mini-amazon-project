@@ -74,6 +74,56 @@ def delete_item(product_id):
     return redirect(url_for('cart.cart'))
 
 
+'''@bp.route('/discount_code/<int:product_id>/<int:seller_id>/<int:seller_quant>', methods = {"GET", "POST"})
+def discount_code(product_id, seller_id, seller_quant):
+    if not current_user.is_authenticated:
+        return jsonify({}), 404
+
+    user_id = current_user.id
+    cart_info = CartContents.get_cart(user_id)
+
+    if cart_info:
+        total_cost = CartContents.calculate_total_cost(cart_info)
+    else:
+        total_cost = 0
+
+    discount = request.form["k"]
+
+    if discount == discount.code:
+        total_cost = Cart.discount(total_cost)
+        return redirect(url_for('cart.cart'))
+
+    return redirect(url_for('cart.cart'))'''
+
+@bp.route('/apply_discount', methods=['POST'])
+def apply_discount():
+    if not current_user.is_authenticated:
+        return jsonify({}), 404
+
+    user_id = current_user.id
+    cart_info = CartContents.get_cart(user_id)
+
+    if cart_info:
+        total_cost = CartContents.calculate_total_cost(cart_info)
+        total_products = CartContents.calculate_total_products(cart_info)
+    else:
+        total_cost = 0
+        total_products = 0
+
+    discount_code = request.form.get('discount_code')
+
+    # Check the validity of the discount code
+    #if discount_code:
+    if (Cart.valid_code(discount_code) == 1):
+        flash('Discount applied!', 'success')
+        total_cost = total_cost-100
+    else:
+        flash('Invalid discount code', 'danger')
+    # Redirect back to the cart page
+    #return redirect(url_for('cart.cart'))
+    return render_template('cart.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
+
+
 @bp.route('/add_to_cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
   if not current_user.is_authenticated:
@@ -81,28 +131,6 @@ def add_to_cart(product_id):
   user_id = current_user.id
   cart.add_to_cart(user_id, product_id, quantity=1)
   return redirect(url_for('cart.cart'))
-
-
-@bp.route('/update_quantity/<int:product_id>/<action>', methods=['POST'])
-def update_quantity_route(product_id, action):
-    Cart.update_quantity(product_id, action)
-    new_quantity = Cart.get_updated_quantity(product_id)
-    return jsonify({'newQuantity': new_quantity})
-
-@bp.route('/update_quantity/<int:product_id>/<action>/<int:current_quantity>', methods=['GET', 'POST'])
-def update_quantity():
-    if current_user.is_authenticated:
-        user_id = current_user.id
-        new_text_quantity = request.form["m"]
-
-        test = Cart.update_cart_quantity(product_id, new_text_quantity)
-
-        if test is True:
-            return redirect(url_for("products.getprodpage", product = product_id))
-
-    
-    else:
-        return jsonify({}), 404
 
 
 @bp.route('/place_order', methods=['POST'])
@@ -128,6 +156,9 @@ def place_order():
 
         if cart_info:
             flash('Order placed successfully!', 'success')
+            for item in cart_info:
+                CartContents.delete_from_cart(user_id, item.product_id)
+            #balance = float(balance) - float(total_cost)
             return render_template('orders.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
         else:
             flash('Failed to place the order. Please try again later.', 'danger')

@@ -24,11 +24,19 @@ class Order:
 
 
 class Cart:
-   def __init__(self, user_id, product_id, seller_id, quantity):
+   def __init__(self, user_id, product_id, seller_id, quantity, discount_code):
        self.user_id = user_id
        self.product_id = product_id
        self.seller_id = seller_id
        self.quantity = quantity
+       self.discount_code = discount_code
+
+   @staticmethod
+   def valid_code(discount_code):
+        if (discount_code == "100off"):
+            return 1
+        else:
+            return 0
       
    
    @staticmethod
