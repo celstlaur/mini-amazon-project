@@ -63,14 +63,10 @@ def plus_item(product_id, quantity):
 
 @bp.route('/delete_item/<int:product_id>', methods=['POST', 'DELETE', 'Get'])
 def delete_item(product_id):
-   if request.method == 'DELETE':
-       user_id = current_user.id 
-       Cart.remove_from_cart(user_id, product_id)
-       #item = Product.query.get_or_404(product_id)
-       #db.session.delete(item)
-       #db.session.commit()
-       flash('Item removed from cart.', 'success')
-       return redirect(url_for('cart.cart'))
+    user_id = current_user.id
+    CartContents.delete_from_cart(user_id, product_id)
+    flash('Item removed from cart', 'success')
+    return redirect(url_for('cart.cart'))
 
 
 @bp.route('/add_to_cart/<int:product_id>', methods=['POST'])

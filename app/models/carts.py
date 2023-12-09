@@ -164,4 +164,11 @@ class CartContents:
        WHERE user_id=:user_id AND product_id=:product_id''',
        user_id=user_id, product_id=product_id, quantity=quantity+1)
        return
+   @staticmethod
+   def delete_from_cart(user_id, product_id):
+        app.db.execute('''
+            DELETE FROM CartContents
+            WHERE user_id = :user_id AND product_id = :product_id
+        ''', user_id=user_id, product_id=product_id)
+        return
         
