@@ -118,7 +118,7 @@ def gen_products(num_products, categories, seller_ids):
             product_description = fake.sentence(nb_words=8)[:-1]
            
             image = "https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp"
-            
+            # put a for loop here, add different seller ids
             writer.writerow([pid, product_name, product_seller, product_category, product_description, product_price, image])
         print(f"{num_products} products generated")
     return
@@ -207,7 +207,7 @@ def gen_search(num_search, num_users):
     return
  
 
-def gen_hasinventory(prod_name):
+def gen_hasinventory(prod_name, seller_ids):
     prod = pd.read_csv(prod_name, names=['product_id', 'product_name', 'seller_id', 'category', 'description', 'price', 'link'])
     with open('HasInventory.csv', 'w') as f:
         writer = get_csv_writer(f)
@@ -215,9 +215,10 @@ def gen_hasinventory(prod_name):
             if i % (0.1 * prod.shape[0]) == 0:
                 print(f'{i}', end=' ', flush=True)
             pid = prod['product_id'].iloc[i]
-            sid = prod['seller_id'].iloc[i]
-            quantity = fake.random_int(min=0, max=100)
-            writer.writerow([sid, pid, quantity])
+            #sid = prod['seller_id'].iloc[i]
+            for sid in random.sample(seller_ids, 4):
+                quantity = fake.random_int(min=0, max=100)
+                writer.writerow([sid, pid, quantity])
         print(f"{prod.shape[0]} hasinventory rows generated")
     return
  
@@ -357,8 +358,8 @@ def gen_useraddress(num_users):
  
 
 ## PARAMETERS ##
-num_users = 10000 # number of generated users
-num_products = 2000 # number of generated products
+num_users = 500 # number of generated users
+num_products = 1500 # number of generated products
 num_orders = 25000 # number of rows in order fact, order contents can have between [num_orders, 5 * num_orders]
 num_search = 25000 # number of generated rows in Search.csv
 num_saved = 25000 # number of generated rows in SavedForLaterContents.csv
@@ -367,7 +368,7 @@ num_wishes = 25000 # number of generated rows in Wishes.csv
  
 product_categories = ['Red', 'Blue', 'Green', 'Yellow', 'Purple'] # figured this would be better than random category names in case we want to use them for something, can be any str list of any len > 1...
  
-seller_percentage = 0.8 # percentage of users that will be assigned as sellers
+seller_percentage = 0.4 # percentage of users that will be assigned as sellers
 fulfill_percentage = 0.9 # percentage of item, buyer pairs that are set to 'True' in OrderContents... OrderFact only shows fulfilled=True if all items are fulfilled
 reviewed_seller_percentage = 0.9 # percentage of valid seller, buyer pairs that are reviewed
 reviewed_product_percentage = 0.9 # percentage of valid product, buyer pairs that are reviewed
@@ -380,7 +381,7 @@ valid_seller_ids = gen_sellers(num_users, seller_percentage)
 gen_products(num_products, product_categories, valid_seller_ids)
 gen_orders(num_orders, num_users, fulfill_percentage)
 gen_search(num_search, num_users)
-gen_hasinventory('Products.csv')
+gen_hasinventory('Products.csv', valid_seller_ids)
 gen_savedforlatercontents(num_saved, num_users, 'HasInventory.csv')
 gen_cartcontents(num_cart, num_users, 'HasInventory.csv')
 gen_reviewedproduct('OrderFact.csv', 'OrderContents.csv', reviewed_product_percentage)
