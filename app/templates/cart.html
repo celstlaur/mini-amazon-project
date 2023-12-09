@@ -10,7 +10,7 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">Product ID</th>
-      <th scope="col">Item</th>
+      <th scope="col">Product</th>
       <th scope="col">Quantity</th>
       <th scope="col">Unit Price</th>
       <th scope="col">Total Price</th>
@@ -22,9 +22,13 @@
       <tr>
         <th scope="row">{{item.product_id}}</th>
         <th scope="row">{{item.product_name}}</th>
-        <td>{{item.quantity}}</td>
-        <td>{{item.price}}</td>
-        <td>{{item.quantity}}</td>
+        <td>
+          <a href= "{{url_for('cart.plus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">+</a>
+            <p>{{item.quantity}}</p>
+          <a href= "({url_for('cart.minus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">-</a>
+        </td>
+        <td>${{item.price}}</td>
+        <td>${{item.price*item.quantity}}</td>
         <td>
           <a href="{{ url_for('cart.delete_item', product_id=item.product_id) }}" class="btn btn-danger">Remove</a>
         </td>
@@ -32,7 +36,15 @@
     {% endfor %}
   </tbody>
 </table>
-<p class="total">Total: {{ cart|length }} items</p>
+<p class="total">Items in Cart: {{ total_products }} items</p>
+<p class="total">Total Cost: ${{ total_cost }}</p>
+<div class="discount-section">
+  <form action="{{ url_for('cart.apply_discount') }}" method="POST">
+      <label for="discount_code">Discount Code:</label>
+      <input type="text" id="discount_code" name="discount_code">
+      <button type="submit">Apply Discount</button>
+  </form>
+</div>
 {% if cart %}
    <form action="{{ url_for('cart.place_order') }}" method="POST">
        <p><button type="submit" class="btn btn-success">Place Order</button></p>
@@ -44,6 +56,5 @@
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
 {% endif %}
-
 
 {% endblock %}

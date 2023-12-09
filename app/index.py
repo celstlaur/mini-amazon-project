@@ -6,7 +6,7 @@ import random
 from .models.product import Product
 from .models.orderfact import OrderFact
 from .models.inventory import Inventory
-from .models.carts import Cart
+from .models.carts import Cart, CartContents
 
 from flask import Blueprint, request
 bp = Blueprint('index', __name__)
@@ -53,7 +53,7 @@ def index():
 @bp.route('/cart')
 def cart():
     if current_user.is_authenticated:
-        cart = Cart.users_cart(current_user.id)
+        cart = CartContents.get_cart(current_user.id)
         return render_template('cart.html', cart=cart)
     else:
         return redirect(url_for('index.index'))
