@@ -1,17 +1,11 @@
 from flask import current_app as app
-from flask_sqlalchemy import SQLAlchemy
-import datetime
-
-
-db = SQLAlchemy()
+from flask_login import current_user
+from .inventory import Inventory
 
 
 class Product:
-   '''id = db.Column(db.Integer, primary_key=True)
-   name = db.Column(db.String(255), nullable=False)
-   price = db.Column(db.Float, nullable=False)
-   cart_items = db.relationship('Cart', backref='product', lazy=True)'''
    def __init__(self, user_id, product_id, product_name, seller_id, quantity, price):
+       self.id = id
        self.user_id = user_id
        self.product_id = product_id
        self.product_name = product_name
@@ -21,10 +15,6 @@ class Product:
 
 
 class Order:
-   '''id = db.Column(db.Integer, primary_key=True)
-   name = db.Column(db.String(255), nullable=False)
-   price = db.Column(db.Float, nullable=False)
-   cart_items = db.relationship('Cart', backref='product', lazy=True)'''
    def __init__(self, user_id, product_id, seller_id, quantity):
        self.user_id = user_id
        self.product_id = product_id
@@ -34,87 +24,90 @@ class Order:
 
 
 class Cart:
-   '''id = db.Column(db.Integer, primary_key=True)
-   user_id = db.Column(db.Integer, nullable=False)
-   product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-   seller_id = db.Column(db.Integer, nullable=False)
-   quantity = db.Column(db.Integer, nullable=False)
-  
-   product = db.relationship('Product', backref='cart_items')'''
-
-
-   def __init__(self, user_id, product_id, seller_id, quantity):
+   def __init__(self, user_id, product_id, seller_id, quantity, discount_code):
        self.user_id = user_id
        self.product_id = product_id
        self.seller_id = seller_id
        self.quantity = quantity
-      
-   
-   def create_order(self):
-        try:
-            '''id = db.Column(db.Integer, primary_key=True)
-            user_id = db.Column(db.Integer, nullable=False)
-            product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-            seller_id = db.Column(db.Integer, nullable=False)
-            quantity = db.Column(db.Integer, nullable=False)'''
+       self.discount_code = discount_code
 
-            current_time = datetime.datetime.now()
-            #order = Order(user_id=self.user_id, time_created=current_time)
-            order = Order(user_id=self.user_id, product_id=self.product_id, seller_id=self.seller_id, quantity=self.quantity, time_created=current_time)
-            db.session.add(order)
-            db.session.commit()
-
-            # Move cart items to order items
-            for item in self.cart_items:
-                order_item = OrderItem(order_id=order.id, product_id=item.product_id, quantity=item.quantity)
-                db.session.add(order_item)
-                db.session.commit()
-
-            # Clear the cart after creating the order
-            #self.cart_items = []
-            #db.session.commit()
-
-            return order
-        except Exception as e:
-            print(str(e))
-            db.session.rollback()
-            return None
-   
    @staticmethod
-   def users_cart(user_id):
-     
-       rows = app.db.execute('''
-   SELECT user_id, product_id, seller_id, quantity
-   FROM CartContents
-   WHERE user_id = :user_id
-   ''',
-                             user_id=user_id)
-       return [Cart(*row) for row in rows] if rows else None
-
-
-   def get_cart(user_id):
-       rows = app.db.execute("""
-SELECT user_id, product_id, seller_id, quantity
-FROM CartContents
-WHERE user_id = :user_id
-            """, user_id=user_id)
-       return CartContents(*(rows[0])) if rows else None
+   def valid_code(discount_code):
+        if (discount_code == "100off"):
+            return 1
+        else:
+            return 0
 
 
    @staticmethod
-   def add_to_cart(user_id, product_id, quantity):
+   def add_to_cart(user_id, product_id, quantity, seller_id):
         try:
-            current_time = datetime.datetime.now()
             rows = app.db.execute("""
 INSERT INTO CartContents(user_id, product_id, seller_id, quantity)
-VALUES(:user_id, :product_id, :seller_id, :time_added)
-RETURNING id
+VALUES(:user_id, :product_id, :seller_id, :quantity)
 """,
                                   user_id=user_id,
                                   product_id=product_id,
-                                  time_added=current_time)
-            id = rows[0][0]
-            return Cart.get(user_id)
+                                  seller_id = seller_id,
+                                  quantity = quantity)
+            return True
         except Exception as e:
             print(str(e))
             return None
+
+
+
+class CartContents:
+   def __init__(self, product_id, product_name, quantity, price):
+       self.product_id = product_id
+       self.product_name = product_name
+       self.quantity = quantity
+       self.price = price
+
+   @staticmethod
+   def get_cart(user_id):
+        rows = app.db.execute('''
+            SELECT c.product_id, p.name as product_name, c.quantity, p.price
+            FROM CartContents c
+            LEFT JOIN Products p ON p.id = c.product_id
+            WHERE c.user_id = :user_id
+        ''', user_id=user_id)
+        
+        return [CartContents(*row) for row in rows] if rows else None
+
+
+   def calculate_total_cost(cart):
+       total_cost = sum(item.price * item.quantity for item in cart)
+       return total_cost
+
+   def update_total_cost(total_cost, discount):
+       new_total_cost = total_cost - discount
+       return new_total_cost
+    
+   def calculate_total_products(cart):
+       total_products = sum(item.quantity for item in cart)
+       return total_products
+
+   @staticmethod
+   def increase_quantity(user_id, product_id, quantity):
+       app.db.execute('''
+       UPDATE CartContents SET quantity=:quantity
+       WHERE user_id=:user_id AND product_id=:product_id''',
+       user_id=user_id, product_id=product_id, quantity=quantity+1)
+       return
+
+   @staticmethod
+   def decrease_quantity(user_id, product_id, quantity):
+       app.db.execute('''
+       UPDATE CartContents SET quantity=:quantity
+       WHERE user_id=:user_id AND product_id=:product_id''',
+       user_id=user_id, product_id=product_id, quantity=quantity-1)
+       return
+
+   @staticmethod
+   def delete_from_cart(user_id, product_id):
+        app.db.execute('''
+            DELETE FROM CartContents
+            WHERE user_id = :user_id AND product_id = :product_id
+        ''', user_id=user_id, product_id=product_id)
+        return
