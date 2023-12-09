@@ -157,3 +157,4 @@ class CartContents:
         
         return [CartContents(*row) for row in rows] if rows else None
 
+
