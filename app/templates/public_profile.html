@@ -6,32 +6,55 @@
 
 <h1>Public Profile</h1>
 {% if not current_user.is_authenticated %}
-    <p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
+{% set id = current_user.id %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
 {% else %}
 <div style="display: flex; justify-content: space-between; align-items: center;">
     <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
 </div>
-<hr>
-    <strong>Year Joined: </strong> {{ year_joined }}
+<hr><br>
+<strong>Total Purchases: </strong>{{ num_purchases }}
+<br>
+{% if seller_check %}
+    <strong>Total Sales: </strong>{{ num_sales }}
     <br>
-    <strong>Total Purchases: </strong>{{ num_purchases }}
-    <br>
-    <strong>Account Type: </strong>
-    {% if seller_check %}
-        Seller
-        <br><br><br>
-        <h5>Seller Profile</h5>
-        <hr>
-        <strong>Total Sales: </strong>{{ num_sales }}
-        <br>
         <strong>Email: </strong>{{ seller_email }}
         <br>
         <strong>Address: </strong>{{ seller_address }}
-        <!-- TODO: integrate with reviews-->
-        <p><a href="{{ url_for('recent_feedback.submit_SELLERfeedback', seller_id=current_user.id)}}">Submit a review of this
-            seller</a></p>
+    <form action="{{ url_for('recent_feedback.get_seller_feedback_page', seller_id=current_user.id) }}" method="POST">
+        <!--{% print id %}-->
+        <input type="submit" value="Go to Seller Feedback Page" />
+      </form>
+    <p><a href="{{ url_for('recent_feedback.submit_SELLERfeedback', seller_id=current_user.id)}}">submit a review of this
+        seller</a></p>
+{% endif %}
+{% endif %}
+
+{% else %}
 
 
+{% set id = user.id %}
+<!--maybe todo: option to return to main account page-->
+<br><br>
+<h1>Public Profile</h1>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3>{{ user.firstname }} {{ user.lastname }}, User #{{user.id}} </h3>
+</div>
+<hr><br>
+<strong>Total Purchases: </strong>{{ num_purchases }}
+<br>
+{% if seller_check %}
+{% if  current_user.is_authenticated %}
+    <strong>Total Sales: </strong>{{ num_sales }}
+    <form action="{{ url_for('recent_feedback.get_seller_feedback_page', seller_id=user.id) }}" method="POST">
+        <!--{% print id %}-->
+        <input type="submit" value="Go to Seller Feedback Page" />
+      </form>
+    <p><a href="{{ url_for('recent_feedback.submit_SELLERfeedback', seller_id=user.id)}}">submit a review of this
+        seller</a></p>
+{% endif %}
+{% endif %}
 
             <p><a href="{{ url_for('seller_reviews_sorted', seller_id=current_user.id)}}">View reviews of this seller</a></p>
     {% else %}
@@ -39,3 +62,5 @@
     {% endif %}
 {% endif %}
 {% endblock %}
+
+

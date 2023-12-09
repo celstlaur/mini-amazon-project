@@ -64,14 +64,22 @@
       {% else %}
       {% set i = y %}
       {% endif %}
+      {% set count = namespace(value=0) %}
       {% for seller in sellers[x:i]%}
       {% set id = seller.seller_id %}
+      {% set temp = count.value %}
+      
       <!--{% print id %}-->
       <div class="height d-flex justify-content-center align-items-center"></div>
       <div class="card">
         <div class="d-flex justify-content-between align-items-center ">
             <div class="mt-5">
               <h4 class="main-heading mt-0">Seller {{seller.seller_id}}</h4>
+              <form action="{{ url_for('account.public_profile_by_id', user_id = seller.seller_id) }}" method="post">
+                <!--{% print id %}-->
+                <input type="submit" value="Go to Seller Page" />
+              </form>
+              <p class="product-description">Average Review Rating: {{avg_star_ratingSELLER[temp]}}</p>
               <p class="product-description">In Stock: {{seller.quantity}}</p>
               <form action="{{ url_for('recent_feedback.get_seller_feedback_page', seller_id=id) }}" method="POST">
                 <!--{% print id %}-->
@@ -88,6 +96,7 @@
           </div>
           </div>
         </div>
+      {% set count.value = count.value + 1 %}
       {% endfor %}
       </div>
       </div>
@@ -96,10 +105,10 @@
 
   {% endfor %}
 
+{% if len > page_length %}
   <div class="center-container">
   <p> Page {{ current_page }} of {{ pages}} </p>
 
-{% if len > page_length %}
 <form action="" method="post" style="display: inline;">
     {% if current_page > 1 %} <!-- dont want to get page < 1, will give out of bounds error-->
         <input type="hidden" name="action" value="prev">

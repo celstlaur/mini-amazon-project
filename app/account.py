@@ -61,6 +61,14 @@ def public_profile():
     return render_template('public_profile.html', title='Profile', current_user=current_user, year_joined=year_joined,num_sales=num_sales, num_purchases=num_purchases,
                            seller_check=current_user.is_seller(current_user.id), seller_email=seller_email, seller_address=seller_address)
 
+@bp.route('/public_profile_id/<user_id>', methods=['GET', 'POST'])
+def public_profile_by_id(user_id):
+    num_purchases = User.num_purchases(user_id)
+    num_sales = User.num_sales(user_id)
+    user = User.get(user_id)
+    return render_template('public_profile.html', title='Profile', user=user, num_sales=num_sales, num_purchases=num_purchases,
+                           seller_check=True)
+
 
 @bp.route('/edit_name', methods=['POST'])
 def edit_name():
