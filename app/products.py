@@ -174,7 +174,7 @@ def filter():
     # finds order history, number of rows in order history
     if checkbox == 'asc':
         if cat:
-            if stars != "Any":
+            if stars != "-1":
                 if keyword:
                     adv_filt = Product.get_filtered(cat, keyword, stars, per_page, offset, minp, maxp)
                 else:
@@ -186,7 +186,7 @@ def filter():
                 else:
                     adv_filt = Product.get_catfilter(cat, per_page, offset, minp, maxp)
         else:
-            if stars != "Any":
+            if stars != "-1":
                 if keyword:
                     adv_filt = Product.get_keystars(keyword, stars, per_page, offset, minp, maxp)
                 else:
@@ -196,10 +196,12 @@ def filter():
                 if keyword:
                     adv_filt = Product.get_keyfiltered(keyword, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_minmax(per_page, offset, minp, maxp)     
+                    adv_filt = Product.get_minmax(per_page, offset, minp, maxp)  
+                    if adv_filt == []:
+                        return jsonify({})   
     else:
         if cat:
-            if stars != "Any":
+            if stars != "-1":
                 if keyword:
                     adv_filt = Product.get_filtered_desc(cat, keyword, stars, per_page, offset, minp, maxp)
                 else:
@@ -211,7 +213,7 @@ def filter():
                 else:
                     adv_filt = Product.get_catfilter_desc(cat, per_page, offset, minp, maxp)
         else:
-            if stars != "Any":
+            if stars != "-1":
                 if keyword:
                     adv_filt = Product.get_keystars_desc(keyword,stars, per_page, offset, minp, maxp)
                 else:
@@ -221,9 +223,13 @@ def filter():
                 if keyword:
                     adv_filt = Product.get_keyfiltered_desc(keyword, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_minmax_desc(per_page, offset, minp, maxp)        
+                    adv_filt = Product.get_minmax_desc(per_page, offset, minp, maxp) 
+                    if adv_filt == []:
+                        return jsonify({})  
+     
 
     len = Product.get_len_prods()
+
         
     # logic for front and back buttons
     if request.method == 'POST':
@@ -247,7 +253,7 @@ def filter():
                                             cart_check=current_user.has_cart(current_user.id),
                                             price = "asc")
     else:
-        return render_template('buy.html', avail_products=filtcat,
+        return render_template('buy.html', avail_products= adv_filt,
                                current_user=current_user,
                                current_page = page,
                                page_length = per_page,
