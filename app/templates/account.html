@@ -331,8 +331,8 @@
           <td>{{purchase.status}}</td>
           <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
           <td>
-            Cart/Orders guru did not make an order page.
-            <!-- <p><a href="{{ url_for('order.orders') }}">Order Page</a></p>-->
+            <a href="{{ url_for('cart.cart') }}">View Order</a>
+            <!-- TODO: link to individual purchase page -->
           </td>
         </tr>
       {% endfor %}
