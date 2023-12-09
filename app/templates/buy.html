@@ -85,7 +85,6 @@
       {% endif %}
       {% for product in avail_products[x:i]%}
       {% set id = product.id%}
-      {% set image = product.image %}
       <!--{% print id %}-->
 
       <div class="height d-flex justify-content-center align-items-center"></div>
@@ -93,7 +92,7 @@
         <div class="d-flex justify-content-between align-items-center ">
           <div class="mt-2">
             <div class="image">
-              <img src= image width="190">
+              <img src= "{{product.image}}" width="190">
             </div>
             <div class="mt-5">
               <h4 class="main-heading mt-0">{{product.name}}</h4>
@@ -102,8 +101,6 @@
               <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
               <p>
               {% if current_user.is_authenticated %}
-              <br>
-
               <form action="{{ url_for('wishlist.wishlist_add', product_id=id) }}" method="POST">
                 <!--{% print id %}-->
                 <input type="submit" value="Add to Wishlist" />
