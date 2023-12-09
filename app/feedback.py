@@ -106,6 +106,25 @@ def submit_edits(product_id):
     else:
         return jsonify({}), 404
     
+@bp.route('/recent_feedback/editSTARS/<int:product_id>')
+def submit_editsSTARS(product_id):
+    if current_user.is_authenticated:
+
+        user_id = current_user.id
+
+        product = Product.get(product_id)
+
+        return render_template('submiteditsSTARS.html', product=product)
+
+        #FeedbackItem.add_product_feedback(user_id, product_id)
+
+        #return jsonify([feedback.__dict__ for feedback in feedbacks])
+        
+        #return render_template('recent_feedbacks.html', recent_feedbacks = feedbacks)
+    
+    else:
+        return jsonify({}), 404
+    
 @bp.route('/recent_feedback/editSELLER/<int:seller_id>')
 def submit_SELLERedits(seller_id):
     if current_user.is_authenticated:
@@ -115,6 +134,25 @@ def submit_SELLERedits(seller_id):
         seller = Seller.seller_details(seller_id)[0]
 
         return render_template('submitSELLERedits.html', seller=seller)
+
+        #FeedbackItem.add_product_feedback(user_id, product_id)
+
+        #return jsonify([feedback.__dict__ for feedback in feedbacks])
+        
+        #return render_template('recent_feedbacks.html', recent_feedbacks = feedbacks)
+    
+    else:
+        return jsonify({}), 404
+
+@bp.route('/recent_feedback/editSELLERSTARS/<int:seller_id>')
+def submit_SELLEReditsSTARS(seller_id):
+    if current_user.is_authenticated:
+
+        user_id = current_user.id
+
+        seller = Seller.seller_details(seller_id)[0]
+
+        return render_template('submitSELLEReditsSTARS.html', seller=seller)
 
         #FeedbackItem.add_product_feedback(user_id, product_id)
 
@@ -134,13 +172,14 @@ def add_feedback(product_id):
         if current_reviews is not None:
             return redirect(url_for('recent_feedback.error'))
     
-
         user_id = current_user.id
-        review_text = request.form["review"]
+
+        review_text = request.form['review']
+        star_rating = int(request.form['rating'])
 
         #return render_template('submitfeedback.html')
 
-        test = FeedbackItem.add_product_feedback(user_id, product_id, review_text)
+        test = FeedbackItem.add_product_feedback(user_id, product_id, review_text, star_rating)
 
         #return jsonify([feedback.__dict__ for feedback in feedbacks])
         
@@ -167,9 +206,11 @@ def add_SELLERfeedback(seller_id):
             return redirect(url_for('recent_feedback.ordererror'))
 
         user_id = current_user.id
-        review_text = request.form["seller_review"]
 
-        test = FeedbackItem.add_seller_feedback(user_id, seller_id, review_text)
+        review_text = request.form['seller_review']
+        star_rating = int(request.form['seller_rating'])
+
+        test = FeedbackItem.add_seller_feedback(user_id, seller_id, review_text, star_rating)
 
         if test is True:
             return redirect(url_for('recent_feedback.recentFeedback'))
@@ -196,6 +237,26 @@ def edit_feedback(product_id):
     
     else:
         return jsonify({}), 404
+
+@bp.route('/recent_feedback/edit_reviewSTARS/<int:product_id>', methods=['GET', 'POST'])
+def edit_feedbackSTARS(product_id):
+    if current_user.is_authenticated:
+        user_id = current_user.id
+        star_rating = int(request.form['editSTARS'])
+
+        #return render_template('submitfeedback.html')
+
+        test = FeedbackItem.edit_product_STARS(user_id, product_id, star_rating)
+
+        #return jsonify([feedback.__dict__ for feedback in feedbacks])
+        
+        #return render_template('recent_feedbacks.html', recent_feedbacks = feedbacks)
+
+        if test is True:
+            return redirect(url_for('recent_feedback.recentFeedback'))
+    
+    else:
+        return jsonify({}), 404
     
 @bp.route('/recent_feedback/edit_SELLERreview/<int:seller_id>', methods=['GET', 'POST'])
 def edit_SELLERfeedback(seller_id):
@@ -206,6 +267,26 @@ def edit_SELLERfeedback(seller_id):
         #return render_template('submitfeedback.html')
 
         test = FeedbackItem.edit_seller_feedback(user_id, seller_id, review_text)
+
+        #return jsonify([feedback.__dict__ for feedback in feedbacks])
+        
+        #return render_template('recent_feedbacks.html', recent_feedbacks = feedbacks)
+
+        if test is True:
+            return redirect(url_for('recent_feedback.recentFeedback'))
+    
+    else:
+        return jsonify({}), 404
+    
+@bp.route('/recent_feedback/edit_SELLERreviewSTARS/<int:seller_id>', methods=['GET', 'POST'])
+def edit_SELLERfeedbackSTARS(seller_id):
+    if current_user.is_authenticated:
+        user_id = current_user.id
+        star_rating = request.form["editSELLERSTARS"]
+
+        #return render_template('submitfeedback.html')
+
+        test = FeedbackItem.edit_seller_STARS(user_id, seller_id, star_rating)
 
         #return jsonify([feedback.__dict__ for feedback in feedbacks])
         

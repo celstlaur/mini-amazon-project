@@ -61,7 +61,7 @@ class FeedbackItem:
         return [FeedbackItem(*row) for row in rows] if rows else None
     
     @staticmethod
-    def add_product_feedback(uid, pid, review):
+    def add_product_feedback(uid, pid, review, stars):
         try:
             current_time = datetime.datetime.now()
             rows = app.db.execute("""INSERT INTO ReviewedProduct(user_id, product_id, review, stars, time_reviewed_product)
@@ -69,7 +69,7 @@ class FeedbackItem:
                                   user_id=uid,
                                   product_id=pid,
                                   review=review,
-                                  stars=0,
+                                  stars=stars,
                                   time_reviewed_product=current_time)
             #id = rows[0][0]
             #return FeedbackItem.get_all(id)
@@ -79,7 +79,7 @@ class FeedbackItem:
             return None
         
     @staticmethod
-    def add_seller_feedback(uid, sid, review):
+    def add_seller_feedback(uid, sid, review, stars):
         try:
             current_time = datetime.datetime.now()
             rows = app.db.execute("""INSERT INTO ReviewedSeller(user_id, seller_id, review, stars, time_reviewed_seller)
@@ -87,7 +87,7 @@ class FeedbackItem:
                                   user_id=uid,
                                   seller_id=sid,
                                   review=review,
-                                  stars=0,
+                                  stars=stars,
                                   time_reviewed_seller=current_time)
             #id = rows[0][0]
             #return FeedbackItem.get_all(id)
@@ -156,6 +156,44 @@ class FeedbackItem:
                                   uid=uid,
                                   sid=sid,
                                   newReview=newReview,
+                                  time_reviewed_seller=current_time)
+            #id = rows[0][0]
+            #return FeedbackItem.get_all(id)
+            return True
+        except Exception as e:
+            print(str(e))
+            return e
+
+    @staticmethod
+    def edit_product_STARS(uid, pid, newStars):
+        try:
+            current_time = datetime.datetime.now()
+            rows = app.db.execute("""UPDATE ReviewedProduct
+                                SET stars = :newStars,
+                                    time_reviewed_product = :time_reviewed_product
+                                WHERE user_id = :uid AND product_id = :pid""",
+                                  uid=uid,
+                                  pid=pid,
+                                  newStars=newStars,
+                                  time_reviewed_product=current_time)
+            #id = rows[0][0]
+            #return FeedbackItem.get_all(id)
+            return True
+        except Exception as e:
+            print(str(e))
+            return e
+    
+    @staticmethod
+    def edit_seller_STARS(uid, sid, newStars):
+        try:
+            current_time = datetime.datetime.now()
+            rows = app.db.execute("""UPDATE ReviewedSeller
+                                SET stars = :newStars,
+                                    time_reviewed_seller = :time_reviewed_seller
+                                WHERE user_id = :uid AND seller_id = :sid""",
+                                  uid=uid,
+                                  sid=sid,
+                                  newStars=newStars,
                                   time_reviewed_seller=current_time)
             #id = rows[0][0]
             #return FeedbackItem.get_all(id)
