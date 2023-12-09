@@ -29,15 +29,16 @@ def orders(sid, purchase_id):
 
 
 
-
-'''@bp.route('/orders')
+'''
+@bp.route('/orders')
 def orders():
     orders = Order.users_cart(current_user.id)
     return render_template('orders.html', title='Orders', orders=orders)
-    cart_items = Product.users_cart(current_user.id)
-    total_cost = sum(item.product.price * item.quantity for item in cart_items)
-    return render_template('cart.html', title='Cart', current_user=current_user, cart_items=cart_items, total_cost=total_cost)
+    #cart_items = Product.users_cart(current_user.id)
+    #total_cost = sum(item.product.price * item.quantity for item in cart_items)
+    #return render_template('cart.html', title='Cart', current_user=current_user, cart_items=cart_items, total_cost=total_cost)
 '''
+
 @bp.route('/place_order/<int:product_id>', methods=['POST'])
 def place_order():
     if not current_user.is_authenticated:
