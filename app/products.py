@@ -7,6 +7,7 @@ import datetime
 from .models.product import Product
 from .models.orderfact import OrderFact
 from .models.inventory import Inventory
+from .models.feedbackitem import FeedbackItem
 from .models.seller import Seller
 from .models.carts import Cart
 from .models.cart import CartContents
@@ -61,6 +62,15 @@ def getprodpage(product):
     sellers = Inventory.get_sellers_given_product(product, per_page, offset)
     len_sellers = Inventory.get_len_sellers_given_prod(product)
 
+    seller_reviews = []
+    avg_star_ratingSELLER= []
+    num_ratingsSELLER = []
+    for seller in sellers:
+        seller_reviews.append(Product.get_seller_reviews(seller.seller_id))
+        avg_star_ratingSELLER.append(Product.get_seller_avgstars(seller.seller_id))
+        num_ratingsSELLER.append(Product.get_num_seller_ratings(seller.seller_id))
+        
+
     avg_star_rating = Product.get_product_avgstars(product)
     num_ratings = Product.get_num_product_ratings(product)
 
@@ -76,7 +86,10 @@ def getprodpage(product):
                            len_sellers = len_sellers,
                            avg_star_rating = avg_star_rating,
                            num_ratings = num_ratings,
-                           all_reviews = all_reviews)
+                           all_reviews = all_reviews,
+                           seller_reviews = seller_reviews,
+                           avg_star_ratingSELLER = avg_star_ratingSELLER,
+                           num_ratingsSELLER = num_ratingsSELLER)
 
 @bp.route('/products/findexpensive/', methods = {"GET"})
 def find_most_expensive_products():
