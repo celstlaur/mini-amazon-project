@@ -61,6 +61,48 @@
 
 </div>
 
+<br><br><br><br><br><br><br>
+
+<div class = "left-column">
+<h5> Advanced Filter </h5>
+
+<div class = "container">
+<p> Ascending/Descending Price
+<form action='/products/filter/' method = "GET" id="advfilter">
+
+<!-- checkbox code for asc/desc -->
+<label class="switch">
+  <input type="checkbox"
+  name = "checkbox"
+  value = "asc"
+  id = "ascdesc">
+  <span class="slider round"></span>
+</label>
+<br>
+
+</div>
+
+<!-- category to filter for -->
+
+
+<!-- keyword to filter for -->
+  <input type="string" placeholder = "Enter keyword" name = "keyword"/>
+
+  <input type="string" placeholder = "Enter category" name = "cat"/>
+
+
+    <input type="string" placeholder = "Maximum Price" name = "maxp"/> 
+
+
+
+    <input type="string" placeholder = "Minimum Price" name = "minp"/>
+
+    <input type="submit" value="Submit Advanced Filtering">
+
+</form>
+</div>
+
+
 
 
 
