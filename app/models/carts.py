@@ -91,6 +91,10 @@ class CartContents:
    def calculate_total_cost(cart):
        total_cost = sum(item.price * item.quantity for item in cart)
        return total_cost
+
+   def update_total_cost(total_cost, discount):
+       new_total_cost = total_cost - discount
+       return new_total_cost
     
    def calculate_total_products(cart):
        total_products = sum(item.quantity for item in cart)

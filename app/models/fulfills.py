@@ -18,3 +18,5 @@ class Fulfills:
     ''',
                               seller_id=seller_id)
         return [Fulfills(*row) for row in rows] if rows else None
+
+    

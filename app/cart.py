@@ -5,6 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask import jsonify
+from decimal import Decimal
 
 
 from .models.user import User
@@ -12,8 +13,7 @@ from .models.product import Product
 from .models.carts import Cart, CartContents
 from .models.orders import Order, OrderItem
 from .models.balance import Balance
-#from .models.cart import CartContents
-
+from .models.ordercontents import OrderHistory
 
 
 
@@ -83,17 +83,17 @@ def apply_discount():
 
     discount_code = request.form.get('discount_code')
 
-
     # Check the validity of the discount code
     #if discount_code:
     if (Cart.valid_code(discount_code) == 1):
         flash('Discount applied!', 'success')
-        total_cost = total_cost-100
+        #total_cost = total_cost-100
+        new_total_cost = CartContents.update_total_cost(total_cost, 100)
     else:
         flash('Invalid discount code', 'danger')
     # Redirect back to the cart page
     #return redirect(url_for('cart.cart'))
-    return render_template('cart.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
+    return render_template('cart.html', cart=cart_info, total_cost=new_total_cost, total_products=total_products)
 
 
 @bp.route('/add_to_cart/<int:product_id>', methods=['POST'])
@@ -122,18 +122,27 @@ def place_order():
         total_products = 0
 
     if balance > total_cost:
+        order_info = CartContents.get_cart(user_id)
         if cart_info:
             flash('Order placed successfully!', 'success')
+            OrderHistory.insert_user_purchase_history(user_id, order_info)
             for item in cart_info:
                 CartContents.delete_from_cart(user_id, item.product_id)
             #balance = float(balance) - float(total_cost)
+            '''amount = Decimal(total_cost)
+            new_balance = Balance.calculate_new_balance(user_id, -amount)
+            Balance.insert_new_balance(user_id, new_balance)'''
             return render_template('orders.html', orders=cart_info, total_cost=total_cost, total_products=total_products)
         else:
             flash('Failed to place the order. Please try again later.', 'danger')
             return redirect(url_for('cart.cart'))
     else:
-        flash('Insufficient funds. Please make a deposit and try again.', 'danger')
-        return redirect(url_for('cart.cart'))
+        if balance < total_cost:
+            flash('Insufficient funds. Please make a deposit and try again.', 'danger')
+            return redirect(url_for('cart.cart'))
+        else:
+            flash('Some items unavailable. Please edit your cart and try again.', 'danger')
+            return redirect(url_for('cart.cart'))
 
 
     '''if request.method == 'POST':

@@ -28,8 +28,7 @@
           <a href= "({url_for('cart.minus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">-</a>
         </td>
         <td>${{item.price}}</td>
-        {% set total_price = item.price*item.quantity %}
-        <td>${{total_price}}</td>
+        <td>${{item.price*item.quantity}}</td>
         <td>
           <a href="{{ url_for('cart.delete_item', product_id=item.product_id) }}" class="btn btn-danger">Remove</a>
         </td>

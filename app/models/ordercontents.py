@@ -46,6 +46,21 @@ LIMIT :limit OFFSET :offset ;
                               ''',
                               seller_id=seller_id, limit=limit, offset=offset)
         return [OrderHistory(*row) for row in rows] if rows else None
+
+
+    def insert_user_purchase_history(self, user_id):
+        try:
+            # Insert order details into the user's purchase history
+            app.db.execute('''
+                INSERT INTO OrderHistory (order_id, product_name, product_id, quantity, fulfillment_status, timestamp, first, last, price_each, address)
+                VALUES (:user_id, :order_id, :product_name, :product_id, :quantity, :fulfillment_status, :timestamp, :first, :last, :price_each, :address)
+            ''', user_id=user_id, order_id=self.order_id, product_name=self.product_name, product_id=self.product_id,
+                           quantity=self.quantity, fulfillment_status=self.fulfill_status, timestamp=self.timestamp,
+                           first=self.first, last=self.last, price_each=self.price_each, address=self.address)
+            return True
+        except Exception as e:
+            print(e)
+            return False
     
     
     def get_seller_history_length(seller_id):
