@@ -4,6 +4,7 @@
 
 <main class="container">
 
+
   <!-- Left Column / Products Image -->
   <div class="left-column">
     <img data-image="red" class=active
@@ -38,7 +39,7 @@
     {% endif %}
   </div>
 
-  
+</main>
 {% if sellers %}
 
 {% set y = sellers|length %}
@@ -47,11 +48,11 @@
 
 <br> <br>
 
-<div class="container"></div>
-
 {% set pages = (len / page_length) | round(0, 'ceil') | int %}
 
 <br>
+
+
 
 {% for x in range(0, y, 4) %}
     <div class="card-group">
@@ -62,9 +63,9 @@
       {% endif %}
       {% for seller in sellers[x:i]%}
       <!--{% print id %}-->
-
       <div class="height d-flex justify-content-center align-items-center"></div>
       <div class="card">
+        <div class="d-flex justify-content-between align-items-center ">
             <div class="mt-5">
               <h4 class="main-heading mt-0">Seller {{seller.seller_id}}</h4>
               <p class="product-description">In Stock: {{seller.quantity}}</p>
@@ -73,13 +74,17 @@
                 
                 <input type="string" placeholder = "Quantity to Order" name = "k"/><br>
             
-                <input type="submit" value="Place Order">
+                <input type="submit" value="Add to Cart">
+              </form>
                 {% endif %}
-            </form>
-      </div>
+          </div>
+          </div>
+        </div>
       {% endfor %}
       </div>
       </div>
+
+
 
   {% endfor %}
 
@@ -116,6 +121,9 @@
 </form>
 <form action="{{ url_for('products.edit_price', product_id=product.id)}}" method="post">
   <input type="string" placeholder="New Price" name="m" /><br>
+</form>
+<form action="{{ url_for('products.edit_image', product_id=product.id)}}" method="post">
+  <input type="string" placeholder="New Image" name="i" /><br>
 </form>
   <br>
 <label for="review">New Description:</label> <br>
