@@ -21,13 +21,14 @@ from .inventory import Inventory
 
 
 class Product:
-    def __init__(self, id, name, creator_id, category, product_description, price):
+    def __init__(self, id, name, creator_id, category, product_description, price, image):
         self.id = id
         self.name = name
         self.creator_id = creator_id
         self.category = category
         self.product_description = product_description
         self.price = price
+        self.image = image
 
 # Products:
 # product_id, product_name, seller_id, category, description, price
@@ -40,6 +41,22 @@ class Product:
             rows = app.db.execute(""" UPDATE Products
                                    SET name = :name
                                    WHERE id = :id """, name = name, id = id)
+
+            #id = rows[0][0]
+            #return FeedbackItem.get_all(id)
+            return True
+        except Exception as e:
+            print(str(e))
+            return None
+        
+
+    @staticmethod
+    def edit_product_image(id, image):
+        try:
+
+            rows = app.db.execute(""" UPDATE Products
+                                   SET image = :image
+                                   WHERE id = :id """, image = image, id = id)
 
             #id = rows[0][0]
             #return FeedbackItem.get_all(id)
@@ -110,7 +127,7 @@ WHERE id = :id
     @staticmethod
     def get_all():
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 ''')
         return [Product(*row) for row in rows]
@@ -120,7 +137,7 @@ FROM Products
     @staticmethod
     def get_byoffset(limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 ORDER BY id
 LIMIT :limit OFFSET :offset
@@ -132,7 +149,7 @@ LIMIT :limit OFFSET :offset
     @staticmethod
     def get_len_prods():
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 ''')
         return len(rows) if rows else 0
@@ -141,7 +158,7 @@ FROM Products
     @staticmethod
     def get_asc(limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 ORDER BY price
 LIMIT :limit OFFSET :offset
@@ -153,7 +170,7 @@ LIMIT :limit OFFSET :offset
     @staticmethod
     def get_desc(limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 ORDER BY price DESC
 LIMIT :limit OFFSET :offset
@@ -165,7 +182,7 @@ LIMIT :limit OFFSET :offset
     @staticmethod
     def get_by_category(category, limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE category = :category
 LIMIT :limit OFFSET :offset
@@ -178,7 +195,7 @@ category = category, limit = limit, offset = offset)
     @staticmethod
     def get_by_category_asc(category, limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE category = :category
 ORDER BY price, id
@@ -191,7 +208,7 @@ category = category, limit = limit, offset = offset)
     @staticmethod
     def get_by_category_desc(category, limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE category = :category
 ORDER BY price DESC, id
@@ -204,7 +221,7 @@ category = category, limit = limit, offset = offset)
     @staticmethod
     def getbycat_length(category):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE category = :category
 ''', 
@@ -216,7 +233,7 @@ category = category)
     def get_by_desc(keyword, limit, offset):
         key = "%" + keyword + "%"
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE product_description LIKE :key OR name LIKE :key
 LIMIT :limit OFFSET :offset
@@ -229,7 +246,7 @@ key = key, limit = limit, offset = offset)
     def get_by_desc_asc(keyword, limit, offset):
         key = "%" + keyword + "%"
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE product_description LIKE :key OR name LIKE :key
 ORDER BY price, id
@@ -243,7 +260,7 @@ key = key, limit = limit, offset = offset)
     def get_by_desc_desc(keyword, limit, offset):
         key = "%" + keyword + "%"
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE product_description LIKE :key OR name LIKE :key
 ORDER BY price DESC, id
@@ -257,7 +274,7 @@ key = key, limit = limit, offset = offset)
     def getbydesc_length(keyword):
         key = "%" + keyword + "%"
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE product_description LIKE :key OR name LIKE :key
 ''', 
@@ -271,7 +288,7 @@ key = key)
     @staticmethod
     def get_all_less_than_equal_to_price(price, limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE price <= :price
 ORDER BY price DESC, id
@@ -284,7 +301,7 @@ LIMIT :limit OFFSET :offset
     @staticmethod
     def get_len_leq(price):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE price <= :price
 ''',
@@ -295,7 +312,7 @@ WHERE price <= :price
     @staticmethod
     def get_all_greater_than_price(price, limit, offset):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE price >= :price
 ORDER BY price, ID
@@ -308,7 +325,7 @@ LIMIT :limit OFFSET :offset
     @staticmethod
     def get_len_geq(price):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE price >= :price
 ''',
@@ -323,7 +340,7 @@ WHERE price >= :price
         if k < limit:
             limit = k
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 ORDER BY price DESC, id
 LIMIT :k OFFSET :offset
@@ -333,7 +350,7 @@ LIMIT :k OFFSET :offset
     @staticmethod
     def get_k_cheapest(k):
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 ORDER BY price, id
 LIMIT :k
@@ -349,7 +366,7 @@ LIMIT :k
         if k < limit:
             limit = k
         rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price
+SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 ORDER BY id
 LIMIT :limit OFFSET :offset
@@ -360,7 +377,7 @@ LIMIT :limit OFFSET :offset
 # product_id, product_name, seller_id, category, description, price
 
     @staticmethod
-    def create_new_product(name, creator_id, category, product_description, price):
+    def create_new_product(name, creator_id, category, product_description, price, image):
 
         if category not in ["Red", "Blue", "Green", "Yellow", "Purple"]:
             print("Not an acceptable category!")
@@ -375,14 +392,15 @@ FROM Products
         try:
         
 
-            rows = app.db.execute("""INSERT INTO Products(id, name, creator_id, category, product_description, price)
-                                VALUES(:pid, :product_name, :seller_id, :category, :description, :price)""",
+            rows = app.db.execute("""INSERT INTO Products(id, name, creator_id, category, product_description, price, image)
+                                VALUES(:pid, :product_name, :seller_id, :category, :description, :price, :image)""",
                                   pid=pid,
                                   product_name = name,
                                   seller_id =creator_id,
                                   category = category,
                                   description = product_description,
-                                  price = price)
+                                  price = price,
+                                  image = image)
 
             return True, pid
         except Exception as e:
