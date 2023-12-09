@@ -157,7 +157,7 @@ def filter():
     offset = (page - 1) * per_page
 
 
-    stars = request.args.get('stars')
+    stars = request.args.get('editSTARS')
     keyword = request.args.get('keyword')
     cat = request.args.get('cat')
     maxp = request.args.get('maxp')
@@ -169,9 +169,9 @@ def filter():
     # finds order history, number of rows in order history
     if checkbox == 'asc':
         if cat:
-            if stars:
+            if stars != "Any":
                 if keyword:
-                    adv_filt = Product.get_filtered(cat, keyword, minp, maxp, stars, per_page, offset)
+                    adv_filt = Product.get_filtered(cat, keyword, stars, per_page, offset, minp, maxp)
                 else:
                     adv_filt = Product.get_catstars(cat, minp, maxp, stars, per_page, offset)
 
@@ -181,7 +181,7 @@ def filter():
                 else:
                     adv_filt = Product.get_catfilter(cat, minp, maxp, per_page, offset)
         else:
-            if stars:
+            if stars != "Any":
                 if keyword:
                     adv_filt = Product.get_keystars(keyword, minp, maxp, stars, per_page, offset)
                 else:
@@ -194,7 +194,7 @@ def filter():
                     adv_filt = Product.get_minmax(minp, maxp, per_page, offset)     
     else:
         if cat:
-            if stars:
+            if stars != "Any":
                 if keyword:
                     adv_filt = Product.get_filtered_desc(cat, keyword, minp, maxp, stars, per_page, offset)
                 else:
@@ -206,7 +206,7 @@ def filter():
                 else:
                     adv_filt = Product.get_catfilter_desc(cat, minp, maxp, per_page, offset)
         else:
-            if stars:
+            if stars != "Any":
                 if keyword:
                     adv_filt = Product.get_keystars_desc(keyword, minp, maxp, stars, per_page, offset)
                 else:
@@ -316,6 +316,51 @@ def get_leq():
             page -= 1
 
         return redirect(url_for('products.get_leq', page = page))
+
+    # render the page by adding information to the index.html file
+    if current_user.is_authenticated:
+        purchases = OrderFact.get_paged_orders(current_user.id, page, per_page)
+        return render_template('buy.html', avail_products=lenleq,
+                               current_user=current_user, 
+                                            purchase_history=purchases, 
+                                            current_page = page,
+                                            page_length = per_page,
+                                            total_avail = lenq,
+                                            #seller_check=current_user.is_seller(current_user.id), 
+                                            cart_check=current_user.has_cart(current_user.id),
+                                            category = k)
+    else:
+        return render_template('buy.html', avail_products=lenleq,
+                               current_user=current_user,
+                               current_page = page,
+                               page_length = per_page,
+                               total_avail = lenq,
+                               category = k)
+    
+@bp.route('/products/get_prods_by_star/', methods = {"GET", "POST"})
+def get_prods_by_star():
+
+    k = request.args.get('k')
+    # get products for sale in category:
+
+        # determines table size
+    page = request.args.get('page', 1, type=int)
+    per_page = 12
+    offset = (page - 1) * per_page
+
+    # finds order history, number of rows in order history
+    lenleq = Product.get_prods_by_star(k, per_page, offset)
+
+    lenq = Product.get_prods_by_star_len(k)
+        
+    # logic for front and back buttons
+    if request.method == 'POST':
+        if request.form['action'] == 'next':
+            page += 1
+        elif request.form['action'] == 'prev':
+            page -= 1
+
+        return redirect(url_for('products.get_prods_by_star', page = page, k = k))
 
     # render the page by adding information to the index.html file
     if current_user.is_authenticated:

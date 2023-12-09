@@ -33,6 +33,27 @@
   </a>
 </div>
 </div>
+<h5> Filter By Average Review </h5>
+<div class="button-container">
+  <a href="/products/get_prods_by_star/?k=0">
+    <button>0 Star</button>
+  </a>
+  <a href="/products/get_prods_by_star/?k=1">
+    <button>1 Star</button>
+  </a>
+  <a href="/products/get_prods_by_star/?k=2">
+    <button>2 Stars</button>
+  </a>
+  <a href="/products/get_prods_by_star/?k=3">
+    <button>3 Stars</button>
+  </a>
+  <a href="/products/get_prods_by_star/?k=4">
+    <button>4 Stars</button>
+  </a>
+  <a href="/products/get_prods_by_star/?k=5">
+    <button>5 Stars</button>
+  </a>
+</div>
 
 <div class ="right-column">
   <h5> Filter By Description </h5>
@@ -67,18 +88,26 @@
 <h5> Advanced Filter </h5>
 
 <div class = "container">
-<p> Ascending/Descending Price
 <form action='/products/filter/' method = "GET" id="advfilter">
 
 <!-- checkbox code for asc/desc -->
-<label class="switch">
-  <input type="checkbox"
-  name = "checkbox"
-  value = "asc"
-  id = "ascdesc">
-  <span class="slider round"></span>
-</label>
-<br>
+<label for="checkbox">Price:</label>
+<select id="checkbox" name="checkbox" required>
+    <option value="asc">Ascending</option>
+    <option value="desc">Descending</option>
+</select>
+
+
+<label for="editSTARS">Star Rating:</label>
+<select id="editSTARS" name="editSTARS" required>
+    <option value="-1">Any</option>
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+</select>
 
 </div>
 

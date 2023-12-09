@@ -221,20 +221,31 @@ category = category, limit = limit, offset = offset)
 
 # filter by category PRICE DESCENDING WITH KEYWORD
     @staticmethod
-    def get_filtered(category, keyword, minp = 0, maxp = 99999999999999999, stars, limit, offset):
+    def get_filtered(category, keyword, stars, limit, offset, minp = 0, maxp = 99999999999999999):
 
         rows = app.db.execute('''
 (SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
-WHERE category = :category AND stars = :stars AND price >= :minp AND price <= :maxp)
-UNION
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
 (SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
 WHERE product_description LIKE :key OR name LIKE :key )
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
 ORDER BY price, id
 LIMIT :limit OFFSET :offset
-''', category = category, key = keyword, minp = minp, maxp=maxp, stars = :stars limit = limit, offset = offset)
-
+''', category = category, key = keyword, minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    """
         rows = app.db.execute('''
 SELECT id, name, creator_id, category, product_description, price, image
 FROM Products
@@ -244,6 +255,9 @@ LIMIT :limit OFFSET :offset
 ''', 
 category = category, key = keyword, minp = minp, maxp=maxp, limit = limit, offset = offset)
         return [Product(*row) for row in rows]
+
+"""
+
 
 # filter by category PRICE DESCENDING WITH KEYWORD
     @staticmethod
@@ -537,6 +551,8 @@ FROM Products
                             SELECT AVG(CAST(stars AS FLOAT)) AS average_stars
                             FROM ReviewedProduct
                             WHERE product_id = :product_id''', product_id = product_id)
+        if avg == [(None,)]:
+            return None
 
         return str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2)) if avg else 0
     
@@ -593,6 +609,36 @@ FROM Products
         all_reviews = [{'review': row[0], 'stars': row[1]} for row in rows]
 
         return all_reviews if all_reviews else []
+    
+
+    @staticmethod
+    def get_prods_by_star(stars, limit, offset):
+        rows = app.db.execute('''
+                            SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id
+                            LIMIT :limit OFFSET :offset
+                            ''', stars = stars, limit = limit, offset = offset)
+    
+
+        return [Product(*row) for row in rows]
+    
+    @staticmethod
+    def get_prods_by_star_len(stars):
+        rows = app.db.execute('''
+                            SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id''', stars = stars)
+    
+
+        return len(rows) if rows else 0
         
 
     
