@@ -38,14 +38,6 @@ def cart():
 
 
     return render_template('cart.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
-    
-    #cart_items = Cart.get_cart_items_with_info(user_id)
-    #return render_template('cart.html', items=cart_items)
-
-    #cart_items = Product.users_cart(current_user.id)
-    #cart_items = Cart.get_all()
-    #total_cost = sum(item.product.price * item.quantity for item in cart_items)
-    #return render_template('cart.html', title='Cart', current_user=current_user, cart_items=cart_items, total_cost=total_cost)
 
 
 @bp.route('/quantity_minus/<product_id>/<quantity>', methods = ['GET', 'POST'])
@@ -74,27 +66,6 @@ def delete_item(product_id):
     return redirect(url_for('cart.cart'))
 
 
-'''@bp.route('/discount_code/<int:product_id>/<int:seller_id>/<int:seller_quant>', methods = {"GET", "POST"})
-def discount_code(product_id, seller_id, seller_quant):
-    if not current_user.is_authenticated:
-        return jsonify({}), 404
-
-    user_id = current_user.id
-    cart_info = CartContents.get_cart(user_id)
-
-    if cart_info:
-        total_cost = CartContents.calculate_total_cost(cart_info)
-    else:
-        total_cost = 0
-
-    discount = request.form["k"]
-
-    if discount == discount.code:
-        total_cost = Cart.discount(total_cost)
-        return redirect(url_for('cart.cart'))
-
-    return redirect(url_for('cart.cart'))'''
-
 @bp.route('/apply_discount', methods=['POST'])
 def apply_discount():
     if not current_user.is_authenticated:
@@ -111,6 +82,7 @@ def apply_discount():
         total_products = 0
 
     discount_code = request.form.get('discount_code')
+
 
     # Check the validity of the discount code
     #if discount_code:
@@ -150,16 +122,12 @@ def place_order():
         total_products = 0
 
     if balance > total_cost:
-        if request.method == 'POST':
-            user_id = current_user.id
-            cart_info = CartContents.get_cart(user_id)
-
         if cart_info:
             flash('Order placed successfully!', 'success')
             for item in cart_info:
                 CartContents.delete_from_cart(user_id, item.product_id)
             #balance = float(balance) - float(total_cost)
-            return render_template('orders.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
+            return render_template('orders.html', orders=cart_info, total_cost=total_cost, total_products=total_products)
         else:
             flash('Failed to place the order. Please try again later.', 'danger')
             return redirect(url_for('cart.cart'))
