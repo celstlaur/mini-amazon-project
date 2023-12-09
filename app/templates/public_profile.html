@@ -8,6 +8,14 @@
 {% if not current_user.is_authenticated %}
     <p><a href="{{ url_for('users.login') }}">Log in</a> to see your account information!</p>
 {% else %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
+</div>
+<hr><br>
+<strong>Total Purchases: </strong>{{ num_purchases }}
+<br>
+
+
 
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3>{{ current_user.firstname }} {{ current_user.lastname }}, User #{{current_user.id}} </h3>
@@ -29,6 +37,8 @@
         <br>
         <strong>Address: </strong>{{ seller_address }}
         <!-- TODO: integrate with reviews-->
+        <p><a href="{{ url_for('recent_feedback.submit_SELLERfeedback', seller_id=current_user.id)}}">submit a review of this
+            seller</a></p>
     {% else %}
         Buyer
     {% endif %}

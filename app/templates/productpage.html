@@ -2,14 +2,20 @@
 
 {% block content %}
 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
 <main class="container">
+
 
   <!-- Left Column / Products Image -->
   <div class="left-column">
     <img data-image="red" class=active
-      src="https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp" alt="">
+      src= "{{product.image}}" alt="">
   </div>
-
 
   <!-- Right Column -->
   <div class="right-column">
@@ -24,9 +30,6 @@
     <!-- Product Configuration -->
     <div class="product-configuration">
 
-
-    </div>
-
     <!-- Product Pricing -->
     <div class="product-price">
       <span>${{product.price}}</span>
@@ -38,7 +41,8 @@
     {% endif %}
   </div>
 
-  
+</main>
+
 {% if sellers %}
 
 {% set y = sellers|length %}
@@ -47,11 +51,11 @@
 
 <br> <br>
 
-<div class="container"></div>
-
 {% set pages = (len / page_length) | round(0, 'ceil') | int %}
 
 <br>
+
+
 
 {% for x in range(0, y, 4) %}
     <div class="card-group">
@@ -62,9 +66,9 @@
       {% endif %}
       {% for seller in sellers[x:i]%}
       <!--{% print id %}-->
-
       <div class="height d-flex justify-content-center align-items-center"></div>
       <div class="card">
+        <div class="d-flex justify-content-between align-items-center ">
             <div class="mt-5">
               <h4 class="main-heading mt-0">Seller {{seller.seller_id}}</h4>
               <p class="product-description">In Stock: {{seller.quantity}}</p>
@@ -73,13 +77,17 @@
                 
                 <input type="string" placeholder = "Quantity to Order" name = "k"/><br>
             
-                <input type="submit" value="Place Order">
+                <input type="submit" value="Add to Cart">
+              </form>
                 {% endif %}
-            </form>
-      </div>
+          </div>
+          </div>
+        </div>
       {% endfor %}
       </div>
       </div>
+
+
 
   {% endfor %}
 
@@ -117,6 +125,9 @@
 <form action="{{ url_for('products.edit_price', product_id=product.id)}}" method="post">
   <input type="string" placeholder="New Price" name="m" /><br>
 </form>
+<form action="{{ url_for('products.edit_image', product_id=product.id)}}" method="post">
+  <input type="string" placeholder="New Image" name="i" /><br>
+</form>
   <br>
 <label for="review">New Description:</label> <br>
       <form action="{{ url_for('products.edit_desc', product_id=product.id)}}" method="post">
@@ -127,14 +138,161 @@
 {% endif %}
 
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Rating</title>
+  <style>
+      .rating-block {
+          background-color: #f8f8f8;
+          padding: 20px;
+          border-radius: 10px;
+          text-align: center;
+          font-family: Arial, sans-serif;
+          width: 100%; 
+          margin: 20px 0; 
+      }
+
+      .average-rating {
+          font-size: 24px;
+          color: #ffcc00;
+      }
+
+      .num-ratings {
+          font-size: 16px;
+          color: #666;
+      }
+  </style>
+</head>
+
+<body>
+
+  <div class="rating-block">
+      <p class="average-rating"> {{avg_star_rating}} / 5  stars</p>
+      <p class="num-ratings">Based on {{num_ratings}} ratings</p>
+  </div>
+
+</body>
+
+{% if all_reviews != [] %}
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Review</th>
+      <th scope="col">Rating</th>
+    </tr>
+  </thead>
+  <tbody id="reviewTableBody">
+    <!-- Display the first 10 rows initially -->
+    {% for row in all_reviews[:10] %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>
+            {% if row[1] == 0 %} <img data-image="red" class=active src="https://i.imgur.com/p2JjRmM.png" width="175">  
+              {% elif row[1] == 1 %} <img data-image="red" class=active src="https://i.imgur.com/BdfU7m5.png" width="175"> 
+              {% elif row[1] == 2 %} <img data-image="red" class=active src="https://i.imgur.com/HgNYvHH.png" width="175">
+              {% elif row[1] == 3 %} <img data-image="red" class=active src="https://i.imgur.com/0OGy7CQ.png" width="175">
+              {% elif row[1] == 4 %} <img data-image="red" class=active src="https://i.imgur.com/Ra9Iliz.png" width="175">
+              {% elif row[1] == 5 %} <img data-image="red" class=active src="https://i.imgur.com/4Ph8pTz.png" width="175">
+              {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Pagination buttons -->
+<div class="container mt-3">
+  <ul class="pagination">
+    <li class="page-item" id="prevPage">
+      <a class="page-link" href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li class="page-item" id="nextPage">
+      <a class="page-link" href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
 </div>
-</div>
 
-<br> <br> <br>
+<!-- Pagination script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var currentPage = 1;
+    var rowsPerPage = 10;
 
+    // Manually convert Python list to JSON string
+    var allReviewsJson = '{{ all_reviews|tojson|safe }}';
 
+    // Parse JSON string to JavaScript object
+    var allReviews = JSON.parse(allReviewsJson);
 
+    function displayRows() {
+      var startIndex = (currentPage - 1) * rowsPerPage;
+      var endIndex = startIndex + rowsPerPage;
+      var visibleRows = allReviews.slice(startIndex, endIndex);
 
+      var tableBody = document.getElementById('reviewTableBody');
+      tableBody.innerHTML = ''; // Clear existing rows
+
+      for (var i = 0; i < visibleRows.length; i++) {
+        var row = visibleRows[i];
+        var newRow = "<tr><td>" + row.review + "</td><td>";
+
+        // Update the logic for displaying rating images
+        newRow += getRatingImage(row.stars);
+
+        newRow += "</td></tr>";
+        tableBody.innerHTML += newRow;
+      }
+    }
+
+    function updatePaginationButtons() {
+      document.getElementById('prevPage').disabled = (currentPage === 1);
+      document.getElementById('nextPage').disabled = (currentPage === Math.ceil(allReviews.length / rowsPerPage));
+    }
+
+    // New function to get the rating image path based on the rating value
+    function getRatingImage(stars) {
+      var basePath = "https://i.imgur.com/";  // Adjust the base path as needed
+
+      if (stars === 0) return "<img src='" + basePath + "/p2JjRmM.png' width='175'>";
+      if (stars === 1) return "<img src='" + basePath + "/BdfU7m5.png' width='175'>";
+      if (stars === 2) return "<img src='" + basePath + "/HgNYvHH.png' width='175'>";
+      if (stars === 3) return "<img src='" + basePath + "/0OGy7CQ.png' width='175'>";
+      if (stars === 4) return "<img src='" + basePath + "/Ra9Iliz.png' width='175'>";
+      if (stars === 5) return "<img src='" + basePath + "/4Ph8pTz.png' width='175'>";
+
+      return "";  // Default if the rating value is not recognized
+    }
+
+    displayRows();
+    updatePaginationButtons();
+
+    document.getElementById('prevPage').addEventListener('click', function(event) {
+      event.preventDefault();
+      if (currentPage > 1) {
+        currentPage--;
+        displayRows();
+        updatePaginationButtons();
+      }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', function(event) {
+      event.preventDefault();
+      if (currentPage < Math.ceil(allReviews.length / rowsPerPage)) {
+        currentPage++;
+        displayRows();
+        updatePaginationButtons();
+      }
+    });
+  });
+</script>
+{% elif all_reviews == [] %}
+<h2>This product has no reviews.</h2>
+{% endif %}
 </main>
 
 
