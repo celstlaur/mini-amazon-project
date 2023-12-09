@@ -75,6 +75,7 @@ LIMIT :limit OFFSET :offset ;
             return False
 
 
+
 class OrderViz:
     def __init__(self, oid, pname, quant, fulfill, time, first, last, address, price):
         self.oid = oid
