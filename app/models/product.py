@@ -1,4 +1,4 @@
-from flask import current_app as app
+from flask import current_app as app, flash
 from flask_login import current_user
 from .inventory import Inventory
 
@@ -380,7 +380,7 @@ LIMIT :limit OFFSET :offset
     def create_new_product(name, creator_id, category, product_description, price, image):
 
         if category not in ["Red", "Blue", "Green", "Yellow", "Purple"]:
-            print("Not an acceptable category!")
+            flash("Not an acceptable category!", "danger")
             return False, 0
 
         rows1 = app.db.execute('''

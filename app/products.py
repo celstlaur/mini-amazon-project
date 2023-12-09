@@ -437,6 +437,30 @@ def edit_name(product_id):
     else:
         return jsonify({}), 404
     
+
+@bp.route('/product/edit_image/<int:product_id>', methods=['GET', 'POST'])
+def edit_image(product_id):
+    if current_user.is_authenticated:
+
+        user_id = current_user.id
+        new_imag = request.form["i"]
+
+        #return render_template('submitfeedback.html')
+        
+        test = Product.edit_product_image(product_id, new_imag)
+        #print(test)
+
+        #return jsonify([feedback.__dict__ for feedback in feedbacks])
+        
+        #return render_template('recent_feedbacks.html', recent_feedbacks = feedbacks)
+
+        if test is True:
+            return redirect(url_for("products.getprodpage", product = product_id))
+
+    
+    else:
+        return jsonify({}), 404
+    
 @bp.route('/product/edit_desc/<int:product_id>', methods=['GET', 'POST'])
 def edit_desc(product_id):
     if current_user.is_authenticated:
@@ -518,12 +542,13 @@ def create(creator_id):
         category = request.form["cat"]
         name = request.form["name"]
         new_desc = request.form['desc']
+        new_image = request.form['image']
 
 
 
         #return render_template('submitfeedback.html')
 
-        test, product_id = Product.create_new_product(name, creator_id, category, new_desc, price)
+        test, product_id = Product.create_new_product(name, creator_id, category, new_desc, price, new_image)
         #print(test)
 
         test2 = Seller.become_seller(current_user.id, current_user.email, current_user.email)
