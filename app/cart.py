@@ -129,7 +129,7 @@ def place_order():
             flash('Order placed successfully!', 'success')
             #OrderHistory.insert_user_purchase_history(user_id, order_info)
             for item in cart_info:
-                CartContents.delete_from_cart(user_id, item.product_id)
+                CartContents.delete_from_cart(user_id, item.product_id, item.seller_id)
             #balance = float(balance) - float(total_cost)
             '''amount = Decimal(total_cost)
             new_balance = Balance.calculate_new_balance(user_id, -amount)
