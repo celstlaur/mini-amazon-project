@@ -7,6 +7,7 @@ import datetime
 from .models.product import Product
 from .models.orderfact import OrderFact
 from .models.inventory import Inventory
+from .models.feedbackitem import FeedbackItem
 from .models.seller import Seller
 from .models.carts import Cart
 from .models.carts import CartContents
@@ -61,6 +62,15 @@ def getprodpage(product):
     sellers = Inventory.get_sellers_given_product(product, per_page, offset)
     len_sellers = Inventory.get_len_sellers_given_prod(product)
 
+    seller_reviews = []
+    avg_star_ratingSELLER= []
+    num_ratingsSELLER = []
+    for seller in sellers:
+        seller_reviews.append(Product.get_seller_reviews(seller.seller_id))
+        avg_star_ratingSELLER.append(Product.get_seller_avgstars(seller.seller_id))
+        num_ratingsSELLER.append(Product.get_num_seller_ratings(seller.seller_id))
+        
+
     avg_star_rating = Product.get_product_avgstars(product)
     num_ratings = Product.get_num_product_ratings(product)
 
@@ -76,7 +86,10 @@ def getprodpage(product):
                            len_sellers = len_sellers,
                            avg_star_rating = avg_star_rating,
                            num_ratings = num_ratings,
-                           all_reviews = all_reviews)
+                           all_reviews = all_reviews,
+                           seller_reviews = seller_reviews,
+                           avg_star_ratingSELLER = avg_star_ratingSELLER,
+                           num_ratingsSELLER = num_ratingsSELLER)
 
 @bp.route('/products/findexpensive/', methods = {"GET"})
 def find_most_expensive_products():
@@ -148,6 +161,130 @@ def sort_asc():
                                total_avail = len,
                                price = "asc")
     
+@bp.route('/products/filter/', methods = {"GET", "POST"})
+def filter():
+
+        # determines table size
+    page = request.args.get('page', 1, type=int)
+    per_page = 12
+    offset = (page - 1) * per_page
+
+
+    stars = request.args.get('editSTARS')
+    keyword = request.args.get('keyword')
+    cat = request.args.get('cat')
+    maxp = request.args.get('maxp')
+    minp = request.args.get('minp')
+    checkbox = request.args.get('checkbox')
+
+    if minp == '':
+        minp = 0
+    if maxp == '':
+        maxp = 999999999999
+
+
+
+    # finds order history, number of rows in order history
+    if checkbox == 'asc':
+        if cat:
+            if stars != "-1":
+                if keyword:
+                    adv_filt = Product.get_filtered(cat, keyword, stars, per_page, offset, minp, maxp)
+                    len = Product.get_filtered_len(cat, keyword, stars, minp, maxp)
+                else:
+                    adv_filt = Product.get_catstars(cat, stars, per_page, offset, minp, maxp)
+                    len = Product.get_catstars_len(cat, stars, minp, maxp)
+
+            else:
+                if keyword:
+                    adv_filt = Product.get_catkey(cat, keyword, per_page, offset, minp, maxp)
+                    len = Product.get_catkey_len(cat, keyword, minp, maxp)
+                else:
+                    adv_filt = Product.get_catfilter(cat, per_page, offset, minp, maxp)
+                    len = Product.get_catfilter_len(cat, minp, maxp)
+        else:
+            if stars != "-1":
+                if keyword:
+                    adv_filt = Product.get_keystars(keyword, stars, per_page, offset, minp, maxp)
+                    len = Product.get_keystars_len(keyword, stars, minp, maxp)
+                else:
+                    adv_filt = Product.get_starsfilter(stars, per_page, offset, minp, maxp)
+                    len = Product.get_starsfilter_len(stars, minp, maxp)
+
+            else:
+                if keyword:
+                    adv_filt = Product.get_keyfiltered(keyword, per_page, offset, minp, maxp)
+                    len = Product.get_keyfiltered_len(keyword, minp, maxp)
+                else:
+                    adv_filt = Product.get_minmax(per_page, offset, minp, maxp)  
+                    len = Product.get_minmax_len(minp, maxp)  
+ 
+    else:
+        if cat:
+            if stars != "-1":
+                if keyword:
+                    adv_filt = Product.get_filtered_desc(cat, keyword, stars, per_page, offset, minp, maxp)
+                    len = Product.get_filtered_len(cat, keyword, stars, minp, maxp)
+                else:
+                    adv_filt = Product.get_catstars_desc(cat, stars, per_page, offset, minp, maxp)
+                    len = Product.get_catstars_len(cat, stars, minp, maxp)
+
+            else:
+                if keyword:
+                    adv_filt = Product.get_catkey_desc(cat, keyword, per_page, offset, minp, maxp)
+                    len = Product.get_catkey_len(cat, keyword, minp, maxp)
+                else:
+                    adv_filt = Product.get_catfilter_desc(cat, per_page, offset, minp, maxp)
+                    len = Product.get_catfilter_len(cat, minp, maxp)
+        else:
+            if stars != "-1":
+                if keyword:
+                    adv_filt = Product.get_keystars_desc(keyword,stars, per_page, offset, minp, maxp)
+                    len = Product.get_keystars_len(keyword, stars, minp, maxp)
+                else:
+                    adv_filt = Product.get_starsfilter_desc(stars, per_page, offset, minp, maxp)
+                    len = Product.get_starsfilter_len(stars, minp, maxp)
+
+            else:
+                if keyword:
+                    adv_filt = Product.get_keyfiltered_desc(keyword, per_page, offset, minp, maxp)
+                    len = Product.get_keyfiltered_len(keyword, minp, maxp)
+                else:
+                    adv_filt = Product.get_minmax_desc(per_page, offset, minp, maxp) 
+                    len = Product.get_minmax_len(minp, maxp) 
+       
+
+        
+    # logic for front and back buttons
+    if request.method == 'POST':
+        if request.form['action'] == 'next':
+            page += 1
+        elif request.form['action'] == 'prev':
+            page -= 1
+        
+        return redirect(url_for('products.filter', page = page, editSTARS = stars, keyword = keyword, cat = cat, maxp = maxp, minp = minp, checkbox = checkbox))
+
+    # render the page by adding information to the index.html file
+    if current_user.is_authenticated:
+        purchases = OrderFact.get_paged_orders(current_user.id, page, per_page)
+        return render_template('buy.html', avail_products=adv_filt, 
+                               current_user=current_user,
+                                            purchase_history=purchases, 
+                                            current_page = page,
+                                            page_length = per_page,
+                                            total_avail = len,
+                                            #seller_check=current_user.is_seller(current_user.id), 
+                                            cart_check=current_user.has_cart(current_user.id),
+                                            price = "asc")
+    else:
+        return render_template('buy.html', avail_products= adv_filt,
+                               current_user=current_user,
+                               current_page = page,
+                               page_length = per_page,
+                               total_avail = len,
+                               price = "asc")
+
+    
 @bp.route('/products/desc/', methods = {"GET", "POST"})
 def sort_desc():
 
@@ -214,6 +351,51 @@ def get_leq():
             page -= 1
 
         return redirect(url_for('products.get_leq', page = page))
+
+    # render the page by adding information to the index.html file
+    if current_user.is_authenticated:
+        purchases = OrderFact.get_paged_orders(current_user.id, page, per_page)
+        return render_template('buy.html', avail_products=lenleq,
+                               current_user=current_user, 
+                                            purchase_history=purchases, 
+                                            current_page = page,
+                                            page_length = per_page,
+                                            total_avail = lenq,
+                                            #seller_check=current_user.is_seller(current_user.id), 
+                                            cart_check=current_user.has_cart(current_user.id),
+                                            category = k)
+    else:
+        return render_template('buy.html', avail_products=lenleq,
+                               current_user=current_user,
+                               current_page = page,
+                               page_length = per_page,
+                               total_avail = lenq,
+                               category = k)
+    
+@bp.route('/products/get_prods_by_star/', methods = {"GET", "POST"})
+def get_prods_by_star():
+
+    k = request.args.get('k')
+    # get products for sale in category:
+
+        # determines table size
+    page = request.args.get('page', 1, type=int)
+    per_page = 12
+    offset = (page - 1) * per_page
+
+    # finds order history, number of rows in order history
+    lenleq = Product.get_prods_by_star(k, per_page, offset)
+
+    lenq = Product.get_prods_by_star_len(k)
+        
+    # logic for front and back buttons
+    if request.method == 'POST':
+        if request.form['action'] == 'next':
+            page += 1
+        elif request.form['action'] == 'prev':
+            page -= 1
+
+        return redirect(url_for('products.get_prods_by_star', page = page, k = k))
 
     # render the page by adding information to the index.html file
     if current_user.is_authenticated:

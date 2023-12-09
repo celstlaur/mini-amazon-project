@@ -218,6 +218,617 @@ LIMIT :limit OFFSET :offset
 category = category, limit = limit, offset = offset)
         return [Product(*row) for row in rows]
     
+
+# get all filters
+    @staticmethod
+    def get_filtered(category, keyword, stars, limit, offset, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', category = category, key = key, minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+
+# get all filters LENGTH
+    @staticmethod
+    def get_filtered_len(category, keyword, stars, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price, id
+''', category = category, key = key, minp = minp, maxp=maxp, stars = stars)
+        return len(rows) if rows else 0
+    
+# filter by category and stars
+    @staticmethod
+    def get_catstars(category, stars, limit, offset, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', category = category, minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+
+# filter by category and stars LENGTH
+    @staticmethod
+    def get_catstars_len(category, stars, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price, id
+''', category = category, minp = minp, maxp=maxp, stars = stars)
+        return len(rows) if rows else 0
+    
+# filter by category and key
+    @staticmethod
+    def get_catkey(category, keyword, limit, offset, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', category = category, minp = minp, maxp=maxp, key = key, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter by category and key LENGTH
+    @staticmethod
+    def get_catkey_len(category, keyword, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+ORDER BY price, id
+''', category = category, minp = minp, maxp=maxp, key = key)
+        return len(rows) if rows else 0
+    
+# filter by category and v filters
+    @staticmethod
+    def get_catfilter(category, limit, offset, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', category = category, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter by category and v filters LENGTH
+    @staticmethod
+    def get_catfilter_len(category, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp
+ORDER BY price, id
+''', category = category, minp = minp, maxp=maxp)
+        return len(rows) if rows else 0
+
+# filter by keyword and stars
+    @staticmethod
+    def get_keystars(keyword, stars, limit, offset, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', key = key, minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter by keyword and stars LENGTH
+    @staticmethod
+    def get_keystars_len(keyword, stars, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price, id
+''', key = key, minp = minp, maxp=maxp, stars = stars)
+        return len(rows) if rows else 0
+    
+# filter by stars and v filters
+    @staticmethod
+    def get_starsfilter(stars, limit, offset, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''',minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter stars and v filters LENGTH
+    @staticmethod
+    def get_starsfilter_len(stars, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price, id
+''',minp = minp, maxp=maxp, stars = stars)
+        return len(rows) if rows else 0
+    
+# filter by key
+    @staticmethod
+    def get_keyfiltered(keyword, limit, offset, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+                            
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', key = key, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+
+# filter by key LENGTH
+    @staticmethod
+    def get_keyfiltered_len(keyword, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+                            
+ORDER BY price, id
+''', key = key, minp = minp, maxp=maxp)
+        return len(rows) if rows else 0
+    
+# filter by min and max only
+    @staticmethod
+    def get_minmax(limit, offset, minp, maxp):
+
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp                    
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter by min and max only LENGTH
+    @staticmethod
+    def get_minmax_len(minp, maxp):
+
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp                    
+ORDER BY price, id
+''', minp = minp, maxp=maxp)
+        return len(rows) if rows else 0
+    
+# filter by min and max only
+    @staticmethod
+    def get_minmax_desc(limit, offset, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp                    
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+
+# filter by key desc
+    @staticmethod
+    def get_keyfiltered_desc(keyword, limit, offset, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+                            
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', key = key, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+    
+# filter by keyword and stars
+    @staticmethod
+    def get_starsfilter_desc(stars, limit, offset, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''',minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter by keyword and stars
+    @staticmethod
+    def get_keystars_desc(keyword, stars, limit, offset, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', key = key, minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter by category and stars
+    @staticmethod
+    def get_catfilter_desc(category, limit, offset, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', category = category, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter by category and stars
+    @staticmethod
+    def get_catkey_desc(category, keyword, limit, offset, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', category = category, minp = minp, maxp=maxp, key = key, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+
+
+# filter by category and stars
+    @staticmethod
+    def get_catstars_desc(category, stars, limit, offset, minp = 0, maxp = 99999999999999999):
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', category = category, minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+
+
+# filter by category PRICE DESCENDING WITH KEYWORD
+    @staticmethod
+    def get_filtered_desc(category, keyword, stars, limit, offset, minp = 0, maxp = 99999999999999999):
+        key = "%" + keyword + "%"
+
+        rows = app.db.execute('''
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price >= :minp AND price <= :maxp)
+INTERSECT
+(SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE product_description LIKE :key OR name LIKE :key )
+INTERSECT
+                              
+                            (SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id)
+                            
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', category = category, key = key, minp = minp, maxp=maxp, stars = stars, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+
+# filter by category PRICE DESCENDING WITH KEYWORD
+    @staticmethod
+    def get_adv_filter_asc(category, keyword, minp, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price >= :minp AND price <= :maxp
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# ASC KEY MAXP CATEGORY
+    @staticmethod
+    def get_akcmax(category, keyword, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price <= :maxp
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+
+# ASC MAXP CATEGORY
+    @staticmethod
+    def get_acmax(category, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price <= :maxp
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# DESC MAXP CATEGORY
+    @staticmethod
+    def get_dcmax(category, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# DESC CATEGORY
+    @staticmethod
+    def get_dkc(category, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+    @staticmethod
+    def get_akcmax_len(category, keyword, maxp):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price <= :maxp
+ORDER BY price, id
+''', 
+category = category, key = keyword, maxp=maxp)
+        return len(rows) if rows else 0
+    
+
+    
+    @staticmethod
+    def get_adv_filter_desc(category, keyword, minp, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price >= :minp AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+
+# DESC KEY MAXP CATEGORY
+    @staticmethod
+    def get_dkcmax(category, keyword, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND ( product_description LIKE :key OR name LIKE :key ) AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+        
+    
+    
+# filter by category PRICE DESCENDING WITH KEYWORD
+    @staticmethod
+    def get_adv_filter_len(category, keyword, minp, maxp):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price, image
+FROM Products
+WHERE category = :category AND product_description LIKE :key OR name LIKE :key AND price >= :minp AND price <= :maxp
+ORDER BY price DESC, id
+''', 
+category = category, key = keyword, minp = minp, maxp=maxp)
+        return len(rows) if rows else 0
+
+    
 # filter by category
     @staticmethod
     def getbycat_length(category):
@@ -333,30 +944,6 @@ WHERE price >= :price
                               price=price)
         return len(rows) if rows else 0
     
-
-# PRICE SORTING
-
-    @staticmethod
-    def get_k_most_expensive(k, limit, offset):
-        if k < limit:
-            limit = k
-        rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price, image
-FROM Products
-ORDER BY price DESC, id
-LIMIT :k OFFSET :offset
-                              ''', limit = limit, offset = offset)
-        return [Product(*row) for row in rows]
-    
-    @staticmethod
-    def get_k_cheapest(k):
-        rows = app.db.execute('''
-SELECT id, name, creator_id, category, product_description, price, image
-FROM Products
-ORDER BY price, id
-LIMIT :k
-                              ''', k = k)
-        return [Product(*row) for row in rows]
     
 
 # MISC SORTING
@@ -414,6 +1001,8 @@ FROM Products
                             SELECT AVG(CAST(stars AS FLOAT)) AS average_stars
                             FROM ReviewedProduct
                             WHERE product_id = :product_id''', product_id = product_id)
+        if avg == [(None,)]:
+            return None
 
         return str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2)) if avg else 0
     
@@ -470,6 +1059,36 @@ FROM Products
         all_reviews = [{'review': row[0], 'stars': row[1]} for row in rows]
 
         return all_reviews if all_reviews else []
+    
+
+    @staticmethod
+    def get_prods_by_star(stars, limit, offset):
+        rows = app.db.execute('''
+                            SELECT id, name, creator_id, category, product_description, price, image
+FROM Products RIGHT JOIN (SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id) AS avg ON avg.product_id = Products.id
+                            LIMIT :limit OFFSET :offset
+                            ''', stars = stars, limit = limit, offset = offset)
+    
+
+        return [Product(*row) for row in rows]
+    
+    @staticmethod
+    def get_prods_by_star_len(stars):
+        rows = app.db.execute('''
+                            SELECT product_id
+                            FROM 
+                            (SELECT AVG(CAST(stars AS FLOAT)) AS average_stars, product_id
+                            FROM ReviewedProduct GROUP BY product_id) AS avg_prods
+                            WHERE CEILING(average_stars) = :stars
+                            ORDER BY product_id''', stars = stars)
+    
+
+        return len(rows) if rows else 0
         
 
     
