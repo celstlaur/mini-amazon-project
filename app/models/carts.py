@@ -156,3 +156,9 @@ class CartContents:
         ''', user_id=user_id)
         
         return [CartContents(*row) for row in rows] if rows else None
+
+
+   def calculate_total_cost(cart):
+       total_cost = sum(item.price * item.quantity for item in cart)
+       return total_cost
+        

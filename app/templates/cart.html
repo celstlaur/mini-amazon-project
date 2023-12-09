@@ -27,8 +27,9 @@
             <p>{{item.quantity}}</p>
           <a href= "({url_for('cart.plus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">+</a>
         </td>
-        <td>{{item.price}}</td>
-        <td>{{item.price}}</td>
+        <td>${{item.price}}</td>
+        {% set total_price = item.price*item.quantity %}
+        <td>${{total_price}}</td>
         <td>
           <a href="{{ url_for('cart.delete_item', product_id=item.product_id) }}" class="btn btn-danger">Remove</a>
         </td>
@@ -37,7 +38,7 @@
   </tbody>
 </table>
 <p class="total">Total Products: {{ cart|length }}</p>
-<p class="total">Total Cost: ${{ cart|length }}</p>
+<p class="total">Total Cost: ${{ total_cost }}</p>
 {% if cart %}
    <form action="{{ url_for('cart.place_order') }}" method="POST">
        <p><button type="submit" class="btn btn-success">Place Order</button></p>
@@ -49,16 +50,8 @@
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
 {% endif %}
-{% if cart_info %}
-    <p>Cart Info: {{ cart_info }}</p>
-{% else %}
-    <p>Cart Info is None or Empty</p>
-{% endif %}
 
 {% endblock %}
-
-
-{{cart_info}}
 
 
 <script>
