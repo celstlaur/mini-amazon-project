@@ -199,6 +199,45 @@ LIMIT :limit OFFSET :offset
 ''', 
 category = category, limit = limit, offset = offset)
         return [Product(*row) for row in rows]
+
+
+# filter by category PRICE DESCENDING WITH KEYWORD
+    @staticmethod
+    def get_adv_filter_asc(category, keyword, minp, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+WHERE category = :category AND product_description LIKE :key OR name LIKE :key AND price >= :minp AND price <= :maxp
+ORDER BY price, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+    @staticmethod
+    def get_adv_filter_desc(category, keyword, minp, maxp, limit, offset):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+WHERE category = :category AND product_description LIKE :key OR name LIKE :key AND price >= :minp AND price <= :maxp
+ORDER BY price DESC, id
+LIMIT :limit OFFSET :offset
+''', 
+category = category, key = keyword, minp = minp, maxp=maxp, limit = limit, offset = offset)
+        return [Product(*row) for row in rows]
+    
+# filter by category PRICE DESCENDING WITH KEYWORD
+    @staticmethod
+    def get_adv_filter_len(category, keyword, minp, maxp):
+        rows = app.db.execute('''
+SELECT id, name, creator_id, category, product_description, price
+FROM Products
+WHERE category = :category AND product_description LIKE :key OR name LIKE :key AND price >= :minp AND price <= :maxp
+ORDER BY price DESC, id
+''', 
+category = category, key = keyword, minp = minp, maxp=maxp)
+        return len(rows) if rows else 0
+    
     
 # filter by category
     @staticmethod

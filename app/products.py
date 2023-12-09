@@ -97,6 +97,62 @@ def find_most_expensive_products():
     return render_template('productfilters.html',
                            filteredproducts=expensive)
 
+
+@bp.route('/products/filter/', methods = {"GET", "POST"})
+def filter():
+
+        # determines table size
+    page = request.args.get('page', 1, type=int)
+    per_page = 12
+    offset = (page - 1) * per_page
+
+    keyword = request.args.get('keyword')
+    cat = request.args.get('cat')
+    maxp = request.args.get('maxp')
+    minp = request.args.get('minp')
+    checkbox = request.args.get('checkbox')
+
+
+
+
+
+    # finds order history, number of rows in order history
+    if checkbox == 'asc':
+        adv_filt = Product.get_adv_filter_asc(cat, keyword, minp, maxp, per_page, offset)
+    else:
+        adv_filt = Product.get_adv_filter_desc(cat, keyword, minp, maxp, per_page, offset)
+
+    len = Product.get_adv_filter_len(cat, keyword, minp, maxp)
+        
+    # logic for front and back buttons
+    if request.method == 'POST':
+        if request.form['action'] == 'next':
+            page += 1
+        elif request.form['action'] == 'prev':
+            page -= 1
+        
+        return redirect(url_for('products.sort_asc', page = page))
+
+    # render the page by adding information to the index.html file
+    if current_user.is_authenticated:
+        purchases = OrderFact.get_paged_orders(current_user.id, page, per_page)
+        return render_template('buy.html', avail_products=adv_filt, 
+                               current_user=current_user,
+                                            purchase_history=purchases, 
+                                            current_page = page,
+                                            page_length = per_page,
+                                            total_avail = len,
+                                            #seller_check=current_user.is_seller(current_user.id), 
+                                            cart_check=current_user.has_cart(current_user.id),
+                                            price = "asc")
+    else:
+        return render_template('buy.html', avail_products=filtcat,
+                               current_user=current_user,
+                               current_page = page,
+                               page_length = per_page,
+                               total_avail = len,
+                               price = "asc")
+
 @bp.route('/products/asc/', methods = {"GET", "POST"})
 def sort_asc():
 
