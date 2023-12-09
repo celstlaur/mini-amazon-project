@@ -11,6 +11,7 @@ from .models.user import User
 from .models.product import Product
 from .models.carts import Cart, CartContents
 from .models.orders import Order, OrderItem
+from .models.balance import Balance
 #from .models.cart import CartContents
 
 
@@ -28,8 +29,12 @@ def cart():
     user_id = current_user.id
     cart_info = CartContents.get_cart(user_id)
 
-    total_cost = CartContents.calculate_total_cost(cart_info)
-    total_products = CartContents.calculate_total_products(cart_info)
+    if cart_info:
+        total_cost = CartContents.calculate_total_cost(cart_info)
+        total_products = CartContents.calculate_total_products(cart_info)
+    else:
+        total_cost = 0
+        total_products = 0
 
 
     return render_template('cart.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
@@ -102,24 +107,45 @@ def update_quantity():
 
 @bp.route('/place_order', methods=['POST'])
 def place_order():
-    #if not current_user.is_authenticated:
-    #    return jsonify({}), 404
+    if not current_user.is_authenticated:
+        return jsonify({}), 404
 
-    if request.method == 'POST':
+    user_id = current_user.id
+    cart_info = CartContents.get_cart(user_id)
+    balance = Balance.current_balance(current_user.id)
+
+    if cart_info:
+        total_cost = CartContents.calculate_total_cost(cart_info)
+        total_products = CartContents.calculate_total_products(cart_info)
+    else:
+        total_cost = 0
+        total_products = 0
+
+    if balance > total_cost:
+        if request.method == 'POST':
+            user_id = current_user.id
+            cart_info = CartContents.get_cart(user_id)
+
+        if cart_info:
+            flash('Order placed successfully!', 'success')
+            return render_template('orders.html', cart=cart_info, total_cost=total_cost, total_products=total_products)
+        else:
+            flash('Failed to place the order. Please try again later.', 'danger')
+            return redirect(url_for('cart.cart'))
+    else:
+        flash('Insufficient funds. Please make a deposit and try again.', 'danger')
+        return redirect(url_for('cart.cart'))
+
+
+    '''if request.method == 'POST':
         user_id = current_user.id
         cart_items = Cart.users_cart(current_user.id)
 
-        if not cart:
+        if not cart_items:
             flash('No items in the cart. Cannot place an order with an empty cart.', 'warning')
             return redirect(url_for('cart.cart'))
 
-        # Assuming cart_items[0] contains the necessary information
-        product_id = cart_items[0].product_id
-        seller_id = cart_items[0].seller_id
-        quantity = cart_items[0].quantity
-
         # Create Cart instance with the necessary arguments
-        cart = Cart(user_id=user_id, product_id=product_id, seller_id=seller_id, quantity=quantity)
         order = Cart.create_order
 
         if order:
@@ -131,4 +157,4 @@ def place_order():
             return redirect(url_for('cart.cart'))
     else:
         # Handle GET request (if needed)
-        return redirect(url_for('cart.cart'))
+        return redirect(url_for('cart.cart'))'''

@@ -10,7 +10,7 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">Product ID</th>
-      <th scope="col">Item</th>
+      <th scope="col">Product</th>
       <th scope="col">Quantity</th>
       <th scope="col">Unit Price</th>
       <th scope="col">Total Price</th>
@@ -52,30 +52,3 @@
 {% endif %}
 
 {% endblock %}
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const quantityButtons = document.querySelectorAll('.quantity-toggle');
-
-      quantityButtons.forEach(button => {
-          button.addEventListener('click', function () {
-              const action = this.dataset.action;
-              const productId = this.dataset.productId;
-              updateQuantity(productId, action);
-          });
-      });
-
-      function updateQuantity(productId, action) {
-          // Send an AJAX request to the server to update the quantity
-          fetch(`/update_quantity/${productId}/${action}`, { method: 'POST' })
-              .then(response => response.json())
-              .then(data => {
-                  // Update the quantity displayed on the page
-                  const quantityElement = document.querySelector(`[data-product-id="${productId}"]`);
-                  quantityElement.innerText = data.newQuantity;
-              })
-              .catch(error => console.error('Error:', error));
-      }
-  });
-</script>

@@ -29,6 +29,8 @@
         {% endfor %}
     </tbody>
 </table>
+<p class="total">Items in Cart: {{ total_products }} items</p>
+<p class="total">Total Cost: ${{ total_cost }}</p>
 <p class="total">Order Fulfillment Status: Unfulfilled</p>
 {% else %}
     <p><a href="{{ url_for('users.login') }}">Log in</a> to see your orders!</p>
