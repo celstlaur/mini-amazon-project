@@ -28,8 +28,12 @@
         <br>
         <strong>Address: </strong>{{ seller_address }}
         <!-- TODO: integrate with reviews-->
-        <p><a href="{{ url_for('recent_feedback.submit_SELLERfeedback', seller_id=current_user.id)}}">submit a review of this
+        <p><a href="{{ url_for('recent_feedback.submit_SELLERfeedback', seller_id=current_user.id)}}">Submit a review of this
             seller</a></p>
+
+
+
+            <p><a href="{{ url_for('seller_reviews_sorted', seller_id=current_user.id)}}">View reviews of this seller</a></p>
     {% else %}
         Buyer
     {% endif %}

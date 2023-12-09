@@ -10,6 +10,7 @@ from .models.user import User
 from .models.balance import Balance
 from .models.orderfact import OrderFact
 from .models.seller import Seller
+from .models.feedbackitem import FeedbackItem
 from . import DB
 
 
@@ -48,9 +49,11 @@ def public_profile():
     year_joined = Balance.first_balance_date(current_user.id)
     num_purchases = User.num_purchases(current_user.id)
     num_sales = User.num_sales(current_user.id)
+    
     if current_user.is_seller(current_user.id):
         seller_email=Seller.seller_details(current_user.id)[0].business_email
         seller_address=Seller.seller_details(current_user.id)[0].business_address
+        
     else: 
         seller_email=None
         seller_address=None
