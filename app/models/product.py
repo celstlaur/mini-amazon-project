@@ -1,6 +1,7 @@
 from flask import current_app as app, flash
 from flask_login import current_user
 from .inventory import Inventory
+from .feedbackitem import FeedbackItem
 
 
 # TO DO
@@ -529,6 +530,69 @@ FROM Products
         except Exception as e:
             print(str(e))
             return None
+        
+    @staticmethod
+    def get_product_avgstars(product_id):
+        avg = app.db.execute('''
+                            SELECT AVG(CAST(stars AS FLOAT)) AS average_stars
+                            FROM ReviewedProduct
+                            WHERE product_id = :product_id''', product_id = product_id)
+
+        return str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2)) if avg else 0
+    
+    @staticmethod
+    def get_num_product_ratings(product_id):
+        num = app.db.execute('''
+                            SELECT COUNT(*) AS num_reviews
+                            FROM ReviewedProduct
+                            WHERE product_id = :product_id''', product_id = product_id)
+
+        #formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
+        return str(num[0]).lstrip('(').rstrip(',)') if num else 0
+    
+    @staticmethod
+    def get_seller_avgstars(seller_id):
+        avg = app.db.execute('''
+                            SELECT AVG(CAST(stars AS FLOAT)) AS average_stars
+                            FROM ReviewedSeller
+                            WHERE seller_id = :seller_id''', seller_id = seller_id)
+
+        #formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
+        return str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2)) if avg else 0
+    
+    @staticmethod
+    def get_num_seller_ratings(seller_id):
+        num = app.db.execute('''
+                            SELECT COUNT(*) AS num_reviews
+                            FROM ReviewedSeller
+                            WHERE seller_id = :seller_id''', seller_id = seller_id)
+
+        #formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
+        return str(num[0]).lstrip('(').rstrip(',)') if num else 0
+    
+    @staticmethod
+    def get_product_reviews(product_id):
+        rows = app.db.execute('''
+                            SELECT review, stars
+                            FROM ReviewedProduct
+                            WHERE product_id = :product_id
+                            ORDER BY stars DESC''', product_id = product_id)
+        
+        all_reviews = [{'review': row[0], 'stars': row[1]} for row in rows]
+
+        return all_reviews if all_reviews else []
+
+    @staticmethod
+    def get_seller_reviews(seller_id):
+        rows = app.db.execute('''
+                            SELECT review, stars
+                            FROM ReviewedSeller
+                            WHERE seller_id = :seller_id
+                            ORDER BY stars DESC''', seller_id = seller_id)
+        
+        all_reviews = [{'review': row[0], 'stars': row[1]} for row in rows]
+
+        return all_reviews if all_reviews else []
         
 
     

@@ -60,6 +60,12 @@ def getprodpage(product):
 
     sellers = Inventory.get_sellers_given_product(product, per_page, offset)
     len_sellers = Inventory.get_len_sellers_given_prod(product)
+
+    avg_star_rating = Product.get_product_avgstars(product)
+    num_ratings = Product.get_num_product_ratings(product)
+
+    all_reviews = Product.get_product_reviews(product)
+
     # render the page by adding information to the index.html file
     return render_template('productpage.html',
                            current_user=current_user,
@@ -67,7 +73,10 @@ def getprodpage(product):
                             page_length = per_page,
                            product=products,
                            sellers = sellers,
-                           len_sellers = len_sellers)
+                           len_sellers = len_sellers,
+                           avg_star_rating = avg_star_rating,
+                           num_ratings = num_ratings,
+                           all_reviews = all_reviews)
 
 @bp.route('/products/findexpensive/', methods = {"GET"})
 def find_most_expensive_products():
