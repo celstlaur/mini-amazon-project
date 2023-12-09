@@ -169,6 +169,12 @@
               <h4 class="main-heading mt-0">{{product.name}}</h4>
               <p class="product-description">{{product.product_description}}</p>
               <p class="idx">ID: {{product.id}} &emsp; ${{product.price}}</p>
+              {% if avg_star_rating %}
+              <div class="rating-block">
+                <p class="average-rating"> {{avg_star_rating}} / 5  stars</p>
+                <p class="num-ratings">Based on {{num_ratings}} ratings</p>
+            </div>
+              {% endif %}
               <a href="/products/page/{{product.id}}" class="btn btn-primary stretched-link">Product Page</a>
               <p>
               {% if current_user.is_authenticated %}

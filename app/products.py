@@ -164,6 +164,11 @@ def filter():
     minp = request.args.get('minp')
     checkbox = request.args.get('checkbox')
 
+    if minp == '':
+        minp = 0
+    if maxp == '':
+        maxp = 999999999999
+
 
 
     # finds order history, number of rows in order history
@@ -173,50 +178,50 @@ def filter():
                 if keyword:
                     adv_filt = Product.get_filtered(cat, keyword, stars, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_catstars(cat, minp, maxp, stars, per_page, offset)
+                    adv_filt = Product.get_catstars(cat, stars, per_page, offset, minp, maxp)
 
             else:
                 if keyword:
-                    adv_filt = Product.get_catkey(cat, keyword, minp, maxp, per_page, offset)
+                    adv_filt = Product.get_catkey(cat, keyword, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_catfilter(cat, minp, maxp, per_page, offset)
+                    adv_filt = Product.get_catfilter(cat, per_page, offset, minp, maxp)
         else:
             if stars != "Any":
                 if keyword:
-                    adv_filt = Product.get_keystars(keyword, minp, maxp, stars, per_page, offset)
+                    adv_filt = Product.get_keystars(keyword, stars, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_starsfilter(minp, maxp, stars, per_page, offset)
+                    adv_filt = Product.get_starsfilter(stars, per_page, offset, minp, maxp)
 
             else:
                 if keyword:
-                    adv_filt = Product.get_keyfiltered(keyword, minp, maxp, per_page, offset)
+                    adv_filt = Product.get_keyfiltered(keyword, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_minmax(minp, maxp, per_page, offset)     
+                    adv_filt = Product.get_minmax(per_page, offset, minp, maxp)     
     else:
         if cat:
             if stars != "Any":
                 if keyword:
-                    adv_filt = Product.get_filtered_desc(cat, keyword, minp, maxp, stars, per_page, offset)
+                    adv_filt = Product.get_filtered_desc(cat, keyword, stars, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_catstars_desc(cat, minp, maxp, stars, per_page, offset)
+                    adv_filt = Product.get_catstars_desc(cat, stars, per_page, offset, minp, maxp)
 
             else:
                 if keyword:
-                    adv_filt = Product.get_catkey_desc(cat, keyword, minp, maxp, per_page, offset)
+                    adv_filt = Product.get_catkey_desc(cat, keyword, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_catfilter_desc(cat, minp, maxp, per_page, offset)
+                    adv_filt = Product.get_catfilter_desc(cat, per_page, offset, minp, maxp)
         else:
             if stars != "Any":
                 if keyword:
-                    adv_filt = Product.get_keystars_desc(keyword, minp, maxp, stars, per_page, offset)
+                    adv_filt = Product.get_keystars_desc(keyword,stars, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_starsfilter_desc(minp, maxp, stars, per_page, offset)
+                    adv_filt = Product.get_starsfilter_desc(stars, per_page, offset, minp, maxp)
 
             else:
                 if keyword:
-                    adv_filt = Product.get_keyfiltered_desc(keyword, minp, maxp, per_page, offset)
+                    adv_filt = Product.get_keyfiltered_desc(keyword, per_page, offset, minp, maxp)
                 else:
-                    adv_filt = Product.get_minmax_desc(minp, maxp, per_page, offset)        
+                    adv_filt = Product.get_minmax_desc(per_page, offset, minp, maxp)        
 
     len = Product.get_len_prods()
         
