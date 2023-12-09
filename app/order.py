@@ -31,6 +31,7 @@ def orders():
 
 @bp.route('/place_order/<int:product_id>', methods=['POST'])
 def place_order():
+<<<<<<< HEAD
     if not current_user.is_authenticated:
         return jsonify({}), 404
 
@@ -38,6 +39,10 @@ def place_order():
     product_id = product_id
     cart_info = CartContents.get_cart(user_id)
     balance = Balance.current_balance(current_user.id)
+=======
+    # Get the current user's cart items
+    cart_items = Product.query.filter_by(user_id=current_user.id).all()
+>>>>>>> main
 
     if cart_info:
         total_cost = CartContents.calculate_total_cost(cart_info)

@@ -88,3 +88,44 @@ LIMIT :limit OFFSET :offset ;
         except Exception as e:
             print(e)
             return False
+
+
+class OrderViz:
+    def __init__(self, oid, pname, quant, fulfill, time, first, last, address, price):
+        self.oid = oid
+        self.pname = pname
+        self.quant = quant
+        self.fulfill = fulfill
+        self.time = time
+        self.first = first
+        self.last = last
+        self.address = address
+        self.price = price
+        
+    def fetch_data(user_id):
+        rows = app.db.execute('''
+SELECT f.id, p.name, c.quantity, f.fufillment_status, f.time_purchased, u.firstname, u.lastname, ua.address, f.total_price, p.category
+FROM OrderContents c 
+LEFT JOIN OrderFact f on c.order_id = f.id 
+LEFT JOIN Users u on u.id = f.buyer_id 
+LEFT JOIN Products p on p.id=c.product_id 
+LEFT JOIN UserAddress ua on ua.id = u.id 
+WHERE c.seller_id = :user_id;''', user_id=user_id)
+        orders = []
+        for row in rows:
+            order = {
+                'oid': row[0],
+                'pname': row[1],
+                'quant': row[2],
+                'fulfill': row[3],
+                'time': row[4],
+                'first': row[5],
+                'last': row[6],
+                'address': row[7],
+                'price': row[8],
+                'category': row[9]
+            }
+            orders.append(order)
+            
+        return orders
+        

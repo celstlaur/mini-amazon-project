@@ -1,11 +1,17 @@
 from flask import current_app as app
-from flask_login import current_user
-from .inventory import Inventory
+from flask_sqlalchemy import SQLAlchemy
+import datetime
+
+
+db = SQLAlchemy()
 
 
 class Product:
+   '''id = db.Column(db.Integer, primary_key=True)
+   name = db.Column(db.String(255), nullable=False)
+   price = db.Column(db.Float, nullable=False)
+   cart_items = db.relationship('Cart', backref='product', lazy=True)'''
    def __init__(self, user_id, product_id, product_name, seller_id, quantity, price):
-       self.id = id
        self.user_id = user_id
        self.product_id = product_id
        self.product_name = product_name
@@ -15,6 +21,10 @@ class Product:
 
 
 class Order:
+   '''id = db.Column(db.Integer, primary_key=True)
+   name = db.Column(db.String(255), nullable=False)
+   price = db.Column(db.Float, nullable=False)
+   cart_items = db.relationship('Cart', backref='product', lazy=True)'''
    def __init__(self, user_id, product_id, seller_id, quantity):
        self.user_id = user_id
        self.product_id = product_id
@@ -69,12 +79,14 @@ VALUES(:user_id, :product_id, :seller_id, :quantity)
 
 
 
-class CartContents:
-   def __init__(self, product_id, product_name, quantity, price):
-       self.product_id = product_id
-       self.product_name = product_name
-       self.quantity = quantity
-       self.price = price
+   def get_cart(user_id):
+       rows = app.db.execute("""
+SELECT user_id, product_id, seller_id, quantity
+FROM CartContents
+WHERE user_id = :user_id
+            """, user_id=user_id)
+       return CartContents(*(rows[0])) if rows else None
+
 
    @staticmethod
    def get_cart(user_id):

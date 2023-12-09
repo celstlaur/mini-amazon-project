@@ -9,7 +9,7 @@ from .models.orderfact import OrderFact
 from .models.inventory import Inventory
 from .models.seller import Seller
 from .models.carts import Cart
-#from .models.cart import CartContents
+from .models.cart import CartContents
 
 from flask import Blueprint, request
 bp = Blueprint('products', __name__)
@@ -30,7 +30,7 @@ def add_to_cart(product_id, seller_id, seller_quant):
 
 
 
-        Cart.add_to_cart(user_id, product_id, quantity, seller_id)
+        CartContents.add_to_cart(user_id, product_id, quantity, seller_id)
         return redirect(url_for('cart.cart'))
 
 
@@ -60,6 +60,12 @@ def getprodpage(product):
 
     sellers = Inventory.get_sellers_given_product(product, per_page, offset)
     len_sellers = Inventory.get_len_sellers_given_prod(product)
+
+    avg_star_rating = Product.get_product_avgstars(product)
+    num_ratings = Product.get_num_product_ratings(product)
+
+    all_reviews = Product.get_product_reviews(product)
+
     # render the page by adding information to the index.html file
     return render_template('productpage.html',
                            current_user=current_user,
@@ -67,7 +73,10 @@ def getprodpage(product):
                             page_length = per_page,
                            product=products,
                            sellers = sellers,
-                           len_sellers = len_sellers)
+                           len_sellers = len_sellers,
+                           avg_star_rating = avg_star_rating,
+                           num_ratings = num_ratings,
+                           all_reviews = all_reviews)
 
 @bp.route('/products/findexpensive/', methods = {"GET"})
 def find_most_expensive_products():
@@ -437,6 +446,30 @@ def edit_name(product_id):
     else:
         return jsonify({}), 404
     
+
+@bp.route('/product/edit_image/<int:product_id>', methods=['GET', 'POST'])
+def edit_image(product_id):
+    if current_user.is_authenticated:
+
+        user_id = current_user.id
+        new_imag = request.form["i"]
+
+        #return render_template('submitfeedback.html')
+        
+        test = Product.edit_product_image(product_id, new_imag)
+        #print(test)
+
+        #return jsonify([feedback.__dict__ for feedback in feedbacks])
+        
+        #return render_template('recent_feedbacks.html', recent_feedbacks = feedbacks)
+
+        if test is True:
+            return redirect(url_for("products.getprodpage", product = product_id))
+
+    
+    else:
+        return jsonify({}), 404
+    
 @bp.route('/product/edit_desc/<int:product_id>', methods=['GET', 'POST'])
 def edit_desc(product_id):
     if current_user.is_authenticated:
@@ -518,12 +551,13 @@ def create(creator_id):
         category = request.form["cat"]
         name = request.form["name"]
         new_desc = request.form['desc']
+        new_image = request.form['image']
 
 
 
         #return render_template('submitfeedback.html')
 
-        test, product_id = Product.create_new_product(name, creator_id, category, new_desc, price)
+        test, product_id = Product.create_new_product(name, creator_id, category, new_desc, price, new_image)
         #print(test)
 
         test2 = Seller.become_seller(current_user.id, current_user.email, current_user.email)

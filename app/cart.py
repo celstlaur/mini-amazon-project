@@ -9,8 +9,8 @@ from decimal import Decimal
 
 
 from .models.user import User
-from .models.product import Product
-from .models.carts import Cart, CartContents
+from .models.carts import Product
+from .models.carts import Cart
 from .models.orders import Order, OrderItem
 from .models.balance import Balance
 from .models.ordercontents import OrderHistory
@@ -94,6 +94,8 @@ def apply_discount():
     # Redirect back to the cart page
     #return redirect(url_for('cart.cart'))
     return render_template('cart.html', cart=cart_info, total_cost=new_total_cost, total_products=total_products)
+
+
 
 
 @bp.route('/add_to_cart/<int:product_id>', methods=['POST'])
