@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Submit a review</h2>
+
+
+<form action="{{ url_for('recent_feedback.add_SELLERfeedback', seller_id=seller.user_id)}}" method="post">
+
+    <label for="seller_review">Your Review:</label>
+    <textarea id="seller_review" name="seller_review" required></textarea><br>
+
+    <input type="submit" value="Submit Review">
+</form>
+
+
+{% endblock %}

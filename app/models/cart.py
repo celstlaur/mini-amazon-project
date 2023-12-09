@@ -29,19 +29,17 @@ ORDER BY quantity DESC
         return [CartContents(*row) for row in rows]
 
     @staticmethod
-    def add_to_cart(user_id, product_id):
+    def add_to_cart(user_id, product_id, quantity, seller_id):
         try:
-            current_time = datetime.datetime.now()
             rows = app.db.execute("""
 INSERT INTO CartContents(user_id, product_id, seller_id, quantity)
-VALUES(:user_id, :product_id, :seller_id, :time_added)
-RETURNING id
+VALUES(:user_id, :product_id, :seller_id, :quantity)
 """,
                                   user_id=user_id,
                                   product_id=product_id,
-                                  time_added=current_time)
-            id = rows[0][0]
-            return CartContents.get(user_id)
+                                  seller_id = seller_id,
+                                  quantity = quantity)
+            return True
         except Exception as e:
             print(str(e))
             return None

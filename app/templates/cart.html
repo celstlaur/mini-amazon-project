@@ -10,7 +10,10 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">Product ID</th>
+      <th scope="col">Item</th>
       <th scope="col">Quantity</th>
+      <th scope="col">Unit Price</th>
+      <th scope="col">Total Price</th>
       <th scope="col">Actions</th>
     </tr>
   </thead>
@@ -18,16 +21,23 @@
     {% for item in cart%}
       <tr>
         <th scope="row">{{item.product_id}}</th>
+        <th scope="row">{{item.product_name}}</th>
+        <td>{{item.quantity}}</td>
+        <td>{{item.price}}</td>
         <td>{{item.quantity}}</td>
         <td>
-          <a href="{{ url_for('cart.delete_item', item_id=item.product_id) }}" class="btn btn-danger">Remove</a>
+          <a href="{{ url_for('cart.delete_item', product_id=item.product_id) }}" class="btn btn-danger">Remove</a>
         </td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
-<p class="total">Subtotal: {{ cart|length }} items</p>
-<a href="{{ url_for('buy.buy') }}" class="btn btn-success">Proceed to Checkout</a>
+<p class="total">Total: {{ cart|length }} items</p>
+{% if cart %}
+   <form action="{{ url_for('cart.place_order') }}" method="POST">
+       <p><button type="submit" class="btn btn-success">Place Order</button></p>
+   </form>
+{% endif %}
 {% else %}
 <h2>No items in cart</h2>
 {% endif %}
