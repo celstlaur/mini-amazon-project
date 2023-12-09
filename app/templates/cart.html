@@ -23,9 +23,9 @@
         <th scope="row">{{item.product_id}}</th>
         <th scope="row">{{item.product_name}}</th>
         <td>
-          <a href= "{{url_for('cart.minus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">-</a>
+          <a href= "{{url_for('cart.plus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">+</a>
             <p>{{item.quantity}}</p>
-          <a href= "({url_for('cart.plus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">+</a>
+          <a href= "({url_for('cart.minus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">-</a>
         </td>
         <td>${{item.price}}</td>
         {% set total_price = item.price*item.quantity %}
@@ -37,7 +37,7 @@
     {% endfor %}
   </tbody>
 </table>
-<p class="total">Total Products: {{ cart|length }}</p>
+<p class="total">{{ cart|length }} unique products</p>
 <p class="total">Total Cost: ${{ total_cost }}</p>
 {% if cart %}
    <form action="{{ url_for('cart.place_order') }}" method="POST">

@@ -44,17 +44,20 @@ def cart():
 
 @bp.route('/quantity_minus/<product_id>/<quantity>', methods = ['GET', 'POST'])
 def minus_item(product_id, quantity):
-    uid = current_user.id
-    Cart.decrease_quantity(uid, product_id, int(quantity))
-    cart_items = Cart.users_cart(uid)
-    return render_template('cart.html', cart_items=cart_items)
+    user_id = current_user.id
+    if int(quantity) > 1:
+        CartContents.decrease_quantity(user_id, product_id, int(quantity))
+    cart_items = CartContents.get_cart(user_id)
+    #return render_template('cart.html', user_id=user_id, cart_items=cart_items)
+    return redirect(url_for('cart.cart'))
 
 @bp.route('/quantity_plus/<product_id>/<quantity>', methods = ['GET', 'POST'])
 def plus_item(product_id, quantity):
-    uid = current_user.id
-    Cart.increase_quantity(uid, product_id, int(quantity))
-    cart_items = Cart.users_cart(uid)
-    return render_template('cart.html', cart_items=cart_items)
+    user_id = current_user.id
+    CartContents.increase_quantity(user_id, product_id, int(quantity))
+    cart_items = CartContents.get_cart(user_id)
+    #return render_template('cart.cart', user_id=user_id, cart_items=cart_items)
+    return redirect(url_for('cart.cart'))
 
 
 @bp.route('/delete_item/<int:product_id>', methods=['POST', 'DELETE', 'Get'])

@@ -52,23 +52,6 @@ class Cart:
         ''')
         return [Product(*row) for row in rows]
 
-
-   @staticmethod
-   def decrease_quantity(user_id, product_id, quantity):
-       app.db.execute('''
-       UPDATE CartContents SET quantity=:quantity
-       WHERE user_id=:user_id AND product_id=:product_id''',
-       user_id=user_id, product_id=product_id, quantity=quantity-1)
-       return
-
-   @staticmethod
-   def increase_quantity(user_id, product_id, quantity):
-       app.db.execute('''
-       UPDATE CartContents SET quantity=:quantity
-       WHERE user_id=:user_id AND product_id=:product_id''',
-       user_id=user_id, product_id=product_id, quantity=quantity+1)
-       return
-
    @staticmethod
    def add_to_cart(user_id, product_id, quantity, seller_id):
         try:
@@ -152,7 +135,7 @@ class CartContents:
             SELECT c.product_id, p.name as product_name, c.quantity, p.price
             FROM CartContents c
             LEFT JOIN Products p ON p.id = c.product_id
-            WHERE c.user_id = user_id
+            WHERE c.user_id = :user_id
         ''', user_id=user_id)
         
         return [CartContents(*row) for row in rows] if rows else None
@@ -161,4 +144,20 @@ class CartContents:
    def calculate_total_cost(cart):
        total_cost = sum(item.price * item.quantity for item in cart)
        return total_cost
+
+   @staticmethod
+   def decrease_quantity(user_id, product_id, quantity):
+       app.db.execute('''
+       UPDATE CartContents SET quantity=:quantity
+       WHERE user_id=:user_id AND product_id=:product_id''',
+       user_id=user_id, product_id=product_id, quantity=quantity-1)
+       return
+
+   @staticmethod
+   def increase_quantity(user_id, product_id, quantity):
+       app.db.execute('''
+       UPDATE CartContents SET quantity=:quantity
+       WHERE user_id=:user_id AND product_id=:product_id''',
+       user_id=user_id, product_id=product_id, quantity=quantity+1)
+       return
         
