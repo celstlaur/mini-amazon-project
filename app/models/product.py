@@ -415,8 +415,7 @@ FROM Products
                             FROM ReviewedProduct
                             WHERE product_id = :product_id''', product_id = product_id)
 
-        formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
-        return formatted_avg
+        return str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2)) if avg else 0
     
     @staticmethod
     def get_num_product_ratings(product_id):
@@ -426,7 +425,27 @@ FROM Products
                             WHERE product_id = :product_id''', product_id = product_id)
 
         #formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
-        return str(num[0]).lstrip('(').rstrip(',)')
+        return str(num[0]).lstrip('(').rstrip(',)') if num else 0
+    
+    @staticmethod
+    def get_seller_avgstars(seller_id):
+        avg = app.db.execute('''
+                            SELECT AVG(CAST(stars AS FLOAT)) AS average_stars
+                            FROM ReviewedSeller
+                            WHERE seller_id = :seller_id''', seller_id = seller_id)
+
+        #formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
+        return str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2)) if avg else 0
+    
+    @staticmethod
+    def get_num_seller_ratings(seller_id):
+        num = app.db.execute('''
+                            SELECT COUNT(*) AS num_reviews
+                            FROM ReviewedSeller
+                            WHERE seller_id = :seller_id''', seller_id = seller_id)
+
+        #formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
+        return str(num[0]).lstrip('(').rstrip(',)') if num else 0
     
     @staticmethod
     def get_product_reviews(product_id):
@@ -438,7 +457,19 @@ FROM Products
         
         all_reviews = [{'review': row[0], 'stars': row[1]} for row in rows]
 
-        return all_reviews if all_reviews else None
+        return all_reviews if all_reviews else []
+
+    @staticmethod
+    def get_seller_reviews(seller_id):
+        rows = app.db.execute('''
+                            SELECT review, stars
+                            FROM ReviewedSeller
+                            WHERE seller_id = :seller_id
+                            ORDER BY stars DESC''', seller_id = seller_id)
+        
+        all_reviews = [{'review': row[0], 'stars': row[1]} for row in rows]
+
+        return all_reviews if all_reviews else []
         
 
     
