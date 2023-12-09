@@ -1,6 +1,7 @@
 from flask import current_app as app, flash
 from flask_login import current_user
 from .inventory import Inventory
+from .feedbackitem import FeedbackItem
 
 
 # TO DO
@@ -406,6 +407,36 @@ FROM Products
         except Exception as e:
             print(str(e))
             return None
+        
+    @staticmethod
+    def get_product_avgstars(product_id):
+        avg = app.db.execute('''
+                            SELECT AVG(CAST(stars AS FLOAT)) AS average_stars
+                            FROM ReviewedProduct
+                            WHERE product_id = :product_id''', product_id = product_id)
+
+        formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
+        return formatted_avg
+    
+    @staticmethod
+    def get_num_product_ratings(product_id):
+        num = app.db.execute('''
+                            SELECT COUNT(*) AS num_reviews
+                            FROM ReviewedProduct
+                            WHERE product_id = :product_id''', product_id = product_id)
+
+        #formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
+        return str(num[0]).lstrip('(').rstrip(',)')
+    
+    @staticmethod
+    def get_product_reviews(product_id):
+        rows = app.db.execute('''
+                            SELECT review, stars
+                            FROM ReviewedProduct
+                            WHERE product_id = :product_id
+                            ORDER BY stars DESC''', product_id = product_id)
+        
+        return rows if rows else None
         
 
     
