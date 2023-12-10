@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from .models.user import User
 from .models.balance import Balance
-from .models.orderfact import OrderFact
+from .models.orderfact import OrderFact, OrderPurchaseHistory
 from .models.seller import Seller
 from .models.feedbackitem import FeedbackItem
 from . import DB
@@ -28,7 +28,7 @@ def account():
         full_address = User.get_address(current_user.id)
         address = full_address[0][0] if full_address else None
         transactions, total_pages = Balance.get_paged_balance(current_user.id, balance_page, per_page)
-        purchases, total_pages = OrderFact.get_paged_orders(current_user.id, purchase_page, per_page)
+        purchases, total_pages = OrderPurchaseHistory.get_paged_orders(current_user.id, purchase_page, per_page)
         seller_check = current_user.is_seller(current_user.id)
         
     else:
