@@ -1,6 +1,7 @@
 from flask import current_app as app
 from flask_login import current_user
 from .inventory import Inventory
+import datetime
 
 
 class Product:
@@ -75,8 +76,19 @@ class CartContents:
         ''', user_id=user_id)
         
         return [CartContents(*row) for row in rows] if rows else None
-
-
+    
+   @staticmethod
+   def check_inventory(user_id):
+        rows = app.db.execute('''  
+            SELECT c.product_id, p.name as product_name, c.quantity, p.price, c.seller_id
+            FROM CartContents c
+            LEFT JOIN Products p ON p.id = c.product_id
+            LEFT JOIN HasInventory h on h.seller_id = c.seller_id and h.product_id = c.product_id
+            WHERE c.user_id = 10 and h.quantity < c.quantity;
+        ''', user_id=user_id)
+        
+        return False if rows else True
+    
    def calculate_total_cost(cart):
        total_cost = sum(item.price * item.quantity for item in cart)
        return total_cost
@@ -112,3 +124,30 @@ class CartContents:
             WHERE user_id = :user_id AND product_id = :product_id AND seller_id = :seller_id
         ''', user_id=user_id, product_id=product_id, seller_id = seller_id)
         return
+
+   @staticmethod
+   def increment_seller_balance(user_id, total_price):
+       current_balance = app.db.execute("""select balance from Balance where user_id=0 order by balance_timestamp desc limit 1;""")[0][0]
+       current_balance += float(total_price)
+
+       app.db.execute("""INSERT INTO Balance(user_id, balance_timestamp, balance) VALUES(:sid, :time, :balance);""", sid=user_id, time=datetime.datetime.now(), balance=current_balance)
+
+
+   @staticmethod
+   def add_order_to_orderfact(buyer_id, total_price, time_purchased=datetime.datetime.now(), fulfill_status=False):
+       cursor = app.db.execute("""INSERT INTO OrderFact(buyer_id, total_price, fufillment_status, time_purchased) VALUES(:bid, :tp, :fs, :time);""", bid=buyer_id, tp=total_price, fs=fulfill_status, time=datetime.datetime.now())
+
+       
+
+       return cursor
+
+   
+   @staticmethod
+   def add_order_to_ordercontents(order_id, product_id, seller_id, quantity):
+       app.db.execute("""INSERT INTO OrderContents(order_id, product_id, seller_id, quantity) VALUES(:oid, :pid, :sid, :quant);""", oid=order_id, pid=product_id, sid=seller_id, quant=quantity)
+       return 
+   
+   @staticmethod
+   def get_max_orderfact_id():
+       return app.db.execute("""SELECT MAX(id) from OrderFact;""")[0][0]
+       
