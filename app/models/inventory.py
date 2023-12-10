@@ -103,6 +103,18 @@ class Inventory:
         except Exception as e:
             print(e)
             return False
+        
+    @staticmethod
+    def get_current_quantity(seller_id, product_id):
+        rows = app.db.execute('''
+    SELECT quantity
+    FROM HasInventory
+    WHERE seller_id = :seller_id and product_id = :product_id;
+    ''',
+                              seller_id=seller_id, product_id=product_id)
+        
+        return rows[0][0] if rows else None
+        
     
     
     

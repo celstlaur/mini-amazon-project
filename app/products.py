@@ -10,7 +10,7 @@ from .models.inventory import Inventory
 from .models.feedbackitem import FeedbackItem
 from .models.seller import Seller
 from .models.carts import Cart
-from .models.cart import CartContents
+from .models.carts import CartContents
 
 from flask import Blueprint, request
 bp = Blueprint('products', __name__)
@@ -31,7 +31,7 @@ def add_to_cart(product_id, seller_id, seller_quant):
 
 
 
-        CartContents.add_to_cart(user_id, product_id, quantity, seller_id)
+        Cart.add_to_cart(user_id, product_id, quantity, seller_id)
         return redirect(url_for('cart.cart'))
 
 
@@ -62,13 +62,15 @@ def getprodpage(product):
     sellers = Inventory.get_sellers_given_product(product, per_page, offset)
     len_sellers = Inventory.get_len_sellers_given_prod(product)
 
+    
     seller_reviews = []
     avg_star_ratingSELLER= []
     num_ratingsSELLER = []
-    for seller in sellers:
-        seller_reviews.append(Product.get_seller_reviews(seller.seller_id))
-        avg_star_ratingSELLER.append(Product.get_seller_avgstars(seller.seller_id))
-        num_ratingsSELLER.append(Product.get_num_seller_ratings(seller.seller_id))
+    if sellers:
+        for seller in sellers:
+            seller_reviews.append(Product.get_seller_reviews(seller.seller_id))
+            avg_star_ratingSELLER.append(Product.get_seller_avgstars(seller.seller_id))
+            num_ratingsSELLER.append(Product.get_num_seller_ratings(seller.seller_id))
         
 
     avg_star_rating = Product.get_product_avgstars(product)
@@ -350,7 +352,7 @@ def get_leq():
         elif request.form['action'] == 'prev':
             page -= 1
 
-        return redirect(url_for('products.get_leq', page = page))
+        return redirect(url_for('products.get_leq', page = page, k =k))
 
     # render the page by adding information to the index.html file
     if current_user.is_authenticated:
@@ -440,7 +442,7 @@ def get_geq():
         elif request.form['action'] == 'prev':
             page -= 1
 
-        return redirect(url_for('products.get_geq', page = page))
+        return redirect(url_for('products.get_geq', page = page, k = k))
 
     # render the page by adding information to the index.html file
     if current_user.is_authenticated:

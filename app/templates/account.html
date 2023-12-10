@@ -54,6 +54,12 @@
 
 
 
+  <div style="padding-left: 10px;">
+    <a href="{{ url_for('recent_feedback.recentFeedback') }}">View and edit your reviews</a>
+  </div>
+
+
+
 
 
 <br><br><br>
@@ -256,8 +262,14 @@
 <!--                         TRANSACTION HISTORY                         -->
 
 <a name="paginationAnchorTRANSACTION"></a>
+
+<!------------------------------------------------------------------------->
+<!--                         TRANSACTION HISTORY                         -->
+
+<a name="paginationAnchorTRANSACTION"></a>
 <div class="history">
   <h3>Transaction History:</h3>
+  {% if transaction_history %}
   {% if transaction_history %}
   <table class='table table-hover table-bordered container'>
     <thead class="thead-dark">
@@ -268,7 +280,12 @@
     </thead>
     <tbody>
       {% for transaction in transaction_history %}
+      {% for transaction in transaction_history %}
         <tr>
+          <th scope="row">{{transaction.balance_timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</th>
+          
+          <td>{{"%.2f"|format(transaction.balance)}}</td>
+          
           <th scope="row">{{transaction.balance_timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</th>
           
           <td>{{"%.2f"|format(transaction.balance)}}</td>
@@ -276,8 +293,26 @@
         </tr>
       {% endfor %}
       
+      {% endfor %}
+      
     </tbody>
   </table>
+
+  <div id="pagination">
+    {% if current_balance_page > 1 %}
+    <a href="{{ url_for('account.account', page=current_balance_page-1) }}#paginationAnchorTRANSACTION">Previous</a>
+    {% endif %}
+
+    <!-- Add more links for other pages as needed -->
+
+    {% if current_balance_page < total_pages %}
+    <a href="{{ url_for('account.account', page=current_balance_page+1) }}#paginationAnchorTRANSACTION">Next</a>
+    {% endif %}
+
+  {% else %}
+    <tr>No past purchases</tr>
+  {% endif %}
+  </div>
 
   <div id="pagination">
     {% if current_balance_page > 1 %}
@@ -307,43 +342,65 @@
 
 <!------------------------------------------------------------------------->
 
+
+<br>
+<br>
+<br>
+
+
+
+
+
+
+<!------------------------------------------------------------------------->
+
 <!-- maybe todo: sort purchase history by item, seller, date, etc -->
 <a name="paginationAnchor"></a>
 <div class="history">
   <h3>Purchase History:</h3>
   {% if purchase_history %}
+  {% if purchase_history %}
   <table class='table table-hover table-bordered container'>
     <thead class="thead-dark">
       <tr>
-        <th scope="col">Purchase ID</th>
-        <th scope="col">Price</th>
-        <th scope="col">Fulfillment</th>
+        <th scope="col">Product Name</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Unit Price</th>
+        <th scope="col">Total Price</th>
+        <th scope="col">Seller ID</th>
         <th scope="col">Timestamp</th>
-        <th scope="col">Details</th>
+        <th scope="col">Fulfillment Status</th>
       </tr>
     </thead>
     <tbody>
     
+    
       {% for purchase in purchase_history %}
         <tr>
-          <th scope="row">{{purchase.id}}</th>
-          <td>{{purchase.total_price}}</td>
-          <td>{{purchase.status}}</td>
-          <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
-          <td>
-            <p><a href="{{ url_for('order.orders') }}">Order Page</a></p>
-          </td>
+          <th scope="row">{{purchase.name}}</th>
+          <td>{{purchase.quant}}</td>
+          <td>{{purchase.uprice}}</td>
+          <td>{{purchase.tprice}}</td>
+          <td>{{purchase.sid}}</td>
+          <td>{{purchase.time.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+          <td>{{purchase.fulfill}}</td>
         </tr>
       {% endfor %}
+      
       
     </tbody>
   </table>
 
+
   <div id="pagination">
+    {% if current_purchase_page > 1 %}
+    <a href="{{ url_for('account.account', page=current_purchase_page-1) }}#paginationAnchor">Previous</a>
     {% if current_purchase_page > 1 %}
     <a href="{{ url_for('account.account', page=current_purchase_page-1) }}#paginationAnchor">Previous</a>
     {% endif %}
 
+    {% if current_purchase_page < total_pages %}
+    <a href="{{ url_for('account.account', page=current_purchase_page+1) }}#paginationAnchor">Next</a>
     {% if current_purchase_page < total_pages %}
     <a href="{{ url_for('account.account', page=current_purchase_page+1) }}#paginationAnchor">Next</a>
     {% endif %}
@@ -398,6 +455,22 @@
   {% endif %}
   </div>
 
+  <br> <br> 
+  <div style="justify-content: space-around;">
+    <h1>Create New Product</h1>
+  <form action="{{ url_for('products.create', creator_id = current_user.id)}}" method="post">
+    <input type="string" placeholder="New Name" name="name" /><br>
+      <input type="string" placeholder="New Category" name="cat" /><br>
+    <input type="string" placeholder="New Price" name="price" /><br>
+    <input type="string" placeholder="New Image" name="image" /><br>
+    <br>
+  <label for="review">New Description:</label> <br>
+          <textarea id="desc" name="desc"></textarea><br>
+          <input type="submit" value="Submit New Product">
+        </form>
+  
+  </div>
+  
 
 <!--
 <br>
@@ -408,5 +481,6 @@
 
 {% endif %}
 
+</div>
 </div>
 {% endblock %}

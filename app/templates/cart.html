@@ -11,6 +11,7 @@
     <tr>
       <th scope="col">Product ID</th>
       <th scope="col">Product</th>
+      <th scope="col">Seller ID</th>
       <th scope="col">Quantity</th>
       <th scope="col">Unit Price</th>
       <th scope="col">Total Price</th>
@@ -22,15 +23,16 @@
       <tr>
         <th scope="row">{{item.product_id}}</th>
         <th scope="row">{{item.product_name}}</th>
+        <th scope="row">{{item.seller_id}}</th>
         <td>
-          <a href= "{{url_for('cart.plus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">+</a>
+          <a href= "{{url_for('cart.plus_item', product_id=item.product_id, quantity=item.quantity, seller_id = item.seller_id)}}" type="button">+</a>
             <p>{{item.quantity}}</p>
-          <a href= "({url_for('cart.minus_item', product_id=item.product_id, quantity=item.quantity)}}" type="button">-</a>
+          <a href= "{{url_for('cart.minus_item', product_id=item.product_id, quantity=item.quantity, seller_id = item.seller_id)}}" type="button">-</a>
         </td>
         <td>${{item.price}}</td>
         <td>${{item.price*item.quantity}}</td>
         <td>
-          <a href="{{ url_for('cart.delete_item', product_id=item.product_id) }}" class="btn btn-danger">Remove</a>
+          <a href="{{ url_for('cart.delete_item', product_id=item.product_id, seller_id = item.seller_id) }}" class="btn btn-danger">Remove</a>
         </td>
       </tr>
     {% endfor %}
