@@ -350,7 +350,7 @@ def get_leq():
         elif request.form['action'] == 'prev':
             page -= 1
 
-        return redirect(url_for('products.get_leq', page = page))
+        return redirect(url_for('products.get_leq', page = page, k =k))
 
     # render the page by adding information to the index.html file
     if current_user.is_authenticated:
@@ -440,7 +440,7 @@ def get_geq():
         elif request.form['action'] == 'prev':
             page -= 1
 
-        return redirect(url_for('products.get_geq', page = page))
+        return redirect(url_for('products.get_geq', page = page, k = k))
 
     # render the page by adding information to the index.html file
     if current_user.is_authenticated:

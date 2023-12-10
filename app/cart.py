@@ -26,7 +26,7 @@ bp = Blueprint('cart', __name__)
 @bp.route('/cart')
 def cart():
     if not current_user.is_authenticated:
-        return jsonify({}), 404
+        return render_template('cart.html')
 
     user_id = current_user.id
     cart_info = CartContents.get_cart(user_id)
