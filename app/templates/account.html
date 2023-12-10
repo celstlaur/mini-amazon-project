@@ -331,8 +331,7 @@
           <td>{{purchase.status}}</td>
           <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
           <td>
-            Cart/Orders guru did not make an order page.
-            <!-- <p><a href="{{ url_for('order.orders') }}">Order Page</a></p>-->
+            <p><a href="{{ url_for('order.orders') }}">Order Page</a></p>
           </td>
         </tr>
       {% endfor %}
@@ -353,6 +352,52 @@
     <tr>No past purchases.</tr>
   {% endif %}
   </div>
+</div>
+
+<br>
+<br>
+<br>
+
+
+
+
+  <a name="paginationAnchorSEARCHES"></a>
+<div class="history">
+  <h3>Search History:</h3>
+  {% if search_history %}
+  <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Timestamp</th>
+        <th scope="col">Query</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+      {% for search in search_history %}
+        <tr>
+          <td>{{search.search_timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+          <td>{{search.query}}</td>
+        </tr>
+      {% endfor %}
+      
+    </tbody>
+  </table>
+
+  <div id="pagination">
+    {% if current_search_page > 1 %}
+    <a href="{{ url_for('account.account', page=current_search_page-1) }}#paginationAnchorSEARCHES">Previous</a>
+    {% endif %}
+
+    {% if current_search_page < total_pages %}
+    <a href="{{ url_for('account.account', page=current_search_page+1) }}#paginationAnchorSEARCHES">Next</a>
+    {% endif %}
+
+  {% else %}
+    <tr>No past searches.</tr>
+  {% endif %}
+  </div>
+
 
 <!--
 <br>

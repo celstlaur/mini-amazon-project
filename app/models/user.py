@@ -135,5 +135,36 @@ WHERE id = :id
     """,
                                 id=id)
         return len(rows)
+    
+    @staticmethod
+    def get_paged_searches(user_id, page, per_page):
+        offset = (page - 1) * per_page
+
+        # Query to count the total number of balances for pagination
+        total_count_query = '''
+        SELECT COUNT(*)
+        FROM Search
+        WHERE user_id = :user_id
+        '''
+        total_count = app.db.execute(total_count_query, user_id=user_id)
+        total_count = total_count[0][0] if total_count else 0
+
+        # Calculating the total number of pages
+        total_pages = (total_count + per_page - 1) // per_page
+
+        # Query to fetch specific range of orders
+        searchers_query = '''
+        SELECT user_id, search_timestamp, query
+        FROM Search
+        WHERE user_id = :user_id
+        ORDER BY search_timestamp DESC
+        LIMIT :limit OFFSET :offset
+        '''
+        searches = app.db.execute(searchers_query, user_id=user_id, limit=per_page, offset=offset)
+
+
+        return searches, total_pages
+
+
 
 
