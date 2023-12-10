@@ -81,10 +81,6 @@
               </form>
               <p class="product-description">Average Review Rating: {{avg_star_ratingSELLER[temp]}}</p>
               <p class="product-description">In Stock: {{seller.quantity}}</p>
-              <form action="{{ url_for('recent_feedback.get_seller_feedback_page', seller_id=id) }}" method="POST">
-                <!--{% print id %}-->
-                <input type="submit" value="Go to Seller Page" />
-              </form>
               {% if current_user.is_authenticated %}
               <form action="{{ url_for('products.add_to_cart', product_id=product.id, seller_id = seller.seller_id, seller_quant = seller.quantity)}}" method="post">
                 
