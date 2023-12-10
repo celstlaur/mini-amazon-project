@@ -1022,7 +1022,8 @@ FROM Products
                             SELECT AVG(CAST(stars AS FLOAT)) AS average_stars
                             FROM ReviewedSeller
                             WHERE seller_id = :seller_id''', seller_id = seller_id)
-
+        if avg == [(None,)]:
+            return None
         #formatted_avg = str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2))
         return str(round(float(str(avg[0]).lstrip('(').rstrip(',)')), 2)) if avg else 0
     
