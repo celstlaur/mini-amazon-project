@@ -354,6 +354,23 @@
   {% endif %}
   </div>
 
+  <br> <br> 
+  <div style="justify-content: space-around;">
+    <h1>Create New Product</h1>
+  <form action="{{ url_for('products.create', creator_id = current_user.id)}}" method="post">
+    <input type="string" placeholder="New Name" name="name" /><br>
+      <input type="string" placeholder="New Category" name="cat" /><br>
+    <input type="string" placeholder="New Price" name="price" /><br>
+    <input type="string" placeholder="New Image" name="image" /><br>
+    <br>
+  <label for="review">New Description:</label> <br>
+          <textarea id="desc" name="desc"></textarea><br>
+          <input type="submit" value="Submit New Product">
+        </form>
+  
+  </div>
+  
+
 <!--
 <br>
 <br><br><br>
