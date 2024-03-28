@@ -1,3 +1,5 @@
+# UPDATE BY CELIA: This is my team's completed Mini-Amazon project. The project specifications are below. 
+
 # Skeleton Code for CompSci 316 Standard Course Project.
 
 Originally created by [Rickard
